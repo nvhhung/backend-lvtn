@@ -1,2 +1,4 @@
-package ddd.post.application;public interface IPostApplication {
+package ddd.post.application;
+
+public interface IPostApplication {
 }

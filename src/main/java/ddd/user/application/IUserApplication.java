@@ -1,2 +1,4 @@
-package ddd.user.application;public interface IUserApplication {
+package ddd.user.application;
+
+public interface IUserApplication {
 }

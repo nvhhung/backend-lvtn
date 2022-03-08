@@ -1,4 +1,4 @@
-package provider;
+package factory.provider;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

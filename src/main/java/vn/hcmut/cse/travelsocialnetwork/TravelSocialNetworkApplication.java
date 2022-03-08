@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
-@ComponentScan({"utils","controller","configuration","provider"})
+@ComponentScan({"utils","controller","configuration", "factory","ddd"})
 public class TravelSocialNetworkApplication {
 	@Autowired
 	private RESTfulVerticle resTfulVerticle;

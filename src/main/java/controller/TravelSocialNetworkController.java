@@ -1,15 +1,20 @@
 package controller;
 
+import ddd.user.application.IUserApplication;
 import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 @Component
 public class TravelSocialNetworkController extends AbstractResource {
+    @Autowired
+    IUserApplication userApplication;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public void root(RoutingContext routingContext) {
@@ -26,4 +31,6 @@ public class TravelSocialNetworkController extends AbstractResource {
                     .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
     }
+
+
 }

@@ -1,9 +1,15 @@
 package utils;
 
-import ddd.products.ClassUtils;
+import eu.dozd.mongo.annotation.Embedded;
+import eu.dozd.mongo.annotation.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -19,6 +25,11 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 @Component
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Builder
 public class TimeUtils {
     private static int ZERO = 0, MAX_HOUR = 23, MAX_MIN = 59, MAX_DATE = 31, MIN_DATE = 1, MAX_MONTH = 11;
     private static String PATTERN = "dd MMM yyyy HH:mm:ss";
@@ -69,13 +80,13 @@ public class TimeUtils {
     }
 
 
-    public static ClassUtils.Time infoTimeByCurrent(Long time) throws ParseException {
+    public static Time infoTimeByCurrent(Long time) throws ParseException {
         DateFormat simple = new SimpleDateFormat(PATTERN);
         String dateAsString = simple.format(time);
         Date dateAsObj = simple.parse(dateAsString);
         Calendar cal = Calendar.getInstance();
         cal.setTime(dateAsObj);
-        ClassUtils.Time time_result = ClassUtils.Time.builder()
+        Time time_result = Time.builder()
                 .year(cal.getTime().getYear() + 1900)
                 .month(cal.getTime().getMonth() + 1)
                 .day(cal.getTime().getDate())
@@ -125,7 +136,7 @@ public class TimeUtils {
     public static Long randTime(Integer year_start, Integer year_end, Integer month_start, Integer month_end) throws ParseException {
         GregorianCalendar gc = new GregorianCalendar();
         Long currentTime = System.currentTimeMillis();
-        ClassUtils.Time time = infoTimeByCurrent(currentTime);
+        Time time = infoTimeByCurrent(currentTime);
         int year = time.getYear();
         int month = time.getMonth();
         if (year_start == null || year_start > time.getYear()) {
@@ -184,12 +195,12 @@ public class TimeUtils {
     }
 
     public static Integer getMaxDayOfMonth(Long time) throws ParseException {
-        ClassUtils.Time timeResult = infoTimeByCurrent(time);
+        Time timeResult = infoTimeByCurrent(time);
         return timeResult.getMax_day();
     }
 
     public static Integer getCurrentDayByTime(Long time) throws ParseException {
-        ClassUtils.Time timeResult = infoTimeByCurrent(time);
+        Time timeResult = infoTimeByCurrent(time);
         return timeResult.getDay();
     }
 
@@ -439,7 +450,7 @@ public class TimeUtils {
 
     public static String generateName(String name) {
         try {
-            ClassUtils.Time time = infoTimeByCurrent(System.currentTimeMillis());
+            Time time = infoTimeByCurrent(System.currentTimeMillis());
             String month = time.getMonth().toString();
 
             if (time.getMonth() < 10) {
@@ -460,7 +471,7 @@ public class TimeUtils {
 
     public static String formatTimeToString(Long millis) {
         try {
-            ClassUtils.Time time = infoTimeByCurrent(millis);
+            Time time = infoTimeByCurrent(millis);
             String month = time.getMonth().toString();
             if (time.getMonth() < 10) {
                 month = "0" + time.getMonth();
@@ -477,7 +488,7 @@ public class TimeUtils {
 
     public static String formatTimeToStringNew(Long millis) {
         try {
-            ClassUtils.Time time = infoTimeByCurrent(millis);
+            Time time = infoTimeByCurrent(millis);
             String month = time.getMonth().toString();
             if (time.getMonth() < 10) {
                 month = "0" + time.getMonth();
@@ -568,8 +579,8 @@ public class TimeUtils {
         if (current == null || time == null) {
             return -1;
         }
-        ClassUtils.Time currentTime = infoTimeByCurrent(current);
-        ClassUtils.Time infoTime = infoTimeByCurrent(time);
+        Time currentTime = infoTimeByCurrent(current);
+        Time infoTime = infoTimeByCurrent(time);
         if (current < time) {
             int yearCurrent = currentTime.getYear(), yearTime = infoTime.getYear();
             if (yearCurrent == yearTime) {
@@ -619,5 +630,25 @@ public class TimeUtils {
         return Timestamp.valueOf(LocalDateTime.now()
                 .with(LocalTime.MIN)
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))).getTime();
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embedded
+    @Builder
+    public static class Time implements Serializable {
+        private Integer year;
+        private Integer month;
+        private Integer day;
+        private Integer hours;
+        private Integer minutes;
+        private Integer second;
+        private Integer week;
+        private Integer current_day;
+        private Integer max_day;
+        private Integer max_day_of_week;
+        private Integer min_day;
+        private Integer min_day_of_week;
     }
 }

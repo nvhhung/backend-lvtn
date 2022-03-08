@@ -1,2 +1,4 @@
-package ddd.post.application;public class PostApplication {
+package ddd.post.application;
+
+public class PostApplication implements IPostApplication{
 }
