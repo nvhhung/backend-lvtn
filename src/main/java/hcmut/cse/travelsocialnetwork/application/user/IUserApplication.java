@@ -1,4 +1,4 @@
-package hcmut.cse.travelsocialnetwork.application;
+package hcmut.cse.travelsocialnetwork.application.user;
 
 import hcmut.cse.travelsocialnetwork.model.User;
 

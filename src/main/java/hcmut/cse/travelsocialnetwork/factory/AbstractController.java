@@ -1,4 +1,4 @@
-package hcmut.cse.travelsocialnetwork.controller;
+package hcmut.cse.travelsocialnetwork.factory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class AbstractController {
     @Autowired
