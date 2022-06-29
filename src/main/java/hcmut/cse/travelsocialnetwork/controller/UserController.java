@@ -32,5 +32,4 @@ public class UserController extends AbstractController {
     public String findUser(@RequestParam String _id) {
         return outputJson(9999,userApplication.findUser(_id).orElse(null));
     }
-
 }
