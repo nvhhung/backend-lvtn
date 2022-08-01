@@ -4,11 +4,13 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import eu.dozd.mongo.MongoMapper;
+import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
 import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -16,28 +18,42 @@ import java.util.UUID;
  * @since : 8/1/22 Monday
  **/
 @Component
-public class MongoDBClient {
+public class MongoDBConfig {
+    private static final Map<String, MongoDBConfig> providers = new HashMap<>();
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
 
     public interface factory {
-        MongoDBClient create();
+        MongoDBConfig create();
     }
 
     @Autowired
-    public MongoDBClient() {
+    public MongoDBConfig() {
     }
 
-    private MongoDBClient(String connectionURL, String databaseName) {
-        CodecRegistry codecRegistry = CodecRegistries.fromProviders(MongoMapper.getProviders());
+    private MongoDBConfig(String connectionURL, String databaseName) {
+        var codecRegistry = CodecRegistries.fromProviders(MongoMapper.getProviders());
         mongoClient = new MongoClient(new MongoClientURI(connectionURL));
         mongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry);
     }
 
-    public static MongoDBClient getInstance(MongoDBConfigBuilder mongoDBConfigBuilder) {
-        try{
-            String key = getKeyMap
+  public static MongoDBConfig getInstance(MongoDBConfigBuilder mongoDBConfigBuilder) {
+        var key = getKeyMap(mongoDBConfigBuilder.connectionURL, mongoDBConfigBuilder.databaseName);
+        if (!providers.containsKey(key)) {
+            registerProvider(mongoDBConfigBuilder.connectionURL, mongoDBConfigBuilder.databaseName);
         }
+        return providers.get(key);
+  }
+
+    private static void registerProvider(String connectionURL, String databaseName) {
+        var key = getKeyMap(connectionURL, databaseName);
+        if (!providers.containsKey(key)) {
+            providers.put(key, new MongoDBConfig(connectionURL, databaseName));
+        }
+    }
+
+    MongoDatabase getMongoDatabase(String connectionURL, String dataBaseName) {
+        return providers.get(getKeyMap(connectionURL, dataBaseName)).mongoDatabase;
     }
 
     public static final class MongoDBConfigBuilder {

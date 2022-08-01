@@ -57,7 +57,5 @@ public interface MongoDBClient<ORMClass> {
 
     Iterable<String> findDistinct(String fieldName, Bson queryString);
 
-    Integer countDistinct(String fieldName, Bson queryString);
-
     DeleteResult delete(Bson queryString);
 }

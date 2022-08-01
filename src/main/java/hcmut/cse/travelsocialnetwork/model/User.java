@@ -1,27 +1,27 @@
 package hcmut.cse.travelsocialnetwork.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import eu.dozd.mongo.annotation.Entity;
+import eu.dozd.mongo.annotation.Id;
+import hcmut.cse.travelsocialnetwork.factory.repo.PO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
-@Document(collection = "user")
-public class User {
+@Entity
+public class User extends PO {
+    @JsonSerialize(using = ToStringSerializer.class)
     @Id
-    private String _id;
-    private Long created_date;
-    private Long last_updated_date;
-    private int status;
+    ObjectId id;
     // personal
     private String name;
     private String phone;
