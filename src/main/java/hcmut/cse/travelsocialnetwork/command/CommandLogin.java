@@ -1,5 +1,22 @@
-package hcmut.cse.travelsocialnetwork.command;/**
+package hcmut.cse.travelsocialnetwork.command;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
  * @author : hung.nguyen23
  * @since : 8/16/22 Tuesday
- **/public class CommandLogin {
+ **/
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class CommandLogin {
+    private String phone;
+    private String userId;
+    private String email;
+    private String password;
+    private String kind;
 }

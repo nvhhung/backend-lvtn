@@ -29,4 +29,10 @@ public class Constant {
     public static class KEY_CONFIG {
         public static final String DB = "application.mongodb";
     }
+
+    public static class AUTHENTICATION_KIND {
+        public static String INTERNAL = "internal";
+        public static String GOOGLE = "google";
+        public static String FACEBOOK = "facebook";
+    }
 }
