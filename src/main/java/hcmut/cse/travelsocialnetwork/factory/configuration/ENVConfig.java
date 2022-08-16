@@ -18,4 +18,8 @@ public class ENVConfig {
     public String getStringProperty(String key) {
         return Optional.ofNullable(env.getProperty(key)).orElse(key);
     }
+
+    public String getStringProperty(String key, String defaultValue) {
+        return env.getProperty(key, defaultValue);
+    }
 }
