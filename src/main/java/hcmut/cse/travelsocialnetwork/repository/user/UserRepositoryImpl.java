@@ -11,13 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 /**
  * @author : hung.nguyen23
  * @since : 8/1/22 Monday
  **/
 @Component
-public class UserRepositoryImpl extends GenericMongoRepository<User> implements UserRepository {
+public class UserRepositoryImpl extends GenericMongoRepository<User> implements IUserRepository{
 
     private final MongoDBClient<User> mongoDBClient;
     private static final Logger LOGGER = LogManager.getLogger();

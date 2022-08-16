@@ -2,6 +2,7 @@ package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.user.IUserApplication;
 import hcmut.cse.travelsocialnetwork.command.CommandLogin;
+import hcmut.cse.travelsocialnetwork.command.CommandRegister;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import io.vertx.ext.web.RoutingContext;
@@ -34,21 +35,21 @@ public class UserController extends AbstractController {
         }
     }
 
-//    public void register(RoutingContext routingContext) {
-//        try {
-//            var commandRegister = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandRegister.class);
-//            routingContext.response()
-//                    .setStatusCode(200)
-//                    .putHeader("Content-Type", "application/json; charset=utf-8")
-//                    .end(outputJson(9999, userApplication.register(commandRegister)));
-//        } catch (Throwable throwable) {
-//            LOGGER.error(throwable);
-//            routingContext.response()
-//                    .setStatusCode(200)
-//                    .putHeader("content-type", "application/json; charset=utf-8")
-//                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
-//        }
-//    }
+    public void register(RoutingContext routingContext) {
+        try {
+            var commandRegister = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandRegister.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(outputJson(9999, userApplication.register(commandRegister)));
+        } catch (Throwable throwable) {
+            LOGGER.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 //
 //    public void refreshToken(RoutingContext routingContext) {
 //        try {

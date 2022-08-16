@@ -1,7 +1,6 @@
 package hcmut.cse.travelsocialnetwork.factory.repo;
 
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClient;
-import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBConfig;
 import lombok.NonNull;
 
 import java.util.List;

@@ -35,4 +35,10 @@ public class Constant {
         public static String GOOGLE = "google";
         public static String FACEBOOK = "facebook";
     }
+
+    public static class ERROR_MSG {
+        public static String PARAM_NOT_VALID = "param not valid";
+        public static String NOT_FOUNT_USER = "not found user";
+        public static String USER_REGISTER = "user register";
+    }
 }
