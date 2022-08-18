@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommandRegister {
-    private String email;
+    private String userName;
     private String password;
     private String kind;
     private String phone;

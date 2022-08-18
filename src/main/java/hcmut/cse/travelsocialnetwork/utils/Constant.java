@@ -40,5 +40,12 @@ public class Constant {
         public static String PARAM_NOT_VALID = "param not valid";
         public static String NOT_FOUNT_USER = "not found user";
         public static String USER_REGISTER = "user register";
+        public static String USER_BLOCKED = "user blocked";
+    }
+
+    public static class STATUS_USER {
+        public static String ACTIVE = "active";
+        public static String INACTIVE = "inactive";
+        public static String BLOCKED = "blocked";
     }
 }

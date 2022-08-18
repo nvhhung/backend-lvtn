@@ -16,8 +16,13 @@ public class HelperUser {
     @Autowired
     IUserRepository userRepository;
 
-    public User checkUserExist(String email) {
-        var queryEmail = new Document("email", email);
-        return userRepository.get(queryEmail).orElse(null);
+    public User checkUserRegister(String userName) {
+        var queryUserName = new Document("userName", userName);
+        return userRepository.get(queryUserName).orElse(null);
+    }
+
+    public User checkUserExist(String userId) {
+        var queryUserId = new Document("id", userId);
+        return userRepository.get(queryUserId).orElse(null);
     }
 }

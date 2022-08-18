@@ -22,8 +22,11 @@ public class User extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     ObjectId id;
+    // information login
+    private String userName;
+    private String password;
     // personal
-    private String name;
+    private String fullName;
     private String phone;
     private String email;
     private String birthday;
@@ -34,4 +37,7 @@ public class User extends PO {
     private List<String> userFollow;
     private Long experiencePoint;
     private Integer level;
+    private String status;
+    // provider
+
 }
