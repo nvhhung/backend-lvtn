@@ -19,4 +19,5 @@ public class CommandRegister {
     private String kind;
     private String phone;
     private String name;
+    private String avatar;
 }

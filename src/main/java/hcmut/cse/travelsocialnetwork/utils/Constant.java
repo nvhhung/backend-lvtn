@@ -28,6 +28,7 @@ public class Constant {
 
     public static class KEY_CONFIG {
         public static final String DB = "application.mongodb";
+        public static final String REDIS = "application.redis";
     }
 
     public static class AUTHENTICATION_KIND {
@@ -47,5 +48,23 @@ public class Constant {
         public static String ACTIVE = "active";
         public static String INACTIVE = "inactive";
         public static String BLOCKED = "blocked";
+    }
+
+    public static class TIME {
+        public static final int MILLISECOND_OF_FIVE_MINUTE = 5 * 60 * 1000;
+        public static final int MILLISECOND_OF_ONE_HOUR = 60 * 60 * 1000;
+        public static final int MILLISECOND_OF_SIX_HOUR = 6 * 60 * 60 * 1000;
+        public static final int MILLISECOND_OF_ONE_DAY = 24 * 60 * 60 * 1000;
+        public static final int MILLISECOND_OF_SEVEN_DAY = 7 * 24 * 60 * 60 * 1000;
+        public static final int SECOND_OF_TWO_MINUTE = 2 * 60;
+        public static final int SECOND_OF_THREE_MINUTE = 3 * 60;
+        public static final int SECOND_OF_FIVE_MINUTE = 5 * 60;
+        public static final int SECOND_OF_ONE_HOUR = 60 * 60;
+        public static final int SECOND_OF_TWO_HOUR = 2 * 60 * 60;
+        public static final int SECOND_OF_SIX_HOUR = 6 * 60 * 60;
+        public static final int SECOND_OF_ONE_DAY = 24 * 60 * 60;
+        public static final int SECOND_OF_THREE_DAY = 3 * 24 * 60 * 60;
+        public static final int SECOND_OF_SEVEN_DAY = 7 * 24 * 60 * 60;
+        public static final int SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60;
     }
 }
