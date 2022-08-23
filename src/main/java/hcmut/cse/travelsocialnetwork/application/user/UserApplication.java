@@ -34,17 +34,17 @@ public class UserApplication implements IUserApplication {
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-        var userTemp = helperUser.checkUserExist(commandRegister.getUserName());
+        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
         if (userTemp != null) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
 
         var userRegister = User.builder()
-                .userName(commandRegister.getName())
+                .userName(commandRegister.getUserName())
                 .password(SHA512.valueOf(commandRegister.getPassword()))
                 .phone(commandRegister.getPhone())
                 .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
-                .status(Constant.STATUS_USER.INACTIVE)
+                .status(Constant.STATUS_USER.ACTIVE)
                 .level(1)
                 .experiencePoint(0L)
                 .build();

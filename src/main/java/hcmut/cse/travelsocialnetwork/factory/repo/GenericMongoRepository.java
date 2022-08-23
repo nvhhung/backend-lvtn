@@ -117,6 +117,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
         try {
             t.setCreateTime(System.currentTimeMillis());
             t.setLastUpdateTime(System.currentTimeMillis());
+            t.setIsDeleted(false);
             return Optional.of(getMongoDBOperator().insert(t));
         } catch (Throwable throwable) {
             throwable.printStackTrace();

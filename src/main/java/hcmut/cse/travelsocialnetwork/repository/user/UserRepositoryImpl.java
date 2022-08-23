@@ -27,9 +27,9 @@ public class UserRepositoryImpl extends GenericMongoRepository<User> implements 
                 .MongoDBConfigBuilder
                 .config()
                 .withConnectionURL(config.getStringProperty(Constant.KEY_CONFIG.DB))
-                .withDatabaseName(Constant.DB_NAME.USER).build()),
+                .withDatabaseName(Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK).build()),
                 config.getStringProperty(Constant.KEY_CONFIG.DB),
-                Constant.DB_NAME.USER,
+                Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK,
                 Constant.COLLECTION_NAME.USER,
                 User.class);
     }

@@ -46,7 +46,7 @@ public class RestfulVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void start(Promise<Void> startPromise) {
+    public void start() {
         var router = Router.router(vertx);
         router.route().handler(BodyHandler.create()
                 .setBodyLimit(5 * 1024 * 1024) // 5MB
@@ -76,8 +76,10 @@ public class RestfulVerticle extends AbstractVerticle {
         configureRoutes(router);
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(Integer.parseInt(applicationConfig.getStringProperty("rest_expose_port","8081")));
-        startPromise.complete();
+                .listen(Integer.parseInt(applicationConfig.getStringProperty("rest_expose_port","8081")))
+                .onSuccess(server -> {
+                    System.out.println("HTTP server started on port " + server.actualPort());
+                });
     }
 
     public void setRequestHandlerList(List<RequestHandler> requestHandlerList) {

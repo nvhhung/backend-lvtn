@@ -17,8 +17,7 @@ public class Constant {
     }
 
     public static class DB_NAME {
-        public static final String USER = "user";
-
+        public static final String TRAVEL_SOCIAL_NETWORK = "travel-social-network";
     }
 
     public static class COLLECTION_NAME {
@@ -46,7 +45,6 @@ public class Constant {
 
     public static class STATUS_USER {
         public static String ACTIVE = "active";
-        public static String INACTIVE = "inactive";
         public static String BLOCKED = "blocked";
     }
 

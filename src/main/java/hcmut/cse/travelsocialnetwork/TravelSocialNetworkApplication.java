@@ -34,7 +34,10 @@ public class TravelSocialNetworkApplication {
 	public void deployServerVerticle() {
 		final boolean auth = true, notAuth = false;
 		restfulVerticle.setRequestHandlerList(Arrays.asList(
-				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth)
+				// user
+				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/register", userController::register, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth)
 		));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);
