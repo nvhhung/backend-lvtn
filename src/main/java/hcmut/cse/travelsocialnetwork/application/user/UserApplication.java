@@ -9,6 +9,7 @@ import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.JedisMaster;
+import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
@@ -30,14 +31,14 @@ public class UserApplication implements IUserApplication {
     @Autowired
     private JWTAuth jwtAuth;
     @Autowired
-    private JedisMaster redis;
+    private UserRedis redis;
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
-        if (userTemp != null) {
-            throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
-        }
+//        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
+//        if (userTemp != null) {
+//            throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
+//        }
 
         var userRegister = User.builder()
                 .userName(commandRegister.getUserName())
@@ -49,6 +50,7 @@ public class UserApplication implements IUserApplication {
                 .experiencePoint(0L)
                 .build();
         var userAdd = userRepository.add(userRegister);
+        redis.updateUserRedis(userAdd.get().getId().toHexString(), userAdd.get());
         return userAdd.isPresent();
     }
 

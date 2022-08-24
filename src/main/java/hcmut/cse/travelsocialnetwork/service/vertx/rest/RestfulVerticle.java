@@ -2,7 +2,6 @@ package hcmut.cse.travelsocialnetwork.service.vertx.rest;
 
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -29,27 +28,27 @@ public class RestfulVerticle extends AbstractVerticle {
     private JWTAuthHandler jwtAuthHandler;
 
     private void configureRoutes(Router router) {
-    this.requestHandlerList.forEach(
-        requestHandler -> {
-          if (requestHandler.isEnableAuthentication()) {
-            router
-                .route(requestHandler.getPath())
-                .handler(jwtAuthHandler)
-                .handler(requestHandler.handle());
-          } else {
-            router
-                .route(requestHandler.getMethod(), requestHandler.getPath())
-                .handler(requestHandler.handle());
-          }
-          System.out.println("Configuring route {}:{}" + requestHandler.getMethod() + requestHandler.getPath());
-        });
+        this.requestHandlerList.forEach(
+            requestHandler -> {
+              if (requestHandler.isEnableAuthentication()) {
+                router
+                    .route(requestHandler.getPath())
+                    .handler(jwtAuthHandler)
+                    .handler(requestHandler.handle());
+              } else {
+                router
+                    .route(requestHandler.getMethod(), requestHandler.getPath())
+                    .handler(requestHandler.handle());
+              }
+              LOGGER.info(String.format("Configuring route {%s}:{%s}" ,requestHandler.getMethod(),requestHandler.getPath()));
+            });
     }
 
     @Override
     public void start() {
         var router = Router.router(vertx);
         router.route().handler(BodyHandler.create()
-                .setBodyLimit(5 * 1024 * 1024) // 5MB
+                .setBodyLimit(5 * 1024 * 1024L) // 5MB
                 .setDeleteUploadedFilesOnEnd(true)
                 .setUploadsDirectory(applicationConfig.getStringProperty("application.upload.director"))
         );
@@ -77,9 +76,7 @@ public class RestfulVerticle extends AbstractVerticle {
         vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(Integer.parseInt(applicationConfig.getStringProperty("rest_expose_port","8081")))
-                .onSuccess(server -> {
-                    System.out.println("HTTP server started on port " + server.actualPort());
-                });
+                .onSuccess(server -> LOGGER.info("HTTP server started on port " + server.actualPort()));
     }
 
     public void setRequestHandlerList(List<RequestHandler> requestHandlerList) {

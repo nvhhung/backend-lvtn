@@ -48,6 +48,10 @@ public class Constant {
         public static String BLOCKED = "blocked";
     }
 
+    public static class KEY_REDIS {
+        public static String USER = "_user";
+    }
+
     public static class TIME {
         public static final int MILLISECOND_OF_FIVE_MINUTE = 5 * 60 * 1000;
         public static final int MILLISECOND_OF_ONE_HOUR = 60 * 60 * 1000;

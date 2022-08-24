@@ -6,7 +6,7 @@ services:
       ports:
         - 27017:27017
       volumes:
-        - data:/data
+        - db:/data
       environment:
         - MONGO_INIT_ROOT_USERNAME=admin
         - MONGO_INIT_ROOT_PASSWORD=admin
@@ -20,8 +20,20 @@ services:
         ME_CONFIG_MONGODB_ADMINUSERNAME: rootuser
         ME_CONFIG_MONGODB_ADMINPASSWORD: rootpass
         ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongo:27017/
+  cache:
+      image: 'bitnami/redis:latest'
+      environment:
+        - ALLOW_EMPTY_PASSWORD=yes
+      restart: always
+      ports:
+        - 6379:6379
+      volumes:
+        - cache:/data
 volumes:
-  data: {}
+  db:
+      driver: local
+  cache:
+      driver: local
 networks:
   default:
     name: mongodb_network

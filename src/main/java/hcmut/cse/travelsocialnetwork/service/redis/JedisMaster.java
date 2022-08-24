@@ -31,9 +31,9 @@ public class JedisMaster {
         if(POOL_INSTANCE != null) {
             return POOL_INSTANCE;
         }
-        var redisEnv = envConfig.getStringProperty(Constant.KEY_CONFIG.REDIS);
-        var uri = URI.create(redisEnv);
-        POOL_INSTANCE = new JedisPool(getConfig(), uri, TIMEOUT);
+//        var redisEnv = envConfig.getStringProperty(Constant.KEY_CONFIG.REDIS);
+//        var uri = URI.create(redisEnv);
+        POOL_INSTANCE = new JedisPool(getConfig());
         return POOL_INSTANCE;
     }
 
