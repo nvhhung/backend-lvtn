@@ -25,7 +25,7 @@ public class User extends PO {
     // information login
     private String userName;
     private String password;
-    private List<String> roles;
+    private Boolean isAdmin;
     // personal
     private String fullName;
     private String phone;

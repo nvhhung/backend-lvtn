@@ -40,6 +40,7 @@ public class Constant {
         public static String PARAM_NOT_VALID = "param not valid";
         public static String NOT_FOUNT_USER = "not found user";
         public static String USER_REGISTER = "user register";
+        public static String USER_REGISTER_FAIL = "register fail";
         public static String USER_BLOCKED = "user blocked";
     }
 

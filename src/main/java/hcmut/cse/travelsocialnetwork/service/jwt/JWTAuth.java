@@ -26,22 +26,22 @@ public class JWTAuth {
     @Autowired
     private RandomUtils randomUtils;
 
-    private final long EXPIRED_TOKEN = 30 * 60 * 1000L;
+    private final long EXPIRED_TOKEN = 60 * 60 * 1000L;
 
     private String generateToken(JsonObject data) {
     return jwtAuthProvider.getJwtAuth().generateToken(data
                     .put("sub","hcmut")
-                    .put("exp", EXPIRED_TOKEN)
+                    .put("exp", System.currentTimeMillis() / EXPIRED_TOKEN) // after 60'
+                    .put("iat", System.currentTimeMillis() / 1000)
             , new JWTOptions().setAlgorithm("RS256"));
     }
 
     public Optional<LoginToken> createLoginToken(JWTTokenData tokenData) throws Exception  {
         var tokenBase64 = Base64Convert.objectToBase64(tokenData);
         var accessToken = generateToken(new JsonObject()
-                .put("user_id", tokenData.getUserId())
-                .put("type", tokenData.getType())
-                .put("logged_partner", tokenData.getLoggedExternal())
-                .put("soft_key", randomUtils.randomString("mix", 16)));
+                .put("userId", tokenData.getUserId())
+                .put("role", tokenData.getRole())
+                .put("softKey", randomUtils.randomString("mix", 16)));
 
         var refreshToken = applicationConfig.getStringProperty("application.auth.domain") +
                 "/user/refresh_token?access_token=" +

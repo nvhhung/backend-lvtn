@@ -20,4 +20,5 @@ public class CommandRegister {
     private String phone;
     private String name;
     private String avatar;
+    private String role;
 }

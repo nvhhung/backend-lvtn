@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JWTTokenData {
     String userId;
-    String type;
+    Boolean isAdmin;
     Boolean loggedExternal;
 }

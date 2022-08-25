@@ -39,18 +39,23 @@ public class UserApplication implements IUserApplication {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
 
-        var userRegister = User.builder()
-                .userName(commandRegister.getUserName())
-                .password(SHA512.valueOf(commandRegister.getPassword()))
-                .phone(commandRegister.getPhone())
-                .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
-                .status(Constant.STATUS_USER.ACTIVE)
-                .level(1)
-                .experiencePoint(0L)
-                .build();
+    var userRegister =
+        User.builder()
+            .userName(commandRegister.getUserName())
+            .password(SHA512.valueOf(commandRegister.getPassword()))
+            .phone(commandRegister.getPhone())
+            .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
+            .status(Constant.STATUS_USER.ACTIVE)
+            .level(1)
+            .isAdmin(false)
+            .experiencePoint(0L)
+            .build();
         var userAdd = userRepository.add(userRegister);
+        if (userAdd.isEmpty()) {
+            throw new CustomException(Constant.ERROR_MSG.USER_REGISTER_FAIL);
+        }
         redis.updateUserRedis(userAdd.get().getId().toHexString(), userAdd.get());
-        return userAdd.isPresent();
+        return true;
     }
 
     @Override
@@ -73,8 +78,7 @@ public class UserApplication implements IUserApplication {
                     .userId(userTemp.getId().toHexString())
                     .build());
         }
-        // login by google, facebook
-        return Optional.of(null);
+        return null;
     }
 
     @Override
@@ -92,6 +96,7 @@ public class UserApplication implements IUserApplication {
 //        redis.set
         return jwtAuth.createLoginToken(JWTTokenData.builder()
                 .userId(user.getId().toHexString())
+                .isAdmin(false)
                 .build());
     }
 }
