@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 @Component
 public class UserController extends AbstractController {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(UserController.class);
 
     @Autowired
     IUserApplication userApplication;
@@ -27,7 +27,7 @@ public class UserController extends AbstractController {
                     .putHeader("Content-Type", "application/json; charset=utf-8")
                     .end(outputJson(9999, new HashMap<>()));
         } catch (Throwable throwable) {
-            LOGGER.error(throwable);
+            log.error(throwable);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("content-type", "application/json; charset=utf-8")
@@ -43,7 +43,7 @@ public class UserController extends AbstractController {
                     .putHeader("Content-Type", "application/json; charset=utf-8")
                     .end(outputJson(9999, userApplication.register(commandRegister)));
         } catch (Throwable throwable) {
-            LOGGER.error(throwable);
+            log.error(throwable);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("content-type", "application/json; charset=utf-8")
@@ -78,7 +78,7 @@ public class UserController extends AbstractController {
                     .putHeader("Content-Type", "application/json; charset=utf-8")
                     .end(outputJson(9999, userApplication.login(commandLogin).orElse(null)));
         } catch (Throwable throwable) {
-            LOGGER.error(throwable);
+            log.error(throwable);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("content-type", "application/json; charset=utf-8")

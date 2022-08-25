@@ -49,7 +49,7 @@ public class Constant {
     }
 
     public static class KEY_REDIS {
-        public static String USER = "_user";
+        public static String USER = "user_";
     }
 
     public static class TIME {

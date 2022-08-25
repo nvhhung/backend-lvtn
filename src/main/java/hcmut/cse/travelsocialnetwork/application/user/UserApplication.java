@@ -8,22 +8,21 @@ import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
-import hcmut.cse.travelsocialnetwork.service.redis.JedisMaster;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
 import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Log4j2
 @Component
 public class UserApplication implements IUserApplication {
-
+    private static final Logger log = LogManager.getLogger(UserApplication.class);
     @Autowired
     HelperUser helperUser;
     @Autowired
@@ -35,10 +34,10 @@ public class UserApplication implements IUserApplication {
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-//        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
-//        if (userTemp != null) {
-//            throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
-//        }
+        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
+        if (userTemp != null) {
+            throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
+        }
 
         var userRegister = User.builder()
                 .userName(commandRegister.getUserName())

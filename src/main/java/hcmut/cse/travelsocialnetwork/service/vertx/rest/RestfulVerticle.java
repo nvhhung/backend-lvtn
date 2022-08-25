@@ -20,7 +20,7 @@ import java.util.List;
  **/
 @Component
 public class RestfulVerticle extends AbstractVerticle {
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Logger log = LogManager.getLogger(RestfulVerticle.class);
     private List<RequestHandler> requestHandlerList = new ArrayList<>();
     @Autowired
     protected ENVConfig applicationConfig;
@@ -40,7 +40,7 @@ public class RestfulVerticle extends AbstractVerticle {
                     .route(requestHandler.getMethod(), requestHandler.getPath())
                     .handler(requestHandler.handle());
               }
-              LOGGER.info(String.format("Configuring route {%s}:{%s}" ,requestHandler.getMethod(),requestHandler.getPath()));
+                log.info(String.format("Configuring route {%s}:{%s}" ,requestHandler.getMethod(),requestHandler.getPath()));
             });
     }
 
@@ -76,7 +76,7 @@ public class RestfulVerticle extends AbstractVerticle {
         vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(Integer.parseInt(applicationConfig.getStringProperty("rest_expose_port","8081")))
-                .onSuccess(server -> LOGGER.info("HTTP server started on port " + server.actualPort()));
+                .onSuccess(server -> log.info("HTTP server started on port " + server.actualPort()));
     }
 
     public void setRequestHandlerList(List<RequestHandler> requestHandlerList) {
