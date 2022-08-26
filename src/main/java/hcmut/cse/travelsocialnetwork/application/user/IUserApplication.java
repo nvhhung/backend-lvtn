@@ -10,4 +10,5 @@ public interface IUserApplication {
     Boolean register(CommandRegister commandRegister) throws Exception;
     Optional<LoginToken> login(CommandLogin commandLogin) throws Exception;
     Optional<LoginToken> resetPassword(CommandPassword commandPassword) throws Exception;
+    Optional<LoginToken> refreshToken(String accessToken, String refreshToken) throws Exception;
 }

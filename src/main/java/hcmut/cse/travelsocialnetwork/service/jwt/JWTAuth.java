@@ -40,7 +40,7 @@ public class JWTAuth {
         var tokenBase64 = Base64Convert.objectToBase64(tokenData);
         var accessToken = generateToken(new JsonObject()
                 .put("userId", tokenData.getUserId())
-                .put("role", tokenData.getRole())
+                .put("isAdmin", tokenData.getIsAdmin())
                 .put("softKey", randomUtils.randomString("mix", 16)));
 
         var refreshToken = applicationConfig.getStringProperty("application.auth.domain") +
@@ -51,6 +51,13 @@ public class JWTAuth {
         return Optional.of(LoginToken.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
+                .build());
+    }
+
+    public Optional<LoginToken> refreshToken(String accessToken, String refreshToken) throws Exception {
+        JWTTokenData jwtRefreshTokenData = Base64Convert.base64ToObject(refreshToken, JWTTokenData.class);
+        return createLoginToken(JWTTokenData.builder()
+                .userId(jwtRefreshTokenData.getUserId())
                 .build());
     }
 }

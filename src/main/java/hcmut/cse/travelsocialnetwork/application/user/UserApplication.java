@@ -9,6 +9,7 @@ import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
+import hcmut.cse.travelsocialnetwork.utils.Base64Convert;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
@@ -99,4 +100,10 @@ public class UserApplication implements IUserApplication {
                 .isAdmin(false)
                 .build());
     }
+
+    @Override
+    public Optional<LoginToken> refreshToken(String accessToken, String refreshToken) throws Exception {
+        return jwtAuth.refreshToken(accessToken, refreshToken);
+    }
+
 }

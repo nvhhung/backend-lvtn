@@ -17,4 +17,5 @@ public class CommandLogin {
     private String userName;
     private String password;
     private String kind;
+    private Boolean isAdmin;
 }
