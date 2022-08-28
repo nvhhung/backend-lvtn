@@ -8,6 +8,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.AuthenticationHandlerImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public class JWTAuthHandler extends AuthenticationHandlerImpl {
+
+    private static final Logger log = LogManager.getLogger(JWTAuthHandler.class);
 
     public JWTAuthHandler(JWTAuthProvider authProvider) {
         super(authProvider.getJwtAuth());
@@ -39,12 +43,15 @@ public class JWTAuthHandler extends AuthenticationHandlerImpl {
                 } else {
                     var token = parts[1];
                     var credentials = new JsonObject();
-                    credentials.put("jwt", token);
+                    credentials.put("token", token);
                     authProvider.authenticate(credentials, res -> {
                         if (res.succeeded()) {
                             var jsonObject = res.result().principal();
-                            routingContext.setUser(res.result());
+                            routingContext.setBody(jsonObject.toBuffer());
+                            request.resume();
+                            routingContext.next();
                         } else {
+                            log.info("token invalid because: " + res.cause());
                             routingContext.fail(401);
                         }
                     });

@@ -1,4 +1,4 @@
-package hcmut.cse.travelsocialnetwork.command;
+package hcmut.cse.travelsocialnetwork.command.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommandPassword {
-    private String userName;
+    private String username;
     private String oldPassword;
     private String newPassword;
     private String kind;

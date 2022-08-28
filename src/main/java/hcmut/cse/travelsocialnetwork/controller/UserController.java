@@ -1,10 +1,11 @@
 package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.user.IUserApplication;
-import hcmut.cse.travelsocialnetwork.command.CommandLogin;
-import hcmut.cse.travelsocialnetwork.command.CommandRegister;
+import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
+import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,5 +85,23 @@ public class UserController extends AbstractController {
                     .putHeader("content-type", "application/json; charset=utf-8")
                     .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
+    }
+
+    public void getInfoUser(RoutingContext routingContext) {
+        try {
+            MultiMap params = routingContext.request().params();
+            String userId = params.get("userId");
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, userApplication.getInfoUser(userId)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+
     }
 }

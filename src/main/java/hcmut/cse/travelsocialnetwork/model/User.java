@@ -23,7 +23,7 @@ public class User extends PO {
     @Id
     ObjectId id;
     // information login
-    private String userName;
+    private String username;
     private String password;
     private Boolean isAdmin;
     // personal

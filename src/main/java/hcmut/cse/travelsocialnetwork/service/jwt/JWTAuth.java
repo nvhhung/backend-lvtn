@@ -31,7 +31,7 @@ public class JWTAuth {
     private String generateToken(JsonObject data) {
     return jwtAuthProvider.getJwtAuth().generateToken(data
                     .put("sub","hcmut")
-                    .put("exp", System.currentTimeMillis() / EXPIRED_TOKEN) // after 60'
+                    .put("exp", System.currentTimeMillis() + EXPIRED_TOKEN) // after 60'
                     .put("iat", System.currentTimeMillis() / 1000)
             , new JWTOptions().setAlgorithm("RS256"));
     }

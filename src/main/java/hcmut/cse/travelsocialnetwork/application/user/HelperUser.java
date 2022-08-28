@@ -16,8 +16,8 @@ public class HelperUser {
     @Autowired
     IUserRepository userRepository;
 
-    public User checkUserRegister(String userName) {
-        var queryUserName = new Document("userName", userName);
+    public User checkUserRegister(String username) {
+        var queryUserName = new Document("username", username);
         return userRepository.get(queryUserName).orElse(null);
     }
 

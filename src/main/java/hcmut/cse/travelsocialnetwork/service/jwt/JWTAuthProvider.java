@@ -1,7 +1,6 @@
 package hcmut.cse.travelsocialnetwork.service.jwt;
 
 import hcmut.cse.travelsocialnetwork.service.VertxProvider;
-import io.vertx.core.Vertx;
 import io.vertx.ext.auth.PubSecKeyOptions;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
@@ -65,5 +64,6 @@ public class JWTAuthProvider {
                                         "0fPinYmDJpkwMYHqQaLGQyg=\n" +
                                         "-----END PRIVATE KEY-----")
                 ));
+
     }
 }

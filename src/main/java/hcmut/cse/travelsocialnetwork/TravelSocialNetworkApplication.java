@@ -37,8 +37,10 @@ public class TravelSocialNetworkApplication {
 				// user
 				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/register", userController::register, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth)
-		));
+				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/user/info-user", userController::getInfoUser, auth)
+
+				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);
 	}

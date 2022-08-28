@@ -1,15 +1,14 @@
 package hcmut.cse.travelsocialnetwork.application.user;
 
-import hcmut.cse.travelsocialnetwork.command.CommandLogin;
-import hcmut.cse.travelsocialnetwork.command.CommandPassword;
-import hcmut.cse.travelsocialnetwork.command.CommandRegister;
+import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
+import hcmut.cse.travelsocialnetwork.command.user.CommandPassword;
+import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
-import hcmut.cse.travelsocialnetwork.utils.Base64Convert;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
@@ -35,14 +34,14 @@ public class UserApplication implements IUserApplication {
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-        var userTemp = helperUser.checkUserRegister(commandRegister.getUserName());
+        var userTemp = helperUser.checkUserRegister(commandRegister.getUsername());
         if (userTemp != null) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
 
     var userRegister =
         User.builder()
-            .userName(commandRegister.getUserName())
+            .username(commandRegister.getUsername())
             .password(SHA512.valueOf(commandRegister.getPassword()))
             .phone(commandRegister.getPhone())
             .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
@@ -55,7 +54,7 @@ public class UserApplication implements IUserApplication {
         if (userAdd.isEmpty()) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER_FAIL);
         }
-        redis.updateUserRedis(userAdd.get().getId().toHexString(), userAdd.get());
+        redis.updateUser(userAdd.get().getId().toString(), userAdd.get());
         return true;
     }
 
@@ -63,7 +62,7 @@ public class UserApplication implements IUserApplication {
     public Optional<LoginToken> login(CommandLogin commandLogin) throws Exception {
         // login by registered account
         if (StringUtils.equals(commandLogin.getKind(), Constant.AUTHENTICATION_KIND.INTERNAL)) {
-            var userTemp = helperUser.checkUserRegister(commandLogin.getUserName());
+            var userTemp = helperUser.checkUserRegister(commandLogin.getUsername());
             if (userTemp == null) {
                 throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
             }
@@ -84,7 +83,7 @@ public class UserApplication implements IUserApplication {
 
     @Override
     public Optional<LoginToken> resetPassword(CommandPassword commandPassword) throws Exception {
-        var user = helperUser.checkUserRegister(commandPassword.getUserName());
+        var user = helperUser.checkUserRegister(commandPassword.getUsername());
         if (user == null) {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
         }
@@ -93,7 +92,7 @@ public class UserApplication implements IUserApplication {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
         }
         user.setPassword(commandPassword.getNewPassword());
-        var userUpdated  = userRepository.update(user.getId().toHexString(), user);
+        var userUpdated  = userRepository.update(user.getId().toString(), user);
 //        redis.set
         return jwtAuth.createLoginToken(JWTTokenData.builder()
                 .userId(user.getId().toHexString())
@@ -104,6 +103,16 @@ public class UserApplication implements IUserApplication {
     @Override
     public Optional<LoginToken> refreshToken(String accessToken, String refreshToken) throws Exception {
         return jwtAuth.refreshToken(accessToken, refreshToken);
+    }
+
+    @Override
+    public Optional<User> getInfoUser(String userId) throws Exception {
+        if (StringUtils.isNullOrEmpty(userId)) {
+            log.info("request getInfoUser no have userId");
+            throw new CustomException(Constant.ERROR_MSG.PARAM_NOT_VALID);
+        }
+        var user = redis.getUser(userId);
+        return Optional.of(user);
     }
 
 }
