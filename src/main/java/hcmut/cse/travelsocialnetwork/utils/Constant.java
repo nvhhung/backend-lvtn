@@ -7,7 +7,7 @@ package hcmut.cse.travelsocialnetwork.utils;
 public class Constant {
     public static class FIELD {
         public static final String IS_DELETED = "isDeleted";
-        public static final String ID = "id";
+        public static final String ID = "_id";
         public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
     }
 

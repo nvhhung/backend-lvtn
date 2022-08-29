@@ -6,11 +6,11 @@ services:
       ports:
         - 27017:27017
       volumes:
-        - db:/data
+        - mongodata:/data
       environment:
         - MONGO_INIT_ROOT_USERNAME=admin
         - MONGO_INIT_ROOT_PASSWORD=admin
-  cache:
+  redis:
       image: 'bitnami/redis:latest'
       environment:
         - ALLOW_EMPTY_PASSWORD=yes
@@ -18,12 +18,30 @@ services:
       ports:
         - 6379:6379
       volumes:
-        - cache:/data
+        - redisdata:/data
+#  elasticsearch:
+#      container_name: es-container
+#      image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+#      environment:
+#        - xpack.sercurity.enable=false
+#        - "discovery.type=single-node"
+#      networks:
+#        - es-net
+#      ports:
+#        - 9200:9200
+#      volumes:
+#        - esdata:/data
 volumes:
-  db:
-      driver: local
-  cache:
-      driver: local
+  mongodata:
+    driver_opts:
+      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/mongodb
+      o: bind
+      type: tmpfs
+  redisdata:
+    driver_opts:
+      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/redis
+      o: bind
+      type: tmpfs
 networks:
   default:
     name: travel-social-network
