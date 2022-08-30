@@ -38,8 +38,22 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/register", userController::register, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/user/info-user", userController::getInfoUser, auth)
+				RequestHandler.init(HttpMethod.GET, "/user/info-user", userController::getInfoUser, auth),
+				RequestHandler.init(HttpMethod.POST, "/user/search-user", userController::getInfoUser, auth),
 
+				// friend
+				RequestHandler.init(HttpMethod.POST, "/user/create-friend-request", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/delete-friend-request", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/user/get-friend-request", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/user/get-friends", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/get-friends", userController::root, notAuth),
+
+				// user follow
+				RequestHandler.init(HttpMethod.GET, "/user/get-follows", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/follow-user", userController::root, notAuth),
+
+				// post
+				RequestHandler.init(HttpMethod.POST, "/post/post-review", userController::root, notAuth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);

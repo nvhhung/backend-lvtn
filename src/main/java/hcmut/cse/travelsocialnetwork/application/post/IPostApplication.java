@@ -1,5 +1,8 @@
-package hcmut.cse.travelsocialnetwork.application.post;/**
+package hcmut.cse.travelsocialnetwork.application.post;
+
+/**
  * @author : hung.nguyen23
  * @since : 8/30/22 Tuesday
- **/public interface IPostApplication {
+ **/
+public interface IPostApplication {
 }
