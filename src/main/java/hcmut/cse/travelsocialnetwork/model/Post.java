@@ -22,18 +22,15 @@ public class Post extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private String id;
-    private Long created_date;
-    private Long last_updated_date;
-    private Integer status;
 
-    private String user_post;
+    private String userPost;
     private String content;
     private String link;
-    private List<User> black_list_user;
-
+    private Integer status;
     private List<Url> urls;
-    private Integer like_size;
-    private Integer comment_size;
+    private Integer likeSize;
+    private Integer commentSize;
+    private List<String> blackList;
 
     @Data
     @AllArgsConstructor
@@ -42,9 +39,9 @@ public class Post extends PO {
     @Builder
     public static class Url implements Serializable {
         private String url;
-        private String _id;
+        private String id;
         private String type;//video, image
-        private Long created_date;
+        private Long createdDate;
     }
 
 }

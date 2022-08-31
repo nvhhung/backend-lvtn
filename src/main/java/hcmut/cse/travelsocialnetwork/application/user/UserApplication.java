@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class UserApplication implements IUserApplication {
+public class UserApplication implements IUserApplication{
     private static final Logger log = LogManager.getLogger(UserApplication.class);
     @Autowired
     HelperUser helperUser;

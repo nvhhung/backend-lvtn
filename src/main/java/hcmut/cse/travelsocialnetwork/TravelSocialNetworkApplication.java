@@ -1,5 +1,6 @@
 package hcmut.cse.travelsocialnetwork;
 
+import hcmut.cse.travelsocialnetwork.controller.PostController;
 import hcmut.cse.travelsocialnetwork.controller.UserController;
 import hcmut.cse.travelsocialnetwork.service.VertxProvider;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RequestHandler;
@@ -25,6 +26,8 @@ public class TravelSocialNetworkApplication {
 	private VertxProvider vertxProvider;
 	@Autowired
 	private UserController userController;
+	@Autowired
+	private PostController postController;
 
 	public static void main(String[] args) {
 		SpringApplication.run(TravelSocialNetworkApplication.class, args);
@@ -52,8 +55,12 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.GET, "/user/get-follows", userController::root, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/follow-user", userController::root, notAuth),
 
+				// rank
+				RequestHandler.init(HttpMethod.GET, "/user/get-rank", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/user/info-rank", userController::root, notAuth)
+
 				// post
-				RequestHandler.init(HttpMethod.POST, "/post/post-review", userController::root, notAuth)
+//				RequestHandler.init(HttpMethod.POST, "/post/post-review", postController::root, notAuth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);
