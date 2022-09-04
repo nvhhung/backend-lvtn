@@ -39,10 +39,10 @@ public class UserApplication implements IUserApplication{
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
 
-    var userRegister =
-        User.builder()
+    var userRegister = User.builder()
             .username(commandRegister.getUsername())
             .password(SHA512.valueOf(commandRegister.getPassword()))
+            .fullName(commandRegister.getFullName())
             .phone(commandRegister.getPhone())
             .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
             .status(Constant.STATUS_USER.ACTIVE)

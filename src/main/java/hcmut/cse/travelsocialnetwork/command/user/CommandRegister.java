@@ -18,7 +18,7 @@ public class CommandRegister {
     private String password;
     private String kind;
     private String phone;
-    private String name;
+    private String fullName;
     private String avatar;
     private String role;
 }

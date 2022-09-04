@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public abstract class PO {
     private Long createTime;
     private Long lastUpdateTime;
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 }

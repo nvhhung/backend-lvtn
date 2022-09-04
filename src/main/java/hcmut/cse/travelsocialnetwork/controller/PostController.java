@@ -25,13 +25,31 @@ public class PostController extends AbstractController {
 
     public void createPost(RoutingContext routingContext) {
         try {
-            String userId = routingContext.user().principal().getString("userId");
-            CommandPost commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
-            commandPost.setUserPost(userId);
+            var userId = routingContext.user().principal().getString("userId");
+            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            commandPost.setUserId(userId);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
                     .end(this.outputJson(9999, postApplication.createPost(commandPost)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
+    public void updatePost(RoutingContext routingContext) {
+        try {
+            var userId = routingContext.user().principal().getString("userId");
+            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            commandPost.setUserId(userId);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, postApplication.updatePost(commandPost)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()

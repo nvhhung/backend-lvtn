@@ -57,10 +57,11 @@ public class TravelSocialNetworkApplication {
 
 				// rank
 				RequestHandler.init(HttpMethod.GET, "/user/get-rank", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/user/info-rank", userController::root, notAuth)
+				RequestHandler.init(HttpMethod.GET, "/user/info-rank", userController::root, notAuth),
 
 				// post
-//				RequestHandler.init(HttpMethod.POST, "/post/post-review", postController::root, notAuth)
+				RequestHandler.init(HttpMethod.POST, "/post/create", postController::createPost, auth),
+				RequestHandler.init(HttpMethod.POST, "/post/update", postController::updatePost, auth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);

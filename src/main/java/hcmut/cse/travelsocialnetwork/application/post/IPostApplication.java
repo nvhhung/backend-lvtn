@@ -1,8 +1,6 @@
 package hcmut.cse.travelsocialnetwork.application.post;
 
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
-import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
-import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.Post;
 
 import java.util.Optional;
@@ -13,4 +11,5 @@ import java.util.Optional;
  **/
 public interface IPostApplication {
     Optional<Post> createPost(CommandPost commandPost) throws Exception;
+    Optional<Post> updatePost(CommandPost commandPost) throws Exception;
 }

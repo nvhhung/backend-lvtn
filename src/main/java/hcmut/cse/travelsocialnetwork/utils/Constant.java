@@ -39,10 +39,15 @@ public class Constant {
 
     public static class ERROR_MSG {
         public static String PARAM_NOT_VALID = "param not valid";
+        // user
         public static String NOT_FOUNT_USER = "not found user";
         public static String USER_REGISTER = "user register";
         public static String USER_REGISTER_FAIL = "register fail";
         public static String USER_BLOCKED = "user blocked";
+        // post
+        public static String POST_FAIL = "post fail";
+        public static String NOT_FOUND_POST = "not found post";
+        public static String UPDATE_POST_FAIL = "UPDATE_POST_FAIL";
     }
 
     public static class STATUS_USER {

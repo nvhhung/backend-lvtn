@@ -46,8 +46,7 @@ public class JWTAuthHandler extends AuthenticationHandlerImpl {
                     credentials.put("token", token);
                     authProvider.authenticate(credentials, res -> {
                         if (res.succeeded()) {
-                            var jsonObject = res.result().principal();
-                            routingContext.setBody(jsonObject.toBuffer());
+                            routingContext.setUser(res.result());
                             request.resume();
                             routingContext.next();
                         } else {

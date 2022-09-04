@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -21,16 +23,19 @@ import java.util.List;
 public class Post extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
-    private String id;
+    ObjectId id;
 
-    private String userPost;
+    private String userId;
+    private String title;
     private String content;
+    private String type;
     private String link;
-    private Integer status;
+    private String status; // onlyMe, public, follow, unknown
     private List<Url> urls;
     private Integer likeSize;
     private Integer commentSize;
-    private List<String> blackList;
+    private Long point;
+    private List<String> blackListUsers;
 
     @Data
     @AllArgsConstructor

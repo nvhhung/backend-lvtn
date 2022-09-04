@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author : hung.nguyen23
  * @since : 8/31/22 Wednesday
@@ -14,8 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommandPost {
-    private String id;;
-    private String postId;
-    private String userPost;
+    private String id;
     private String userId;
+    private String title;
+    private String content;
+    private String link;
+    private String type;
+    private String video;
+    private String status;
+    private List<String> blackListUsers;
 }
