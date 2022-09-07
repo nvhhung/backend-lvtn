@@ -59,4 +59,35 @@ public class PostController extends AbstractController {
         }
     }
 
+    public void getPost(RoutingContext routingContext) {
+        try {
+            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, postApplication.getPost(commandPost)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
+    public void deletePost(RoutingContext routingContext) {
+        try {
+            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, postApplication.getPost(commandPost)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 }

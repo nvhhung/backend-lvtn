@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
@@ -23,7 +24,7 @@ import java.util.List;
 public class Post extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
-    ObjectId id;
+    private ObjectId _id;
 
     private String userId;
     private String title;

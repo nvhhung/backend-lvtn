@@ -23,6 +23,7 @@ public class Constant {
     public static class COLLECTION_NAME {
         public static final String USER = "user";
         public static final String POST = "post";
+        public static final String COMMENT = "comment";
 
     }
 

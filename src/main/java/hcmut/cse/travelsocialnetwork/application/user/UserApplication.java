@@ -54,7 +54,7 @@ public class UserApplication implements IUserApplication{
         if (userAdd.isEmpty()) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER_FAIL);
         }
-        redis.updateUser(userAdd.get().getId().toString(), userAdd.get());
+        redis.updateUser(userAdd.get().get_id().toString(), userAdd.get());
         return true;
     }
 
@@ -75,7 +75,7 @@ public class UserApplication implements IUserApplication{
                 throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
             }
             return jwtAuth.createLoginToken(JWTTokenData.builder()
-                    .userId(userTemp.getId().toHexString())
+                    .userId(userTemp.get_id().toHexString())
                     .build());
         }
         return null;
@@ -92,10 +92,10 @@ public class UserApplication implements IUserApplication{
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
         }
         user.setPassword(commandPassword.getNewPassword());
-        var userUpdated  = userRepository.update(user.getId().toString(), user);
+        var userUpdated  = userRepository.update(user.get_id().toString(), user);
 //        redis.set
         return jwtAuth.createLoginToken(JWTTokenData.builder()
-                .userId(user.getId().toHexString())
+                .userId(user.get_id().toHexString())
                 .isAdmin(false)
                 .build());
     }

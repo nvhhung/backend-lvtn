@@ -61,7 +61,9 @@ public class TravelSocialNetworkApplication {
 
 				// post
 				RequestHandler.init(HttpMethod.POST, "/post/create", postController::createPost, auth),
-				RequestHandler.init(HttpMethod.POST, "/post/update", postController::updatePost, auth)
+				RequestHandler.init(HttpMethod.POST, "/post/update", postController::updatePost, auth),
+				RequestHandler.init(HttpMethod.POST, "/post/get", postController::getPost, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::updatePost, auth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);

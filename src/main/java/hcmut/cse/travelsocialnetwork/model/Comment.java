@@ -2,6 +2,7 @@ package hcmut.cse.travelsocialnetwork.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import eu.dozd.mongo.annotation.Embedded;
 import eu.dozd.mongo.annotation.Entity;
 import eu.dozd.mongo.annotation.Id;
 import hcmut.cse.travelsocialnetwork.factory.repo.PO;
@@ -11,34 +12,38 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author : hung.nguyen23
+ * @since : 9/7/22 Wednesday
+ **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-public class User extends PO {
+public class Comment extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId _id;
-    // information login
-    private String username;
-    private String password;
-    private Boolean isAdmin;
-    // personal
-    private String fullName;
-    private String phone;
-    private String email;
-    private String birthday;
-    private String avatar;
-    private String cover;
-    private String address;
-    // feature
-    private List<String> userFollow;
-    private Long experiencePoint;
-    private Integer level;
+
+    private String userId;
+    private String postId;
+    private String content;
     private String status;
-    // provider
+    private List<String> images;
+    private List<TagUser> tagUsers;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embedded
+    @Builder
+    public static class TagUser implements Serializable {
+        String name;
+        String id;
+    }
 
 }

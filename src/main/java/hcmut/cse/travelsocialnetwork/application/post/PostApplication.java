@@ -54,7 +54,7 @@ public class PostApplication implements IPostApplication{
     public Optional<Post> updatePost(CommandPost commandPost) throws Exception {
         var postTemp = postRepository.getById(commandPost.getId());
         if (postTemp.isEmpty()) {
-            log.info(String.format("not found post have id = %s", commandPost.getId()));
+            log.error(String.format("not found post have id = %s", commandPost.getId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
         var userPost = userRedis.getUser(commandPost.getUserId());
@@ -66,12 +66,32 @@ public class PostApplication implements IPostApplication{
         Optional.ofNullable(commandPost.getType()).ifPresent(post::setType);
         post.setLastUpdateTime(System.currentTimeMillis());
 
-        var postUpdate = postRepository.update(post.getId().toString(), post);
+        var postUpdate = postRepository.update(post.get_id().toString(), post);
         if (postUpdate.isEmpty()) {
-            log.info(String.format("update post have id = %s fail",post.getId()));
+            log.info(String.format("update post have id = %s fail",post.get_id()));
             throw new CustomException(Constant.ERROR_MSG.UPDATE_POST_FAIL);
         }
-        log.info(String.format("update post have id = %s by user %s successful",post.getId(),userPost.getFullName()));
-        return Optional.empty();
+        log.info(String.format("update post have id = %s by user %s successful",post.get_id(),userPost.getFullName()));
+        return postUpdate;
+    }
+
+    @Override
+    public Optional<Post> getPost(CommandPost commandPost) throws Exception {
+        var postTemp = postRepository.getById(commandPost.getId());
+        if (postTemp.isEmpty()) {
+            log.error(String.format("not found post have id = %s", commandPost.getId()));
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
+        }
+        return postTemp;
+    }
+
+    @Override
+    public Optional<Boolean> deletePost(CommandPost commandPost) throws Exception {
+        var postTemp = postRepository.getById(commandPost.getId());
+        if (postTemp.isEmpty()) {
+            log.error(String.format("not found post have id = %s", commandPost.getId()));
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
+        }
+        return postRepository.delete(commandPost.getId());
     }
 }

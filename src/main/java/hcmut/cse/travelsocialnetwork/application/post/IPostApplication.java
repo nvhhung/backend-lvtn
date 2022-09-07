@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface IPostApplication {
     Optional<Post> createPost(CommandPost commandPost) throws Exception;
     Optional<Post> updatePost(CommandPost commandPost) throws Exception;
+    Optional<Post> getPost(CommandPost commandPost) throws Exception;
+    Optional<Boolean> deletePost(CommandPost commandPost) throws Exception;
 }
