@@ -23,11 +23,7 @@ import java.util.Optional;
 public class CommentApplication implements ICommentApplication{
     private static final Logger log = LogManager.getLogger(CommentApplication.class);
     @Autowired
-    ICommentApplication commentApplication;
-    @Autowired
     HelperUser helperUser;
-    @Autowired
-    ICommentApplication postRepository;
     @Autowired
     private UserRedis userRedis;
 
@@ -39,11 +35,12 @@ public class CommentApplication implements ICommentApplication{
                 .userId(commandComment.getUserId())
                 .content(commandComment.getContent())
                 .build();
-        var postAdd = postRepository.add(post);
-        if (postAdd.isEmpty()) {
-            log.info(String.format("create post by user = %s fail", user.getFullName()));
-            throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
-        }
-        return postAdd;
+//        var postAdd = postRepository.add(post);
+//        if (postAdd.isEmpty()) {
+//            log.info(String.format("create post by user = %s fail", user.getFullName()));
+//            throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
+//        }
+//        return postAdd;
+        return null;
     }
 }

@@ -22,21 +22,21 @@ public class CommentController extends AbstractController {
     @Autowired
     ICommentApplication commentApplication;
 
-    public void createComment(RoutingContext routingContext) {
-        try {
-            var userId = routingContext.user().principal().getString("userId");
-            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
-            commandPost.setUserId(userId);
-            routingContext.response()
-                    .setStatusCode(200)
-                    .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(this.outputJson(9999, commandPost.createPost(commandPost)));
-        } catch (Throwable throwable) {
-            log.error(throwable);
-            routingContext.response()
-                    .setStatusCode(200)
-                    .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
-        }
-    }
+//    public void createComment(RoutingContext routingContext) {
+//        try {
+//            var userId = routingContext.user().principal().getString("userId");
+//            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+//            commandPost.setUserId(userId);
+//            routingContext.response()
+//                    .setStatusCode(200)
+//                    .putHeader("Content-Type", "application/json; charset=utf-8")
+//                    .end(this.outputJson(9999, commandPost.createPost(commandPost)));
+//        } catch (Throwable throwable) {
+//            log.error(throwable);
+//            routingContext.response()
+//                    .setStatusCode(200)
+//                    .putHeader("content-type", "application/json; charset=utf-8")
+//                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+//        }
+//    }
 }
