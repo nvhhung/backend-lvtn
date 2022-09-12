@@ -21,11 +21,12 @@ services:
         - redisdata:/data
   elasticsearch:
       container_name: es-container
-      image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
       environment:
-        - xpack.sercurity.enable=false
+#        - xpack.sercurity.enable=false
         - "discovery.type=single-node"
-        - ES_JAVA_OPTS="-Xms750m -Xmx750m"
+        - "ES_JAVA_OPTS=-Xms750m -Xmx750m"
+        - bootstrap.memory_lock=true
       ports:
         - 9200:9200
       volumes:
