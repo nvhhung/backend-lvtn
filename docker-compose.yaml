@@ -19,18 +19,17 @@ services:
         - 6379:6379
       volumes:
         - redisdata:/data
-#  elasticsearch:
-#      container_name: es-container
-#      image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
-#      environment:
-#        - xpack.sercurity.enable=false
-#        - "discovery.type=single-node"
-#      networks:
-#        - es-net
-#      ports:
-#        - 9200:9200
-#      volumes:
-#        - esdata:/data
+  elasticsearch:
+      container_name: es-container
+      image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+      environment:
+        - xpack.sercurity.enable=false
+        - "discovery.type=single-node"
+        - ES_JAVA_OPTS="-Xms750m -Xmx750m"
+      ports:
+        - 9200:9200
+      volumes:
+        - esdata:/data
 volumes:
   mongodata:
     driver_opts:
@@ -40,6 +39,11 @@ volumes:
   redisdata:
     driver_opts:
       device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/redis
+      o: bind
+      type: tmpfs
+  esdata:
+    driver_opts:
+      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/elasticsearch
       o: bind
       type: tmpfs
 networks:
