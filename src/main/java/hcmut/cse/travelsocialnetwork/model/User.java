@@ -39,6 +39,7 @@ public class User extends PO {
     private Long experiencePoint;
     private Integer level;
     private String status;
+    private List<String> registerTokens;
     // provider
 
 }

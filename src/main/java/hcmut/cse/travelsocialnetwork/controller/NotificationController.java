@@ -3,6 +3,8 @@ package hcmut.cse.travelsocialnetwork.controller;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,10 @@ import java.util.HashMap;
  * @since : 8/31/22 Wednesday
  **/
 @Component
-public class MessageController {
+public class NotificationController {
+
+    @Autowired
+    INotificationApplication notificationApplication;
 
     @MessageMapping
     @SendTo("/topic/messages")

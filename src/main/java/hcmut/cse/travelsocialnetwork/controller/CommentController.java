@@ -1,17 +1,11 @@
 package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.comment.ICommentApplication;
-import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
-import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
-import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-
 /**
  * @author : hung.nguyen23
  * @since : 9/7/22 Wednesday

@@ -15,38 +15,39 @@ import org.bson.types.ObjectId;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author : hung.nguyen23
+ * @since : 9/12/22 Monday
+ **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-public class Post extends PO {
+public class Notification extends PO {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId _id;
 
+    private Boolean isRead;
     private String userId;
     private String title;
     private String content;
-    private String type;
-    private String link;
-    private String status; // onlyMe, public, follow, unknown
-    private List<Url> urls;
-    private Integer likeSize;
-    private Integer commentSize;
-    private Long point;
-    private List<String> blackListUsers;
+    private String objectId;
+    private String image;
+    private String type; // like, comment, tag
+
+    private InfoUser infoUser;
+    private List<String> registrationTokens;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Embedded
     @Builder
-    public static class Url implements Serializable {
-        private String url;
-        private String id;
-        private String type;//video, image
-        private Long createdDate;
+    public static class InfoUser implements Serializable {
+        private String userId;
+        private String fullName;
+        private String avatar;
     }
-
 }
