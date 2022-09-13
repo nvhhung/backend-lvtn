@@ -6,6 +6,7 @@ import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClient;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
@@ -31,9 +32,12 @@ public class UserApplication implements IUserApplication{
     private JWTAuth jwtAuth;
     @Autowired
     private UserRedis redis;
+    @Autowired
+    ElasticsearchClient elasticsearchClient;
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
+        var s = elasticsearchClient.test();
         var userTemp = helperUser.checkUserRegister(commandRegister.getUsername());
         if (userTemp != null) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
