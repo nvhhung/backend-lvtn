@@ -14,8 +14,13 @@ import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
 import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
+import io.vertx.core.json.JsonObject;
+import org.apache.http.HttpHost;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,20 +29,40 @@ import java.util.Optional;
 @Component
 public class UserApplication implements IUserApplication{
     private static final Logger log = LogManager.getLogger(UserApplication.class);
+    private final HelperUser helperUser;
+    private final IUserRepository userRepository;
+    private final JWTAuth jwtAuth;
+    private final UserRedis redis;
+    private RestHighLevelClient restHighLevelClient;
+
     @Autowired
-    HelperUser helperUser;
-    @Autowired
-    IUserRepository userRepository;
-    @Autowired
-    private JWTAuth jwtAuth;
-    @Autowired
-    private UserRedis redis;
-    @Autowired
-    ElasticsearchClient elasticsearchClient;
+    public UserApplication(HelperUser helperUser,
+                           IUserRepository userRepository,
+                           JWTAuth jwtAuth,
+                           UserRedis redis) {
+        this.helperUser = helperUser;
+        this.userRepository = userRepository;
+        this.jwtAuth = jwtAuth;
+        this.redis = redis;
+        restHighLevelClient = restClient();
+    }
+
+    public RestHighLevelClient restClient() {
+        var elasticsearchCfg = new JsonObject("{\"host\":\"localhost\",\"port\":9200}");
+        return new RestHighLevelClient(RestClient.builder(
+                        new HttpHost(elasticsearchCfg.getString("host"), elasticsearchCfg.getInteger("port"), "http")
+                )
+                .setRequestConfigCallback(builder ->
+                        builder.setConnectTimeout(5000)
+                                .setSocketTimeout(30000))
+                .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
+                        .setDefaultIOReactorConfig(IOReactorConfig.custom()
+                                .setIoThreadCount(Runtime.getRuntime().availableProcessors())
+                                .build())));
+    }
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-        var s = elasticsearchClient.test();
         var userTemp = helperUser.checkUserRegister(commandRegister.getUsername());
         if (userTemp != null) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
