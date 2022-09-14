@@ -1,5 +1,8 @@
 package hcmut.cse.travelsocialnetwork.application.user;
 
+import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
 import hcmut.cse.travelsocialnetwork.command.user.CommandPassword;
 import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
@@ -7,6 +10,7 @@ import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClient;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClientImpl;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
@@ -14,13 +18,8 @@ import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
 import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
-import io.vertx.core.json.JsonObject;
-import org.apache.http.HttpHost;
-import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,32 +32,19 @@ public class UserApplication implements IUserApplication{
     private final IUserRepository userRepository;
     private final JWTAuth jwtAuth;
     private final UserRedis redis;
-    private RestHighLevelClient restHighLevelClient;
+    private ElasticsearchClient elasticsearchClient;
 
     @Autowired
     public UserApplication(HelperUser helperUser,
                            IUserRepository userRepository,
                            JWTAuth jwtAuth,
-                           UserRedis redis) {
+                           UserRedis redis,
+                           ElasticsearchClientImpl elasticsearchClient) {
         this.helperUser = helperUser;
         this.userRepository = userRepository;
         this.jwtAuth = jwtAuth;
         this.redis = redis;
-        restHighLevelClient = restClient();
-    }
-
-    public RestHighLevelClient restClient() {
-        var elasticsearchCfg = new JsonObject("{\"host\":\"localhost\",\"port\":9200}");
-        return new RestHighLevelClient(RestClient.builder(
-                        new HttpHost(elasticsearchCfg.getString("host"), elasticsearchCfg.getInteger("port"), "http")
-                )
-                .setRequestConfigCallback(builder ->
-                        builder.setConnectTimeout(5000)
-                                .setSocketTimeout(30000))
-                .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
-                        .setDefaultIOReactorConfig(IOReactorConfig.custom()
-                                .setIoThreadCount(Runtime.getRuntime().availableProcessors())
-                                .build())));
+        this.elasticsearchClient = elasticsearchClient;
     }
 
     @Override
