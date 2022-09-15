@@ -22,12 +22,18 @@ import java.util.Optional;
 @Component
 public class PostApplication implements IPostApplication{
     private static final Logger log = LogManager.getLogger(PostApplication.class);
-    @Autowired
+
     HelperUser helperUser;
-    @Autowired
     IPostRepository postRepository;
+    UserRedis userRedis;
     @Autowired
-    private UserRedis userRedis;
+    public PostApplication(HelperUser helperUser,
+                           IPostRepository postRepository,
+                           UserRedis userRedis) {
+        this.helperUser = helperUser;
+        this.postRepository = postRepository;
+        this.userRedis = userRedis;
+    }
 
     @Override
     public Optional<Post> createPost(CommandPost commandPost) throws Exception {

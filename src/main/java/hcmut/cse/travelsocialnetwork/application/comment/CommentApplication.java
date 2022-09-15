@@ -22,10 +22,14 @@ import java.util.Optional;
 @Component
 public class CommentApplication implements ICommentApplication{
     private static final Logger log = LogManager.getLogger(CommentApplication.class);
-    @Autowired
     HelperUser helperUser;
-    @Autowired
-    private UserRedis userRedis;
+    UserRedis userRedis;
+
+    public CommentApplication(HelperUser helperUser,
+                              UserRedis userRedis) {
+        this.helperUser = helperUser;
+        this.userRedis = userRedis;
+    }
 
     @Override
     public Optional<Comment> createComment(CommandComment commandComment) throws Exception {
@@ -35,12 +39,6 @@ public class CommentApplication implements ICommentApplication{
                 .userId(commandComment.getUserId())
                 .content(commandComment.getContent())
                 .build();
-//        var postAdd = postRepository.add(post);
-//        if (postAdd.isEmpty()) {
-//            log.info(String.format("create post by user = %s fail", user.getFullName()));
-//            throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
-//        }
-//        return postAdd;
         return null;
     }
 }
