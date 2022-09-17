@@ -4,7 +4,6 @@ import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClient;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;

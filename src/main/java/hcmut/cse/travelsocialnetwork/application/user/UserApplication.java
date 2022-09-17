@@ -1,11 +1,9 @@
 package hcmut.cse.travelsocialnetwork.application.user;
 
-import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
 import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
 import hcmut.cse.travelsocialnetwork.command.user.CommandPassword;
 import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
+import hcmut.cse.travelsocialnetwork.command.user.CommandUser;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
@@ -23,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -31,19 +30,19 @@ public class UserApplication implements IUserApplication{
     private final HelperUser helperUser;
     private final IUserRepository userRepository;
     private final JWTAuth jwtAuth;
-    private final UserRedis redis;
+    private final UserRedis userRedis;
     private ElasticsearchClient elasticsearchClient;
 
     @Autowired
     public UserApplication(HelperUser helperUser,
                            IUserRepository userRepository,
                            JWTAuth jwtAuth,
-                           UserRedis redis,
+                           UserRedis userRedis,
                            ElasticsearchClientImpl elasticsearchClient) {
         this.helperUser = helperUser;
         this.userRepository = userRepository;
         this.jwtAuth = jwtAuth;
-        this.redis = redis;
+        this.userRedis = userRedis;
         this.elasticsearchClient = elasticsearchClient;
     }
 
@@ -54,22 +53,22 @@ public class UserApplication implements IUserApplication{
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
 
-    var userRegister = User.builder()
-            .username(commandRegister.getUsername())
-            .password(SHA512.valueOf(commandRegister.getPassword()))
-            .fullName(commandRegister.getFullName())
-            .phone(commandRegister.getPhone())
-            .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
-            .status(Constant.STATUS_USER.ACTIVE)
-            .level(1)
-            .isAdmin(false)
-            .experiencePoint(0L)
-            .build();
+        var userRegister = User.builder()
+                .username(commandRegister.getUsername())
+                .password(SHA512.valueOf(commandRegister.getPassword()))
+                .fullName(commandRegister.getFullName())
+                .phone(commandRegister.getPhone())
+                .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
+                .status(Constant.STATUS_USER.ACTIVE)
+                .level(1)
+                .isAdmin(false)
+                .experiencePoint(0L)
+                .build();
         var userAdd = userRepository.add(userRegister);
         if (userAdd.isEmpty()) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER_FAIL);
         }
-        redis.updateUser(userAdd.get().get_id().toString(), userAdd.get());
+        userRedis.updateUser(userAdd.get().get_id().toString(), userAdd.get());
         return true;
     }
 
@@ -108,11 +107,10 @@ public class UserApplication implements IUserApplication{
         }
         user.setPassword(commandPassword.getNewPassword());
         var userUpdated  = userRepository.update(user.get_id().toString(), user);
-//        redis.set
-        return jwtAuth.createLoginToken(JWTTokenData.builder()
-                .userId(user.get_id().toHexString())
-                .isAdmin(false)
-                .build());
+        if (userUpdated.isEmpty()) {
+            throw new CustomException(Constant.ERROR_MSG.UPDATE_USER_FAIL);
+        }
+        return jwtAuth.createLoginToken(JWTTokenData.builder().userId(user.get_id().toHexString()).isAdmin(false).build());
     }
 
     @Override
@@ -126,8 +124,37 @@ public class UserApplication implements IUserApplication{
             log.info("request getInfoUser no have userId");
             throw new CustomException(Constant.ERROR_MSG.PARAM_NOT_VALID);
         }
-        var user = redis.getUser(userId);
+        var user = userRedis.getUser(userId);
         return Optional.of(user);
+    }
+
+    @Override
+    public Optional<User> updateInfoUser(CommandUser commandUser) throws Exception {
+        var user = userRedis.getUser(commandUser.getUserId());
+        if (user == null) {
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+        }
+        Optional.ofNullable(commandUser.getFullName()).ifPresent(user::setFullName);
+        Optional.ofNullable(commandUser.getPhone()).ifPresent(user::setPhone);
+        Optional.ofNullable(commandUser.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(commandUser.getBirthday()).ifPresent(user::setBirthday);
+        Optional.ofNullable(commandUser.getAvatar()).ifPresent(user::setAvatar);
+        Optional.ofNullable(commandUser.getCover()).ifPresent(user::setCover);
+        Optional.ofNullable(commandUser.getAddress()).ifPresent(user::setAddress);
+        Optional.ofNullable(commandUser.getStatus()).ifPresent(user::setStatus);
+
+        var userUpdate = userRepository.update(commandUser.getUserId(), user);
+        if (userUpdate.isEmpty()) {
+            throw new CustomException(Constant.ERROR_MSG.UPDATE_USER_FAIL);
+        }
+        userRedis.updateUser(commandUser.getUserId(), userUpdate.get());
+        return userUpdate;
+    }
+
+
+    @Override
+    public Optional<List<User>> searchUser(CommandUser commandUser) {
+        return null;
     }
 
 }

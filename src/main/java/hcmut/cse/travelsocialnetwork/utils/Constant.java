@@ -45,6 +45,7 @@ public class Constant {
         public static String USER_REGISTER = "user register";
         public static String USER_REGISTER_FAIL = "register fail";
         public static String USER_BLOCKED = "user blocked";
+        public static String UPDATE_USER_FAIL = "update user fail";
         // post
         public static String POST_FAIL = "post fail";
         public static String NOT_FOUND_POST = "not found post";
