@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.controller;
 import hcmut.cse.travelsocialnetwork.application.user.IUserApplication;
 import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
 import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
+import hcmut.cse.travelsocialnetwork.command.user.CommandUser;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import io.vertx.core.MultiMap;
@@ -103,5 +104,22 @@ public class UserController extends AbstractController {
                     .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
 
+    }
+
+    public void updateInfoUser(RoutingContext routingContext) {
+        try {
+            var commandUser = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandUser.class);
+            commandUser.setUserId(routingContext.user().get("userId"));
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, userApplication.updateInfoUser(commandUser)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
     }
 }
