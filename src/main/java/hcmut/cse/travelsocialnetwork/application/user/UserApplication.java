@@ -78,7 +78,7 @@ public class UserApplication implements IUserApplication{
         if (StringUtils.equals(commandLogin.getKind(), Constant.AUTHENTICATION_KIND.INTERNAL)) {
             var userTemp = helperUser.checkUserRegister(commandLogin.getUsername());
             if (userTemp == null) {
-                throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+                throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
             }
 
             if (userTemp.getStatus().equals(Constant.STATUS_USER.BLOCKED)) {
@@ -86,7 +86,7 @@ public class UserApplication implements IUserApplication{
             }
 
             if (!SHA512.valueOf(commandLogin.getPassword()).equals(userTemp.getPassword())) {
-                throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+                throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
             }
             return jwtAuth.createLoginToken(JWTTokenData.builder()
                     .userId(userTemp.get_id().toHexString())
@@ -99,11 +99,11 @@ public class UserApplication implements IUserApplication{
     public Optional<LoginToken> resetPassword(CommandPassword commandPassword) throws Exception {
         var user = helperUser.checkUserRegister(commandPassword.getUsername());
         if (user == null) {
-            throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
 
         if (!user.getPassword().equals(commandPassword.getOldPassword())) {
-            throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
         user.setPassword(commandPassword.getNewPassword());
         var userUpdated  = userRepository.update(user.get_id().toString(), user);
@@ -132,7 +132,7 @@ public class UserApplication implements IUserApplication{
     public Optional<User> updateInfoUser(CommandUser commandUser) throws Exception {
         var user = userRedis.getUser(commandUser.getUserId());
         if (user == null) {
-            throw new CustomException(Constant.ERROR_MSG.NOT_FOUNT_USER);
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
         Optional.ofNullable(commandUser.getFullName()).ifPresent(user::setFullName);
         Optional.ofNullable(commandUser.getPhone()).ifPresent(user::setPhone);

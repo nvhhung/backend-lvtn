@@ -24,6 +24,7 @@ public class Constant {
         public static final String USER = "user";
         public static final String POST = "post";
         public static final String COMMENT = "comment";
+        public static final String FOLLOW = "follow";
 
     }
 
@@ -41,7 +42,7 @@ public class Constant {
     public static class ERROR_MSG {
         public static String PARAM_NOT_VALID = "param not valid";
         // user
-        public static String NOT_FOUNT_USER = "not found user";
+        public static String NOT_FOUND_USER = "not found user";
         public static String USER_REGISTER = "user register";
         public static String USER_REGISTER_FAIL = "register fail";
         public static String USER_BLOCKED = "user blocked";
@@ -49,7 +50,11 @@ public class Constant {
         // post
         public static String POST_FAIL = "post fail";
         public static String NOT_FOUND_POST = "not found post";
-        public static String UPDATE_POST_FAIL = "UPDATE_POST_FAIL";
+        public static String UPDATE_POST_FAIL = "update post fail";
+        // follow
+        public static String FOLLOW_FAIL = "follow user fail";
+        public static String UN_FOLLOW_FAIL = "un follow user fail";
+        public static String NOT_FOUND_FOLLOW = "not found follow";
     }
 
     public static class STATUS_USER {

@@ -18,9 +18,12 @@ import java.util.HashMap;
 @Component
 public class UserController extends AbstractController {
     private static final Logger log = LogManager.getLogger(UserController.class);
+    IUserApplication userApplication;
 
     @Autowired
-    IUserApplication userApplication;
+    public UserController(IUserApplication userApplication) {
+        this.userApplication = userApplication;
+    }
 
     public void root(RoutingContext routingContext) {
         try {

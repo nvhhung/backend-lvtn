@@ -1,5 +1,7 @@
 package hcmut.cse.travelsocialnetwork;
 
+import hcmut.cse.travelsocialnetwork.controller.CommentController;
+import hcmut.cse.travelsocialnetwork.controller.FollowController;
 import hcmut.cse.travelsocialnetwork.controller.PostController;
 import hcmut.cse.travelsocialnetwork.controller.UserController;
 import hcmut.cse.travelsocialnetwork.service.VertxProvider;
@@ -20,14 +22,26 @@ import java.util.Arrays;
 @ComponentScan(basePackages = {"hcmut.cse.travelsocialnetwork.*"})
 public class TravelSocialNetworkApplication {
 
-	@Autowired
-	private RestfulVerticle restfulVerticle;
-	@Autowired
-	private VertxProvider vertxProvider;
-	@Autowired
-	private UserController userController;
-	@Autowired
-	private PostController postController;
+	RestfulVerticle restfulVerticle;
+	VertxProvider vertxProvider;
+	UserController userController;
+	PostController postController;
+	CommentController commentController;
+	FollowController followController;
+
+	public TravelSocialNetworkApplication(RestfulVerticle restfulVerticle,
+										  VertxProvider vertxProvider,
+										  UserController userController,
+										  PostController postController,
+										  CommentController commentController,
+										  FollowController followController) {
+		this.restfulVerticle = restfulVerticle;
+		this.vertxProvider = vertxProvider;
+		this.userController = userController;
+		this.postController = postController;
+		this.commentController = commentController;
+		this.followController = followController;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(TravelSocialNetworkApplication.class, args);
@@ -45,12 +59,11 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/user/update-info-user", userController::updateInfoUser, auth),
 				RequestHandler.init(HttpMethod.POST, "/user/search-user", userController::getInfoUser, auth),
 
-				// friend
-				RequestHandler.init(HttpMethod.POST, "/user/create-friend-request", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/user/delete-friend-request", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/user/get-friend-request", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/user/get-friends", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/user/get-friends", userController::root, notAuth),
+				// follow
+				RequestHandler.init(HttpMethod.POST, "/follow/follow-user", followController::followUser, auth),
+				RequestHandler.init(HttpMethod.POST, "/follow/unfollow-user", followController::unFollowUser, auth),
+				RequestHandler.init(HttpMethod.GET, "/follow/get-follower", followController::getFollower, auth),
+				RequestHandler.init(HttpMethod.GET, "/follow/get-follow-user", followController::getFollowUser, auth),
 
 				// user follow
 				RequestHandler.init(HttpMethod.GET, "/user/get-follows", userController::root, notAuth),
