@@ -2,7 +2,6 @@ package hcmut.cse.travelsocialnetwork.repository.comment;
 
 import hcmut.cse.travelsocialnetwork.factory.repo.GenericRepository;
 import hcmut.cse.travelsocialnetwork.model.Comment;
-import hcmut.cse.travelsocialnetwork.model.Post;
 
 /**
  * @author : hung.nguyen23

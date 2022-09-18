@@ -47,14 +47,19 @@ public class Constant {
         public static String USER_REGISTER_FAIL = "register fail";
         public static String USER_BLOCKED = "user blocked";
         public static String UPDATE_USER_FAIL = "update user fail";
+
         // post
         public static String POST_FAIL = "post fail";
         public static String NOT_FOUND_POST = "not found post";
         public static String UPDATE_POST_FAIL = "update post fail";
+
         // follow
         public static String FOLLOW_FAIL = "follow user fail";
         public static String UN_FOLLOW_FAIL = "un follow user fail";
         public static String NOT_FOUND_FOLLOW = "not found follow";
+
+        // comment
+        public static String COMMENT_FAIL = "comment fail";
     }
 
     public static class STATUS_USER {
@@ -64,6 +69,7 @@ public class Constant {
 
     public static class KEY_REDIS {
         public static String USER = "user_";
+        public static String POST = "post_";
     }
 
     public static class TIME {

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommandFollow {
+    private String followId;
     private String userId;
     private String userIdTarget;
 }

@@ -1,9 +1,7 @@
 package hcmut.cse.travelsocialnetwork.service.redis;
 
-import hcmut.cse.travelsocialnetwork.application.user.UserApplication;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
-import hcmut.cse.travelsocialnetwork.repository.user.UserRepositoryImpl;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
@@ -41,7 +39,7 @@ public class UserRedis {
         log.info("no have user cached in redis");
         var userDb = userRepository.getById(userId);
         if (userDb.isEmpty()) {
-            log.info("user not exist");
+            log.warn("user not exist");
             return null;
         }
         jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(userDb.get()), Constant.TIME.SECOND_OF_ONE_DAY);

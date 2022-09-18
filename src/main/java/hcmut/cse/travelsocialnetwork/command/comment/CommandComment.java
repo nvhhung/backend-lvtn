@@ -16,9 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CommandComment {
-    private String id;
+    private String commentId;
     private String userId;
     private String postId;
     private String content;
     private List<String> images;
+    private Integer page;
+    private Integer size;
 }

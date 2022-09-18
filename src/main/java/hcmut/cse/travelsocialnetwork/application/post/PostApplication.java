@@ -4,6 +4,7 @@ import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
+import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
@@ -25,13 +26,15 @@ public class PostApplication implements IPostApplication{
     HelperUser helperUser;
     IPostRepository postRepository;
     UserRedis userRedis;
-    @Autowired
+    PostRedis postRedis;
     public PostApplication(HelperUser helperUser,
                            IPostRepository postRepository,
-                           UserRedis userRedis) {
+                           UserRedis userRedis,
+                           PostRedis postRedis) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
+        this.postRedis = postRedis;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class PostApplication implements IPostApplication{
             log.info(String.format("create post by user = %s fail", user.getFullName()));
             throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
         }
+        postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
         return postAdd;
     }
 
@@ -78,17 +82,18 @@ public class PostApplication implements IPostApplication{
             throw new CustomException(Constant.ERROR_MSG.UPDATE_POST_FAIL);
         }
         log.info(String.format("update post have id = %s by user %s successful",post.get_id(),userPost.getFullName()));
+        postRedis.updatePost(postUpdate.get().get_id().toString(), postUpdate.get());
         return postUpdate;
     }
 
     @Override
     public Optional<Post> getPost(CommandPost commandPost) throws Exception {
-        var postTemp = postRepository.getById(commandPost.getId());
-        if (postTemp.isEmpty()) {
+        var postTemp = postRedis.getPost(commandPost.getId());
+        if (postTemp == null) {
             log.error(String.format("not found post have id = %s", commandPost.getId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
-        return postTemp;
+        return Optional.of(postTemp);
     }
 
     @Override

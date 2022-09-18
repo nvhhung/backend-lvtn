@@ -10,11 +10,13 @@ import hcmut.cse.travelsocialnetwork.utils.Constant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author : hung.nguyen23
  * @since : 9/7/22 Wednesday
  **/
+@Component
 public class CommentRepositoryImpl extends GenericMongoRepository<Comment> implements ICommentRepository{
     private final MongoDBClient<Comment> mongoDBClient;
     private static final Logger log = LogManager.getLogger(CommentRepositoryImpl.class);
