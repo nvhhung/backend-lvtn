@@ -1,9 +1,6 @@
 package hcmut.cse.travelsocialnetwork;
 
-import hcmut.cse.travelsocialnetwork.controller.CommentController;
-import hcmut.cse.travelsocialnetwork.controller.FollowController;
-import hcmut.cse.travelsocialnetwork.controller.PostController;
-import hcmut.cse.travelsocialnetwork.controller.UserController;
+import hcmut.cse.travelsocialnetwork.controller.*;
 import hcmut.cse.travelsocialnetwork.service.VertxProvider;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RequestHandler;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RestfulVerticle;
@@ -28,19 +25,22 @@ public class TravelSocialNetworkApplication {
 	PostController postController;
 	CommentController commentController;
 	FollowController followController;
+	LikeController likeController;
 
 	public TravelSocialNetworkApplication(RestfulVerticle restfulVerticle,
 										  VertxProvider vertxProvider,
 										  UserController userController,
 										  PostController postController,
 										  CommentController commentController,
-										  FollowController followController) {
+										  FollowController followController,
+										  LikeController likeController) {
 		this.restfulVerticle = restfulVerticle;
 		this.vertxProvider = vertxProvider;
 		this.userController = userController;
 		this.postController = postController;
 		this.commentController = commentController;
 		this.followController = followController;
+		this.likeController = likeController;
 	}
 
 	public static void main(String[] args) {
@@ -49,7 +49,8 @@ public class TravelSocialNetworkApplication {
 
 	@PostConstruct
 	public void deployServerVerticle() {
-		final boolean auth = true, notAuth = false;
+		final boolean auth = true;
+		final boolean notAuth = false;
 		restfulVerticle.setRequestHandlerList(Arrays.asList(
 				// user
 				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth),
@@ -68,6 +69,10 @@ public class TravelSocialNetworkApplication {
 				// comment
 				RequestHandler.init(HttpMethod.POST, "/comment/create", commentController::createComment, auth),
 				RequestHandler.init(HttpMethod.GET, "/comment/load", commentController::loadComment, notAuth),
+
+				// like
+				RequestHandler.init(HttpMethod.POST, "/like/create", likeController::createLike, auth),
+				RequestHandler.init(HttpMethod.POST, "/like/unlike", likeController::unlike, auth),
 
 				// rank
 				RequestHandler.init(HttpMethod.GET, "/user/get-rank", userController::root, notAuth),

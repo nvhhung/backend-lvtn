@@ -49,4 +49,13 @@ public class PostRedis {
         }
         jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.SECOND_OF_ONE_DAY);
     }
+
+    public void updatePostRedisDB(String postId, Post post) {
+        var postUpdate = postRepository.update(postId, post);
+        if (postUpdate.isEmpty()) {
+            log.warn("update post fail");
+            return;
+        }
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postUpdate.get()), Constant.TIME.SECOND_OF_ONE_DAY);
+    }
 }

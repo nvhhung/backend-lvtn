@@ -54,12 +54,8 @@ public class CommentApplication implements ICommentApplication{
         }
         // increase comment size of post
         var post = postRedis.getPost(commandComment.getPostId());
-        if (post == null) {
-            log.warn(String.format("%s not found post", commandComment.getUserId()));
-            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
-        }
         post.setCommentSize(post.getCommentSize() + 1);
-        postRedis.updatePost(post.get_id().toString(), post);
+        postRedis.updatePostRedisDB(commandComment.getPostId(), post);
         // todo : push notification owner post
         return commentAdd;
     }

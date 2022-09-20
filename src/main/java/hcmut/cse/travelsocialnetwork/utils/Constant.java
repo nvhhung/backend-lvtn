@@ -61,6 +61,10 @@ public class Constant {
 
         // comment
         public static String COMMENT_FAIL = "comment fail";
+
+        // like
+        public static String LIKE_FAIL = "like fail";
+        public static String NOT_FOUND_LIKE = "not found like";
     }
 
     public static class STATUS_USER {
