@@ -1,9 +1,11 @@
-package hcmut.cse.travelsocialnetwork.repository.post;
+package hcmut.cse.travelsocialnetwork.repository.like;
 
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.factory.repo.GenericMongoRepository;
-import hcmut.cse.travelsocialnetwork.model.Post;
-import hcmut.cse.travelsocialnetwork.model.User;
+import hcmut.cse.travelsocialnetwork.model.Like;
+import hcmut.cse.travelsocialnetwork.model.Rate;
+import hcmut.cse.travelsocialnetwork.repository.rate.IRateRepository;
+import hcmut.cse.travelsocialnetwork.repository.rate.RateRepositoryImpl;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClient;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClientImpl;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBConfig;
@@ -15,15 +17,15 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author : hung.nguyen23
- * @since : 8/30/22 Tuesday
+ * @since : 9/20/22 Tuesday
  **/
 @Component
-public class PostRepositoryImpl extends GenericMongoRepository<Post> implements IPostRepository{
-    private final MongoDBClient<Post> mongoDBClient;
-    private static final Logger log = LogManager.getLogger(PostRepositoryImpl.class);
+public class LikeRepositoryImpl extends GenericMongoRepository<Like> implements ILikeRepository {
+    private final MongoDBClient<Like> mongoDBClient;
+    private static final Logger log = LogManager.getLogger(LikeRepositoryImpl.class);
 
     @Autowired
-    public PostRepositoryImpl(ENVConfig config) {
+    public LikeRepositoryImpl(ENVConfig config) {
         mongoDBClient = new MongoDBClientImpl<>(MongoDBConfig.getInstance(MongoDBConfig
                 .MongoDBConfigBuilder
                 .config()
@@ -31,12 +33,12 @@ public class PostRepositoryImpl extends GenericMongoRepository<Post> implements 
                 .withDatabaseName(Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK).build()),
                 config.getStringProperty(Constant.KEY_CONFIG.DB),
                 Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK,
-                Constant.COLLECTION_NAME.POST,
-                Post.class);
+                Constant.COLLECTION_NAME.LIKE,
+                Like.class);
     }
 
     @Override
-    public MongoDBClient<Post> getMongoDBOperator() {
+    public MongoDBClient<Like> getMongoDBOperator() {
         return mongoDBClient;
     }
 }

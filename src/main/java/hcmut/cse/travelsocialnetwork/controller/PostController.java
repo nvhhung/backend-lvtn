@@ -7,7 +7,6 @@ import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -19,9 +18,11 @@ import java.util.HashMap;
 @Component
 public class PostController extends AbstractController {
     private static final Logger log = LogManager.getLogger(PostController.class);
-    @Autowired
     IPostApplication postApplication;
 
+    public PostController(IPostApplication postApplication) {
+        this.postApplication = postApplication;
+    }
 
     public void createPost(RoutingContext routingContext) {
         try {

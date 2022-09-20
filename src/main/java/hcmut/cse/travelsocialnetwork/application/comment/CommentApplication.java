@@ -72,7 +72,7 @@ public class CommentApplication implements ICommentApplication{
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
         var query = new Document("postId",commandComment.getPostId());
-        var commentList = commentRepository.search(query,new Document(), commandComment.getPage(), commandComment.getSize());
+        var commentList = commentRepository.search(query,new Document("createTime", -1), commandComment.getPage(), commandComment.getSize());
         if (commentList.isEmpty()) {
             log.warn(String.format("%s no have comment", commandComment.getPostId()));
             return Optional.ofNullable(new ArrayList<>());
