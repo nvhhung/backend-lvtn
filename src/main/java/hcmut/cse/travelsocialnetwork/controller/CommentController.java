@@ -43,6 +43,24 @@ public class CommentController extends AbstractController {
         }
     }
 
+    public void deleteComment(RoutingContext routingContext) {
+        try {
+            var userId = routingContext.user().principal().getString("userId");
+            var commandComment = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandComment.class);
+            commandComment.setUserId(userId);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, commentApplication.deleteComment(commandComment)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
     public void loadComment(RoutingContext routingContext) {
         try {
             MultiMap params = routingContext.request().params();

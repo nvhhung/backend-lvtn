@@ -61,10 +61,14 @@ public class Constant {
 
         // comment
         public static String COMMENT_FAIL = "comment fail";
+        public static String NOT_FOUND_COMMENT = "not found comment";
 
         // like
         public static String LIKE_FAIL = "like fail";
         public static String NOT_FOUND_LIKE = "not found like";
+
+        // rate
+        public static String RATE_FAIL = "rate fail";
     }
 
     public static class STATUS_USER {
@@ -75,6 +79,13 @@ public class Constant {
     public static class KEY_REDIS {
         public static String USER = "user_";
         public static String POST = "post_";
+    }
+
+    public static class POINTS {
+        public static final int ONE_LIKE_POST = 1;
+        public static final int ONE_COMMENT_POST = 2;
+        public static final int ONE_LIKE_USER = 2;
+        public static final int ONE_COMMENT_USER = 4;
     }
 
     public static class TIME {

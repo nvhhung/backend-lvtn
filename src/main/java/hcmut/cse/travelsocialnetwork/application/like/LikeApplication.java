@@ -42,11 +42,12 @@ public class LikeApplication implements ILikeApplication{
             throw new CustomException(Constant.ERROR_MSG.LIKE_FAIL);
         }
         // todo : push notification to owner of post
-        // increase size like of post
+        // increase like size, point of post
         var post = postRedis.getPost(commandLike.getPostId());
         post.setLikeSize(post.getLikeSize() + 1);
+        post.setPoint(post.getPoint() + Constant.POINTS.ONE_LIKE_POST);
         postRedis.updatePostRedisDB(commandLike.getPostId(), post);
-
+        // todo increase point user
         return likeAdd;
     }
 
@@ -58,8 +59,10 @@ public class LikeApplication implements ILikeApplication{
             log.warn(String.format("%s not found like in post %s", commandLike.getUserId(), commandLike.getPostId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_LIKE);
         }
+
         var post = postRedis.getPost(commandLike.getPostId());
         post.setLikeSize(post.getLikeSize() - 1);
+        post.setPoint(post.getPoint() - Constant.POINTS.ONE_LIKE_POST);
         postRedis.updatePostRedisDB(commandLike.getPostId(), post);
         return likeRepository.delete(like.get().get_id().toString());
     }

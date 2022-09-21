@@ -55,10 +55,28 @@ public class CommentApplication implements ICommentApplication{
         // increase comment size of post
         var post = postRedis.getPost(commandComment.getPostId());
         post.setCommentSize(post.getCommentSize() + 1);
+        post.setPoint(post.getPoint() + Constant.POINTS.ONE_COMMENT_POST);
         postRedis.updatePostRedisDB(commandComment.getPostId(), post);
         // todo : push notification owner post
         return commentAdd;
     }
+
+    @Override
+    public Optional<Boolean> deleteComment(CommandComment commandComment) throws Exception {
+        var query = new Document("userId", commandComment.getUserId()).append("postId", commandComment.getPostId());
+        var comment = commentRepository.get(query);
+        if (comment.isEmpty()) {
+            log.warn(String.format("%s not found comment in post %s", commandComment.getUserId(), commandComment.getPostId()));
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_COMMENT);
+        }
+
+        var post = postRedis.getPost(commandComment.getPostId());
+        post.setCommentSize(post.getCommentSize() - 1);
+        post.setPoint(post.getPoint() - Constant.POINTS.ONE_COMMENT_POST);
+        postRedis.updatePostRedisDB(commandComment.getPostId(), post);
+        return commentRepository.delete(comment.get().get_id().toString());
+    }
+
 
     @Override
     public Optional<List<Comment>> loadComment(CommandComment commandComment) throws Exception {
