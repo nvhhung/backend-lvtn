@@ -56,6 +56,10 @@ public class PostApplication implements IPostApplication{
             throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
         }
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
+
+        // increase point for owner user post
+        user.setExperiencePoint(user.getExperiencePoint() + Constant.POINTS.ONE_RATE_USER);
+        userRedis.updateUserRedisDB(user.get_id().toString(), user);
         return postAdd;
     }
 

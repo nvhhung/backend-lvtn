@@ -9,6 +9,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -314,7 +315,7 @@ public class JedisMaster {
         }
     }
     // Redis sorted sets : store score, member from smallest to greatest
-    public void addSortedSet(String key, Double score, String member) {
+    public void addSortedSet(String key, Integer score, String member) {
         JedisPool pool = getJedisPool();
         try (Jedis jedis = pool.getResource()) {
             jedis.zadd(key,score,member);
@@ -344,13 +345,39 @@ public class JedisMaster {
     }
     // index : sorted from greatest to smallest
     // if member not exist -> return string "nil"
-    public Long getIndexMember(String key, String member) {
+    public Integer getIndexMember(String key, String member) {
         JedisPool pool = getJedisPool();
         try (Jedis jedis = pool.getResource()) {
-            return jedis.zrevrank(key, member);
+        return Math.toIntExact(jedis.zrevrank(key, member));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return  null;
+    }
+
+    // start, end : null if getList all great->small. else get from index start -> index end great->small
+    public List<String> getListMemberFromGreatToSmall(String key, Integer start, Integer end) {
+        JedisPool pool = getJedisPool();
+        try (Jedis jedis = pool.getResource()) {
+            if (start == null) {
+                return jedis.zrevrange(key,0,-1);
+            }
+            else {
+                return jedis.zrevrange(key,start,end);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public Integer getScoreMember(String key, String member) {
+        JedisPool pool = getJedisPool();
+        try (Jedis jedis = pool.getResource()) {
+        return Math.toIntExact(Math.round(jedis.zscore(key, member)));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

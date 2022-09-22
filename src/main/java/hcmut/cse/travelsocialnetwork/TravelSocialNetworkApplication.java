@@ -27,6 +27,7 @@ public class TravelSocialNetworkApplication {
 	FollowController followController;
 	LikeController likeController;
 	RateController rateController;
+	RankController rankController;
 
 	public TravelSocialNetworkApplication(RestfulVerticle restfulVerticle,
 										  VertxProvider vertxProvider,
@@ -35,7 +36,8 @@ public class TravelSocialNetworkApplication {
 										  CommentController commentController,
 										  FollowController followController,
 										  LikeController likeController,
-										  RateController rateController) {
+										  RateController rateController,
+										  RankController rankController) {
 		this.restfulVerticle = restfulVerticle;
 		this.vertxProvider = vertxProvider;
 		this.userController = userController;
@@ -44,6 +46,7 @@ public class TravelSocialNetworkApplication {
 		this.followController = followController;
 		this.likeController = likeController;
 		this.rateController = rateController;
+		this.rankController = rankController;
 	}
 
 	public static void main(String[] args) {
@@ -82,8 +85,8 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/rate/mark", rateController::mark, auth),
 
 				// rank
-				RequestHandler.init(HttpMethod.GET, "/user/get-rank", userController::root, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/user/info-rank", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/rank/get-rank", rankController::root, auth),
+				RequestHandler.init(HttpMethod.GET, "/rank/info-rank", rankController::root, notAuth),
 
 				// post
 				RequestHandler.init(HttpMethod.POST, "/post/create", postController::createPost, auth),

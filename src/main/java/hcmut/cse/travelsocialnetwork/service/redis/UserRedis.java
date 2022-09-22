@@ -29,6 +29,15 @@ public class UserRedis {
         jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.SECOND_OF_ONE_DAY);
     }
 
+    public void updateUserRedisDB(String userId, User user) {
+        var userUpdate = userRepository.update(userId, user);
+        if (userUpdate.isEmpty()) {
+            log.warn("update user fail");
+            return;
+        }
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.SECOND_OF_ONE_DAY);
+    }
+
     public User getUser(String userId) {
         var userRedis = JSONUtils.stringToObj(jedis.get(Constant.KEY_REDIS.USER + userId), User.class);
         if (userRedis != null) {
@@ -44,5 +53,17 @@ public class UserRedis {
         }
         jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(userDb.get()), Constant.TIME.SECOND_OF_ONE_DAY);
         return userDb.get();
+    }
+
+    public void increasePoints(String userId, Integer pointAdd) {
+        var user = getUser(userId);
+        user.setExperiencePoint(user.getExperiencePoint() + pointAdd);
+        updateUserRedisDB(userId, user);
+    }
+
+    public void decreasePoints(String userId, Integer pointAdd) {
+        var user = getUser(userId);
+        user.setExperiencePoint(user.getExperiencePoint() - pointAdd);
+        updateUserRedisDB(userId, user);
     }
 }

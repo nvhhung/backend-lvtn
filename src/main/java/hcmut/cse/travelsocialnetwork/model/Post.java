@@ -34,6 +34,7 @@ public class Post extends PO {
     private List<Url> urls;
     private Integer likeSize;
     private Integer commentSize;
+    private Integer rateSize;
     private Long point;
     private List<String> blackListUsers;
 

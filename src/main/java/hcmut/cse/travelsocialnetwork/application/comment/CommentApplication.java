@@ -8,6 +8,7 @@ import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
+import hcmut.cse.travelsocialnetwork.utils.enums.FactorialPost;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -52,11 +53,9 @@ public class CommentApplication implements ICommentApplication{
             log.warn(String.format("%s create comment fail", commandComment.getUserId()));
             throw new CustomException(Constant.ERROR_MSG.COMMENT_FAIL);
         }
-        // increase comment size of post
-        var post = postRedis.getPost(commandComment.getPostId());
-        post.setCommentSize(post.getCommentSize() + 1);
-        post.setPoint(post.getPoint() + Constant.POINTS.ONE_COMMENT_POST);
-        postRedis.updatePostRedisDB(commandComment.getPostId(), post);
+        postRedis.increaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
+        postRedis.increasePoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
+        userRedis.increasePoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         // todo : push notification owner post
         return commentAdd;
     }
@@ -70,10 +69,9 @@ public class CommentApplication implements ICommentApplication{
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_COMMENT);
         }
 
-        var post = postRedis.getPost(commandComment.getPostId());
-        post.setCommentSize(post.getCommentSize() - 1);
-        post.setPoint(post.getPoint() - Constant.POINTS.ONE_COMMENT_POST);
-        postRedis.updatePostRedisDB(commandComment.getPostId(), post);
+        postRedis.decreaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
+        postRedis.decreasePoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
+        userRedis.decreasePoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         return commentRepository.delete(comment.get().get_id().toString());
     }
 

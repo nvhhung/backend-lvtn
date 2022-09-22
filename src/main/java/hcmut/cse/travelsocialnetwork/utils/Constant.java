@@ -69,6 +69,7 @@ public class Constant {
 
         // rate
         public static String RATE_FAIL = "rate fail";
+        public static String NOT_FOUND_RATE = "not found rate";
     }
 
     public static class STATUS_USER {
@@ -86,6 +87,12 @@ public class Constant {
         public static final int ONE_COMMENT_POST = 2;
         public static final int ONE_LIKE_USER = 2;
         public static final int ONE_COMMENT_USER = 4;
+        public static final int ONE_RATE_USER = 2;
+    }
+
+    public static class LEADER_BOARD {
+        public static String USER = "leader_board_user_";
+        public static String POST = "leader_board_post_";
     }
 
     public static class TIME {

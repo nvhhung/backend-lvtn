@@ -5,6 +5,7 @@ import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import hcmut.cse.travelsocialnetwork.utils.StringUtils;
+import hcmut.cse.travelsocialnetwork.utils.enums.FactorialPost;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -57,5 +58,37 @@ public class PostRedis {
             return;
         }
         jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postUpdate.get()), Constant.TIME.SECOND_OF_ONE_DAY);
+    }
+
+    public void increasePoints(String postId, Integer pointAdd) {
+        var post = getPost(postId);
+        post.setPoint(post.getPoint() + pointAdd);
+        updatePostRedisDB(postId, post);
+    }
+
+    public void decreasePoints(String postId, Integer pointAdd) {
+        var post = getPost(postId);
+        post.setPoint(post.getPoint() - pointAdd);
+        updatePostRedisDB(postId, post);
+    }
+
+    public void increaseFactorial(String postId, FactorialPost factorialPost) {
+        var post = getPost(postId);
+        switch (factorialPost) {
+            case COMMENT -> post.setCommentSize(post.getCommentSize() + 1);
+            case LIKE -> post.setLikeSize(post.getLikeSize() + 1);
+            case RATE -> post.setRateSize(post.getRateSize() + 1);
+        }
+        updatePostRedisDB(postId, post);
+    }
+
+    public void decreaseFactorial(String postId, FactorialPost factorialPost) {
+        var post = getPost(postId);
+        switch (factorialPost) {
+            case COMMENT -> post.setCommentSize(post.getCommentSize() - 1);
+            case LIKE -> post.setLikeSize(post.getLikeSize() - 1);
+            case RATE -> post.setRateSize(post.getRateSize() - 1);
+        }
+        updatePostRedisDB(postId, post);
     }
 }
