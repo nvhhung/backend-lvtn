@@ -55,15 +55,17 @@ public class UserRedis {
         return userDb.get();
     }
 
-    public void increasePoints(String userId, Integer pointAdd) {
+    public Integer increaseAndGetPoints(String userId, Integer pointAdd) {
         var user = getUser(userId);
         user.setExperiencePoint(user.getExperiencePoint() + pointAdd);
         updateUserRedisDB(userId, user);
+        return user.getExperiencePoint();
     }
 
-    public void decreasePoints(String userId, Integer pointAdd) {
+    public Integer decreaseAndGetPoints(String userId, Integer pointAdd) {
         var user = getUser(userId);
         user.setExperiencePoint(user.getExperiencePoint() - pointAdd);
         updateUserRedisDB(userId, user);
+        return user.getExperiencePoint();
     }
 }

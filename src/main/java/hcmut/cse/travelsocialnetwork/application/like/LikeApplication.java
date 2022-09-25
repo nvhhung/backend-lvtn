@@ -3,8 +3,8 @@ package hcmut.cse.travelsocialnetwork.application.like;
 import hcmut.cse.travelsocialnetwork.command.like.CommandLike;
 import hcmut.cse.travelsocialnetwork.model.Like;
 import hcmut.cse.travelsocialnetwork.repository.like.ILikeRepository;
-import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
+import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
@@ -26,13 +26,16 @@ public class LikeApplication implements ILikeApplication{
     ILikeRepository likeRepository;
     PostRedis postRedis;
     UserRedis userRedis;
+    RankRedis rankRedis;
 
     public LikeApplication(ILikeRepository likeRepository,
                            PostRedis postRedis,
-                           UserRedis userRedis) {
+                           UserRedis userRedis,
+                           RankRedis rankRedis) {
         this.likeRepository = likeRepository;
         this.postRedis = postRedis;
         this.userRedis = userRedis;
+        this.rankRedis = rankRedis;
     }
 
     @Override
@@ -48,8 +51,11 @@ public class LikeApplication implements ILikeApplication{
         }
 
         postRedis.increaseFactorial(commandLike.getPostId(), FactorialPost.LIKE);
-        postRedis.increasePoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
-        userRedis.increasePoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
+        var pointPostNew = postRedis.increaseAndGetPoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew);
+
+        var pointUserNew = userRedis.increaseAndGetPoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandLike.getUserId(), pointUserNew);
         // todo : push notification to owner of post
         return likeAdd;
     }
@@ -65,10 +71,13 @@ public class LikeApplication implements ILikeApplication{
 
         // increase like size, point of post
         postRedis.decreaseFactorial(commandLike.getPostId(), FactorialPost.LIKE);
-        postRedis.decreasePoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
+        var pointPostNew = postRedis.decreaseAndGetPoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew);
 
         // increase point user like
-        userRedis.decreasePoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
+        var pointUserNew = userRedis.decreaseAndGetPoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandLike.getUserId(), pointUserNew);
+
         return likeRepository.delete(like.get().get_id().toString());
     }
 }

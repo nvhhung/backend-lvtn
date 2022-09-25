@@ -18,20 +18,35 @@ import java.util.List;
 public class RankApplication implements IRankApplication{
     private static final Logger log = LogManager.getLogger(RankApplication.class);
     RankRedis rankRedis;
+
+
     public RankApplication(RankRedis rankRedis) {
         this.rankRedis = rankRedis;
     }
 
     @Override
-    public List<Rank> getLeaderBoard(CommandRank commandRank) {
+    public List<Rank> getLeaderBoardUser(CommandRank commandRank) {
         var start = commandRank.getPage() * commandRank.getSize();
         var end = start + commandRank.getSize();
-        return rankRedis.getLeaderBoard(Constant.LEADER_BOARD.USER, start, end);
+        log.info(String.format("get rank user from %d to %d", start, end));
+        return rankRedis.getLeaderBoardUser(Constant.LEADER_BOARD.KEY_USER, start, end);
     }
 
     @Override
-    public Rank getRank(CommandRank commandRank) {
-    //        var rank = rankRedis.getIndexRank()
-        return Rank.builder().build();
+    public List<Rank> getLeaderBoardPost(CommandRank commandRank) {
+        var start = commandRank.getPage() * commandRank.getSize();
+        var end = start + commandRank.getSize();
+        log.info(String.format("get rank post from %d to %d", start, end));
+        return rankRedis.getLeaderBoardPost(Constant.LEADER_BOARD.KEY_POST, start, end);
+    }
+
+    @Override
+    public Rank getRankUser(CommandRank commandRank) {
+        return rankRedis.getInfoRankUser(Constant.LEADER_BOARD.KEY_USER, commandRank.getUserId());
+    }
+
+    @Override
+    public Rank getRankPost(CommandRank commandRank) {
+        return rankRedis.getInfoRankPost(Constant.LEADER_BOARD.KEY_POST, commandRank.getPostId());
     }
 }

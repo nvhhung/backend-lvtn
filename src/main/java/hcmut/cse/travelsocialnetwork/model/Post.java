@@ -35,7 +35,7 @@ public class Post extends PO {
     private Integer likeSize;
     private Integer commentSize;
     private Integer rateSize;
-    private Long point;
+    private Integer point;
     private List<String> blackListUsers;
 
     @Data

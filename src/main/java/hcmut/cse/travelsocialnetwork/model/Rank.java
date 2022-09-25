@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Rank {
     private String userId;
+    private String postId;
     private Integer point;
     private Integer position;
 }

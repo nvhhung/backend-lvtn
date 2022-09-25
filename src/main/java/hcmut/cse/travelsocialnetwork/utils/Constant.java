@@ -91,8 +91,8 @@ public class Constant {
     }
 
     public static class LEADER_BOARD {
-        public static String USER = "leader_board_user_";
-        public static String POST = "leader_board_post_";
+        public static final String KEY_USER = "LEADER_BOARD_POINT_USER";
+        public static final String KEY_POST = "LEADER_BOARD_POINT_POST";
     }
 
     public static class TIME {

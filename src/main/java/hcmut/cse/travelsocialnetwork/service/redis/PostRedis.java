@@ -60,16 +60,18 @@ public class PostRedis {
         jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postUpdate.get()), Constant.TIME.SECOND_OF_ONE_DAY);
     }
 
-    public void increasePoints(String postId, Integer pointAdd) {
+    public Integer increaseAndGetPoints(String postId, Integer pointAdd) {
         var post = getPost(postId);
         post.setPoint(post.getPoint() + pointAdd);
         updatePostRedisDB(postId, post);
+        return post.getPoint();
     }
 
-    public void decreasePoints(String postId, Integer pointAdd) {
+    public Integer decreaseAndGetPoints(String postId, Integer pointAdd) {
         var post = getPost(postId);
         post.setPoint(post.getPoint() - pointAdd);
         updatePostRedisDB(postId, post);
+        return post.getPoint();
     }
 
     public void increaseFactorial(String postId, FactorialPost factorialPost) {

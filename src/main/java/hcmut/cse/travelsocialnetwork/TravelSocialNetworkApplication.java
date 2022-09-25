@@ -85,8 +85,10 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/rate/mark", rateController::mark, auth),
 
 				// rank
-				RequestHandler.init(HttpMethod.GET, "/rank/get-rank", rankController::root, auth),
-				RequestHandler.init(HttpMethod.GET, "/rank/info-rank", rankController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/rank/get-leader-board-user", rankController::getLeaderBoardUser, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/rank/info-rank-user", rankController::getRankUser, auth),
+				RequestHandler.init(HttpMethod.GET, "/rank/get-leader-board-post", rankController::getLeaderBoardPost, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/rank/info-rank-board", rankController::getRankPost, auth),
 
 				// post
 				RequestHandler.init(HttpMethod.POST, "/post/create", postController::createPost, auth),

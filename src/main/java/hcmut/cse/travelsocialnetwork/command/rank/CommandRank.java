@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CommandRank {
     private String userId;
+    private String postId;
     private int page;
     private int size;
 }

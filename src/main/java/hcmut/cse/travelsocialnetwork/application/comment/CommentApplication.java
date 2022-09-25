@@ -5,6 +5,7 @@ import hcmut.cse.travelsocialnetwork.command.comment.CommandComment;
 import hcmut.cse.travelsocialnetwork.model.Comment;
 import hcmut.cse.travelsocialnetwork.repository.comment.ICommentRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
+import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
@@ -25,19 +26,23 @@ import java.util.Optional;
 @Component
 public class CommentApplication implements ICommentApplication{
     private static final Logger log = LogManager.getLogger(CommentApplication.class);
+
     HelperUser helperUser;
     UserRedis userRedis;
     ICommentRepository commentRepository;
     PostRedis postRedis;
+    RankRedis rankRedis;
 
     public CommentApplication(HelperUser helperUser,
                               UserRedis userRedis,
                               ICommentRepository commentRepository,
-                              PostRedis postRedis) {
+                              PostRedis postRedis,
+                              RankRedis rankRedis) {
         this.helperUser = helperUser;
         this.userRedis = userRedis;
         this.commentRepository = commentRepository;
         this.postRedis = postRedis;
+        this.rankRedis = rankRedis;
     }
 
     @Override
@@ -54,8 +59,11 @@ public class CommentApplication implements ICommentApplication{
             throw new CustomException(Constant.ERROR_MSG.COMMENT_FAIL);
         }
         postRedis.increaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
-        postRedis.increasePoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
-        userRedis.increasePoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
+        var pointPostNew = postRedis.increaseAndGetPoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandComment.getPostId(), pointPostNew);
+
+        var pointUserNew = userRedis.increaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
         // todo : push notification owner post
         return commentAdd;
     }
@@ -70,8 +78,12 @@ public class CommentApplication implements ICommentApplication{
         }
 
         postRedis.decreaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
-        postRedis.decreasePoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
-        userRedis.decreasePoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
+        var pointPostNew = postRedis.decreaseAndGetPoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandComment.getPostId(), pointPostNew);
+
+        var pointUserNew = userRedis.decreaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
+
         return commentRepository.delete(comment.get().get_id().toString());
     }
 

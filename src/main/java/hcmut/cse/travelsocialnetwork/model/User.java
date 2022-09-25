@@ -36,7 +36,7 @@ public class User extends PO {
     private String address;
     // feature
     private List<String> userFollow;
-    private Long experiencePoint;
+    private Integer experiencePoint;
     private Integer level;
     private String status;
     private List<String> registerTokens;

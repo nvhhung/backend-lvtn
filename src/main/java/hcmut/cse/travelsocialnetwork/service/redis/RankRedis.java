@@ -15,31 +15,70 @@ import java.util.stream.Collectors;
 @Component
 public class RankRedis {
     private static final Logger log = LogManager.getLogger(RankRedis.class);
-    private static final String KEY_USER = "LEADER_BOARD_POINT_USER_";
     JedisMaster jedis;
 
     public RankRedis(JedisMaster jedis) {
         this.jedis = jedis;
     }
 
-    public void addLeaderBoard(String mainKey, String userId, Integer point) {
-
+    public void addLeaderBoard(String mainKey, String subKey, Integer point) {
+        jedis.addSortedSet(mainKey, point, subKey);
     }
 
-    public int getIndexRank(String mainKey, String userId) {
+    public Rank getInfoRankUser(String mainKey, String userId) {
         if (jedis.get(mainKey) == null) {
-            return 0;
+            log.info("no save leader board user");
+            return null;
         }
-        return jedis.getIndexMember(mainKey, userId);
+        var position =  jedis.getIndexMember(mainKey, userId);
+        if (position == null) {
+            log.info(String.format("no save point &s in leader board", userId));
+            return null;
+        }
+        var point = jedis.getScoreMember(mainKey, userId);
+        return Rank.builder()
+                .point(point)
+                .position(position)
+                .userId(userId)
+                .build();
     }
 
-    public List<Rank> getLeaderBoard(String mainKey, int start, int end) {
+    public Rank getInfoRankPost(String mainKey, String postId) {
+        if (jedis.get(mainKey) == null) {
+            log.info("no save leader board post");
+            return null;
+        }
+        var position =  jedis.getIndexMember(mainKey, postId);
+        if (position == null) {
+            log.info(String.format("no save point &s in leader board", postId));
+            return null;
+        }
+        var point = jedis.getScoreMember(mainKey, postId);
+        return Rank.builder()
+                .point(point)
+                .position(position)
+                .postId(postId)
+                .build();
+    }
+
+
+    public List<Rank> getLeaderBoardUser(String mainKey, int start, int end) {
         var userIdList = jedis.getListMemberFromGreatToSmall(mainKey, start, end);
         return userIdList.stream()
                 .map(userId -> Rank.builder()
                         .userId(userId)
                         .point(jedis.getScoreMember(mainKey, userId))
                 .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<Rank> getLeaderBoardPost(String mainKey, int start, int end) {
+        var userIdList = jedis.getListMemberFromGreatToSmall(mainKey, start, end);
+        return userIdList.stream()
+                .map(userId -> Rank.builder()
+                        .userId(userId)
+                        .point(jedis.getScoreMember(mainKey, userId))
+                        .build())
                 .collect(Collectors.toList());
     }
 }

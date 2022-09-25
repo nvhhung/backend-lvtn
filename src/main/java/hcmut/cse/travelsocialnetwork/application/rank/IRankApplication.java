@@ -10,6 +10,8 @@ import java.util.List;
  * @since : 9/22/22 Thursday
  **/
 public interface IRankApplication {
-    List<Rank> getLeaderBoard(CommandRank commandRank);
-    Rank getRank(CommandRank commandRank);
+    List<Rank> getLeaderBoardUser(CommandRank commandRank);
+    List<Rank> getLeaderBoardPost(CommandRank commandRank);
+    Rank getRankUser(CommandRank commandRank);
+    Rank getRankPost(CommandRank commandRank);
 }

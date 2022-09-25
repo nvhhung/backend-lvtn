@@ -62,7 +62,7 @@ public class UserApplication implements IUserApplication{
                 .status(Constant.STATUS_USER.ACTIVE)
                 .level(1)
                 .isAdmin(false)
-                .experiencePoint(0L)
+                .experiencePoint(0)
                 .build();
         var userAdd = userRepository.add(userRegister);
         if (userAdd.isEmpty()) {
@@ -92,6 +92,7 @@ public class UserApplication implements IUserApplication{
                     .userId(userTemp.get_id().toHexString())
                     .build());
         }
+        // todo login by facebook, google
         return null;
     }
 

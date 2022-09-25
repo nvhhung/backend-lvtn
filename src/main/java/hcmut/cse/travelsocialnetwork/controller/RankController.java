@@ -2,15 +2,15 @@ package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.rank.IRankApplication;
 import hcmut.cse.travelsocialnetwork.command.rank.CommandRank;
-import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
-import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author : hung.nguyen23
@@ -25,12 +25,19 @@ public class RankController extends AbstractController {
         this.rankApplication = rankApplication;
     }
 
-    public void root(RoutingContext routingContext) {
+    public void getLeaderBoardUser(RoutingContext routingContext) {
         try {
+            MultiMap params = routingContext.request().params();
+            var page = Integer.parseInt(Optional.ofNullable(params.get("page")).orElse("1"));
+            var size = Integer.parseInt(Optional.ofNullable(params.get("size")).orElse("20"));
+            var commandRank = CommandRank.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(outputJson(9999, new HashMap<>()));
+                    .end(outputJson(9999, rankApplication.getLeaderBoardUser(commandRank)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()
@@ -40,15 +47,16 @@ public class RankController extends AbstractController {
         }
     }
 
-    public void getRank(RoutingContext routingContext) {
+    public void getRankUser(RoutingContext routingContext) {
         try {
-            var commandRank = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandRank.class);
             var userId = routingContext.user().principal().getString("userId");
-            commandRank.setUserId(userId);
+            var commandRank = CommandRank.builder()
+                    .userId(userId)
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(outputJson(9999, rankApplication.getRank(commandRank)));
+                    .end(outputJson(9999, rankApplication.getRankUser(commandRank)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()
@@ -58,4 +66,45 @@ public class RankController extends AbstractController {
         }
     }
 
+    public void getLeaderBoardPost(RoutingContext routingContext) {
+        try {
+            MultiMap params = routingContext.request().params();
+            var page = Integer.parseInt(Optional.ofNullable(params.get("page")).orElse("1"));
+            var size = Integer.parseInt(Optional.ofNullable(params.get("size")).orElse("20"));
+            var commandRank = CommandRank.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(outputJson(9999, rankApplication.getLeaderBoardPost(commandRank)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
+    public void getRankPost(RoutingContext routingContext) {
+        try {
+            MultiMap params = routingContext.request().params();
+            var postId = Optional.ofNullable(params.get("postId")).orElse("");
+            var commandRank = CommandRank.builder()
+                    .postId(postId)
+                    .build();
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(outputJson(9999, rankApplication.getRankPost(commandRank)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 }
