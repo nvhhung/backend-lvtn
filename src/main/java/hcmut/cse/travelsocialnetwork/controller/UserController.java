@@ -55,25 +55,25 @@ public class UserController extends AbstractController {
                     .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
     }
-//
-//    public void refreshToken(RoutingContext routingContext) {
-//        try {
-//            MultiMap params = routingContext.request().params();
-//            String access_token = params.get("access_token");
-//            String refresh_token = params.get("refresh_token");
-//            routingContext.response()
-//                    .setStatusCode(200)
-//                    .putHeader("Content-Type", "application/json; charset=utf-8")
-//                    .end(this.outputJson(9999, userApplication.refreshToken(access_token, refresh_token)));
-//        } catch (Throwable throwable) {
-//            LOGGER.error(throwable);
-//            routingContext.response()
-//                    .setStatusCode(200)
-//                    .putHeader("content-type", "application/json; charset=utf-8")
-//                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
-//        }
-//
-//    }
+
+    public void refreshToken(RoutingContext routingContext) {
+        try {
+            MultiMap params = routingContext.request().params();
+            String accessToken = params.get("accessToken");
+            String refreshToken = params.get("refreshToken");
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, userApplication.refreshToken(accessToken, refreshToken)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+
+    }
 
     public void login(RoutingContext routingContext) {
         try {

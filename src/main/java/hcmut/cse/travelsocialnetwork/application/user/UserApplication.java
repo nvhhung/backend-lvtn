@@ -33,7 +33,6 @@ public class UserApplication implements IUserApplication{
     private final UserRedis userRedis;
     private ElasticsearchClient elasticsearchClient;
 
-    @Autowired
     public UserApplication(HelperUser helperUser,
                            IUserRepository userRepository,
                            JWTAuth jwtAuth,

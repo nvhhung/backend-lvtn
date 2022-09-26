@@ -97,6 +97,7 @@ public class Constant {
 
     public static class TIME {
         public static final int MILLISECOND_OF_FIVE_MINUTE = 5 * 60 * 1000;
+        public static final int MILLISECOND_OF_FOUR_MINUTE = 4 * 60 * 1000;
         public static final int MILLISECOND_OF_ONE_HOUR = 60 * 60 * 1000;
         public static final int MILLISECOND_OF_SIX_HOUR = 6 * 60 * 60 * 1000;
         public static final int MILLISECOND_OF_ONE_DAY = 24 * 60 * 60 * 1000;
