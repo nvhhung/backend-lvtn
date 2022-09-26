@@ -48,7 +48,7 @@ public class PostApplication implements IPostApplication{
                 .likeSize(0)
                 .status(commandPost.getStatus())
                 .blackListUsers(commandPost.getBlackListUsers())
-                .point(0L)
+                .point(0)
                 .build();
         var postAdd = postRepository.add(post);
         if (postAdd.isEmpty()) {

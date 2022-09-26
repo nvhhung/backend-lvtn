@@ -28,6 +28,7 @@ public class Post extends PO {
     private String userId;
     private String title;
     private String content;
+    private String destination;
     private String type;
     private String link;
     private String status; // onlyMe, public, follow, unknown
@@ -36,7 +37,6 @@ public class Post extends PO {
     private Integer commentSize;
     private Integer rateSize;
     private Integer point;
-    private List<String> blackListUsers;
 
     @Data
     @AllArgsConstructor
