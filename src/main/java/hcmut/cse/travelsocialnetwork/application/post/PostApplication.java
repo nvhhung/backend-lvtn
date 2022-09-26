@@ -44,10 +44,10 @@ public class PostApplication implements IPostApplication{
                 .content(commandPost.getContent())
                 .link(commandPost.getLink())
                 .type(commandPost.getType())
+                .destination(commandPost.getDestionation())
                 .commentSize(0)
                 .likeSize(0)
                 .status(commandPost.getStatus())
-                .blackListUsers(commandPost.getBlackListUsers())
                 .point(0)
                 .build();
         var postAdd = postRepository.add(post);
@@ -77,6 +77,7 @@ public class PostApplication implements IPostApplication{
         Optional.ofNullable(commandPost.getLink()).ifPresent(post::setLink);
         Optional.ofNullable(commandPost.getStatus()).ifPresent(post::setStatus);
         Optional.ofNullable(commandPost.getType()).ifPresent(post::setType);
+        Optional.ofNullable(commandPost.getDestionation()).ifPresent(post::setDestination);
         post.setLastUpdateTime(System.currentTimeMillis());
 
         var postUpdate = postRepository.update(post.get_id().toString(), post);
