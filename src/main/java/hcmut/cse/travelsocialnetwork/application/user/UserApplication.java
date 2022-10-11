@@ -87,6 +87,7 @@ public class UserApplication implements IUserApplication{
             if (!SHA512.valueOf(commandLogin.getPassword()).equals(userTemp.getPassword())) {
                 throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
             }
+            log.info("user {} login successful", userTemp.get_id());
             return jwtAuth.createLoginToken(JWTTokenData.builder()
                     .userId(userTemp.get_id().toHexString())
                     .build());

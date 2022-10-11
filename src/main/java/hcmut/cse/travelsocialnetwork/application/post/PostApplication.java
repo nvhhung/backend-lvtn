@@ -8,10 +8,14 @@ import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
+import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import hcmut.cse.travelsocialnetwork.utils.StringUtils;
+import io.vertx.core.json.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -41,12 +45,14 @@ public class PostApplication implements IPostApplication{
         var user = userRedis.getUser(commandPost.getUserId());
         var post = Post.builder()
                 .userId(commandPost.getUserId())
+                .title(commandPost.getTitle())
                 .content(commandPost.getContent())
-                .link(commandPost.getLink())
                 .type(commandPost.getType())
-                .destination(commandPost.getDestionation())
+                .destination(commandPost.getDestination())
+                .media(JSONUtils.objToJsonString(commandPost.getMedia()))
                 .commentSize(0)
                 .likeSize(0)
+                .rateSize(0)
                 .status(commandPost.getStatus())
                 .point(0)
                 .build();
@@ -74,11 +80,10 @@ public class PostApplication implements IPostApplication{
         var post = postTemp.get();
         Optional.ofNullable(commandPost.getTitle()).ifPresent(post::setTitle);
         Optional.ofNullable(commandPost.getContent()).ifPresent(post::setContent);
-        Optional.ofNullable(commandPost.getLink()).ifPresent(post::setLink);
         Optional.ofNullable(commandPost.getStatus()).ifPresent(post::setStatus);
         Optional.ofNullable(commandPost.getType()).ifPresent(post::setType);
-        Optional.ofNullable(commandPost.getDestionation()).ifPresent(post::setDestination);
-        post.setLastUpdateTime(System.currentTimeMillis());
+        Optional.ofNullable(commandPost.getDestination()).ifPresent(post::setDestination);
+        Optional.ofNullable(commandPost.getMedia()).ifPresent(JSONUtils::objToJsonString);
 
         var postUpdate = postRepository.update(post.get_id().toString(), post);
         if (postUpdate.isEmpty()) {

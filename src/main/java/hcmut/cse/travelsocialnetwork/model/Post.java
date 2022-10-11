@@ -6,6 +6,7 @@ import eu.dozd.mongo.annotation.Embedded;
 import eu.dozd.mongo.annotation.Entity;
 import eu.dozd.mongo.annotation.Id;
 import hcmut.cse.travelsocialnetwork.factory.repo.PO;
+import io.vertx.core.json.JsonArray;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,9 +31,8 @@ public class Post extends PO {
     private String content;
     private String destination;
     private String type;
-    private String link;
     private String status; // onlyMe, public, follow, unknown
-    private List<Url> urls;
+    private String media;
     private Integer likeSize;
     private Integer commentSize;
     private Integer rateSize;
@@ -43,11 +43,9 @@ public class Post extends PO {
     @NoArgsConstructor
     @Embedded
     @Builder
-    public static class Url implements Serializable {
-        private String url;
-        private String id;
+    public static class Media implements Serializable {
+        private String link;
         private String type;//video, image
-        private Long createdDate;
     }
 
 }
