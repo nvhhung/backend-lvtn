@@ -47,6 +47,8 @@ public interface GenericRepository<T> {
 
     Optional<Boolean> delete(@NonNull String id);
 
+    Optional<Boolean> deleteMany(@NonNull Map<String, Object> query);
+
     Optional<T> upsert(@NonNull Map<String, Object> queryString, @NonNull T t, @NonNull Map<String, Object> setOnInsert);
 
     Optional<T> addToSet(@NonNull Map<String, Object> queryString, @NonNull Map<String, Object> addToSetMap);

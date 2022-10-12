@@ -1,5 +1,6 @@
 package hcmut.cse.travelsocialnetwork.command.post;
 
+import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class CommandPost {
     private String link;
     private String type;
     private String destination;
-    private List<Post.Media> media;
+    private List<Media> mediaList;
     private String status;
     private Integer page;
     private Integer size;

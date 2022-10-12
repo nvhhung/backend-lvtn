@@ -11,27 +11,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
-import java.util.List;
-
+/**
+ * @author : hung.nguyen23
+ * @since : 10/12/22 Wednesday
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-public class Post extends PO {
-    @JsonSerialize(using = ToStringSerializer.class)
-    @Id
-    private ObjectId _id;
+public class Media extends PO {
+  @JsonSerialize(using = ToStringSerializer.class)
+  @Id
+  private ObjectId _id;
 
-    private String userId;
-    private String title;
-    private String content;
-    private String destination;
-    private String type;
-    private String status; // onlyMe, public, follow, unknown
-    private List<Media> mediaList;
-    private Integer likeSize;
-    private Integer commentSize;
-    private Integer rateSize;
-    private Integer point;
+  private String postId;
+  private String commentId;
+  private String type; // video or image
+  private String link;
 }

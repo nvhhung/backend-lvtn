@@ -207,6 +207,19 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     }
 
     @Override
+    public Optional<Boolean> deleteMany(@NonNull Map<String, Object> queryString) {
+        try {
+            Document query = new Document(queryString);
+            Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD.IS_DELETED, true)
+                    .append(Constant.FIELD.LAST_UPDATED_TIME, System.currentTimeMillis()));
+            return Optional.of(getMongoDBOperator().updateMany(query, data).getModifiedCount() == 1);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return Optional.of(false);
+        }
+    }
+
+    @Override
     public Optional<T> upsert(@NonNull Map<String, Object> queryString, @NonNull T t, @NonNull Map<String, Object> setOnInsert) {
         try {
             Document query = new Document(queryString);

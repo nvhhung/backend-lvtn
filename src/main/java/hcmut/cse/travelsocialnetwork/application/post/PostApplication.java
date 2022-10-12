@@ -2,20 +2,21 @@ package hcmut.cse.travelsocialnetwork.application.post;
 
 import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
+import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.model.Post;
+import hcmut.cse.travelsocialnetwork.repository.media.IMediaRepository;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
-import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
-import hcmut.cse.travelsocialnetwork.utils.StringUtils;
-import io.vertx.core.json.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,15 +31,20 @@ public class PostApplication implements IPostApplication{
     IPostRepository postRepository;
     UserRedis userRedis;
     PostRedis postRedis;
+    IMediaRepository mediaRepository;
+
     public PostApplication(HelperUser helperUser,
-                           IPostRepository postRepository,
-                           UserRedis userRedis,
-                           PostRedis postRedis) {
+            IPostRepository postRepository,
+            UserRedis userRedis,
+            PostRedis postRedis,
+            IMediaRepository mediaRepository) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
         this.postRedis = postRedis;
+        this.mediaRepository = mediaRepository;
     }
+
 
     @Override
     public Optional<Post> createPost(CommandPost commandPost) throws Exception {
@@ -49,7 +55,6 @@ public class PostApplication implements IPostApplication{
                 .content(commandPost.getContent())
                 .type(commandPost.getType())
                 .destination(commandPost.getDestination())
-                .media(JSONUtils.objToJsonString(commandPost.getMedia()))
                 .commentSize(0)
                 .likeSize(0)
                 .rateSize(0)
@@ -61,6 +66,12 @@ public class PostApplication implements IPostApplication{
             log.info(String.format("create post by user = %s fail", user.getFullName()));
             throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
         }
+
+        Optional.ofNullable(commandPost.getMediaList()).ifPresent(medias -> medias.forEach(media -> {
+            media.setPostId(post.get_id().toString());
+            mediaRepository.add(media);
+        }));
+        post.setMediaList(commandPost.getMediaList());
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
 
         // increase point for owner user post
@@ -83,14 +94,30 @@ public class PostApplication implements IPostApplication{
         Optional.ofNullable(commandPost.getStatus()).ifPresent(post::setStatus);
         Optional.ofNullable(commandPost.getType()).ifPresent(post::setType);
         Optional.ofNullable(commandPost.getDestination()).ifPresent(post::setDestination);
-        Optional.ofNullable(commandPost.getMedia()).ifPresent(JSONUtils::objToJsonString);
 
         var postUpdate = postRepository.update(post.get_id().toString(), post);
         if (postUpdate.isEmpty()) {
             log.info(String.format("update post have id = %s fail",post.get_id()));
             throw new CustomException(Constant.ERROR_MSG.UPDATE_POST_FAIL);
         }
-        log.info(String.format("update post have id = %s by user %s successful",post.get_id(),userPost.getFullName()));
+
+        // update media
+        Optional.ofNullable(commandPost.getMediaList()).ifPresent(mediaList -> {
+            var resultDelete = mediaRepository.deleteMany(new Document("postId", post.get_id().toString()));
+            post.setMediaList(new ArrayList<>());
+            log.info("delete old media of post result = {}", resultDelete);
+            mediaList.forEach(media -> {
+                media.setPostId(post.get_id().toString());
+                var mediaNew = mediaRepository.add(media);
+                if (mediaNew.isEmpty()) {
+                    log.info("save media have link {} error", media.getLink());
+                    return;
+                }
+                post.getMediaList().add(mediaNew.get());
+            });
+        });
+
+        log.info(String.format("update post have id = %s by user %s successful", post.get_id(), userPost.getFullName()));
         postRedis.updatePost(postUpdate.get().get_id().toString(), postUpdate.get());
         return postUpdate;
     }
