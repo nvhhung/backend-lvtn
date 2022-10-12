@@ -84,7 +84,8 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/like/unlike", likeController::unlike, auth),
 
 				// rate
-				RequestHandler.init(HttpMethod.POST, "/rate/mark", rateController::mark, auth),
+				RequestHandler.init(HttpMethod.POST, "/rate/create", rateController::rate, auth),
+				RequestHandler.init(HttpMethod.POST, "/rate/delete", rateController::unRate, auth),
 
 				// rank
 				RequestHandler.init(HttpMethod.GET, "/rank/get-leader-board-user", rankController::getLeaderBoardUser, notAuth),
@@ -96,7 +97,10 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/post/create", postController::createPost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/update", postController::updatePost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/get", postController::getPost, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::updatePost, auth)
+				RequestHandler.init(HttpMethod.POST, "/post/load-all", postController::loadAllPost, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/post/load-related", postController::loadRelatedPost, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/post/search", postController::searchPost, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);

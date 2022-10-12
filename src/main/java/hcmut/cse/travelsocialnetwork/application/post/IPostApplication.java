@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.application.post;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Post;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,4 +15,7 @@ public interface IPostApplication {
     Optional<Post> updatePost(CommandPost commandPost) throws Exception;
     Optional<Post> getPost(CommandPost commandPost) throws Exception;
     Optional<Boolean> deletePost(CommandPost commandPost) throws Exception;
+    Optional<List<Post>> loadPost(CommandPost commandPost) throws Exception;
+    Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception;
+    Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception;
 }

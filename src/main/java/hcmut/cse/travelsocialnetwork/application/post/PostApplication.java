@@ -141,4 +141,21 @@ public class PostApplication implements IPostApplication{
         }
         return postRepository.delete(commandPost.getId());
     }
+
+    @Override
+    public Optional<List<Post>> loadPost(CommandPost commandPost) throws Exception {
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception {
+        return Optional.empty();
+    }
+
 }

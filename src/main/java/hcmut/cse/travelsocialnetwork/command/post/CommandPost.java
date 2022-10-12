@@ -29,4 +29,5 @@ public class CommandPost {
     private String status;
     private Integer page;
     private Integer size;
+    private String keyword;
 }
