@@ -1,7 +1,10 @@
 package hcmut.cse.travelsocialnetwork.application.post;
 
+import hcmut.cse.travelsocialnetwork.application.follow.FollowApplication;
 import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
+import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
+import hcmut.cse.travelsocialnetwork.model.Follow;
 import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.media.IMediaRepository;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author : hung.nguyen23
@@ -32,17 +36,20 @@ public class PostApplication implements IPostApplication{
     UserRedis userRedis;
     PostRedis postRedis;
     IMediaRepository mediaRepository;
+    FollowApplication followApplication;
 
     public PostApplication(HelperUser helperUser,
             IPostRepository postRepository,
             UserRedis userRedis,
             PostRedis postRedis,
-            IMediaRepository mediaRepository) {
+            IMediaRepository mediaRepository,
+                           FollowApplication followApplication) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
         this.postRedis = postRedis;
         this.mediaRepository = mediaRepository;
+        this.followApplication = followApplication;
     }
 
 
@@ -144,13 +151,30 @@ public class PostApplication implements IPostApplication{
 
     @Override
     public Optional<List<Post>> loadPost(CommandPost commandPost) throws Exception {
-
-        return Optional.empty();
+        var query = new Document();
+        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
+        var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
+        postList.ifPresentOrElse(posts -> log.info("user {} load post have size {}", commandPost.getUserId(), posts.size()),
+                () -> log.info("user {} load no post", commandPost.getUserId()));
+        return postList;
     }
 
     @Override
     public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
-        return Optional.empty();
+        // get list user follow
+        var commandFollow = CommandFollow.builder()
+                .userId(commandPost.getUserId())
+                .page(0)
+                .size(1000)
+                .build();
+        var userFollowList = followApplication.getFollowUser(commandFollow);
+        var queryPostOfUserId = new Document();
+        userFollowList.ifPresent(follows -> queryPostOfUserId.append("userId", new Document("$in", follows.stream().map(Follow::getUserId).collect(Collectors.toList()))));
+        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
+        var postList = postRepository.search(queryPostOfUserId, sort, commandPost.getPage(), commandPost.getSize());
+        postList.ifPresentOrElse(posts -> log.info("user {} load post have size {}", commandPost.getUserId(), posts.size()),
+                () -> log.info("user {} load no post", commandPost.getUserId()));
+        return postList;
     }
 
     @Override

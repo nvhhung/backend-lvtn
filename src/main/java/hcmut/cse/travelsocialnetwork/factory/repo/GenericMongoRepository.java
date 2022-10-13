@@ -198,7 +198,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
         try {
             Document query = new Document(Constant.FIELD.ID, new ObjectId(id));
             Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD.IS_DELETED, true)
-                    .append(Constant.FIELD.LAST_UPDATED_TIME, System.currentTimeMillis()));
+                    .append(Constant.FIELD.LAST_UPDATE_TIME, System.currentTimeMillis()));
             return Optional.of(getMongoDBOperator().update(query, data).getModifiedCount() == 1);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -211,7 +211,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
         try {
             Document query = new Document(queryString);
             Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD.IS_DELETED, true)
-                    .append(Constant.FIELD.LAST_UPDATED_TIME, System.currentTimeMillis()));
+                    .append(Constant.FIELD.LAST_UPDATE_TIME, System.currentTimeMillis()));
             return Optional.of(getMongoDBOperator().updateMany(query, data).getModifiedCount() == 1);
         } catch (Throwable throwable) {
             throwable.printStackTrace();

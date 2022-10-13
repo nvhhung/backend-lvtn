@@ -72,7 +72,7 @@ public class FollowApplication implements IFollowApplication {
     @Override
     public Optional<List<Follow>> getFollowUser(CommandFollow commandFollow) throws Exception {
         var query = new Document("userId", commandFollow.getUserId());
-        var followList = followRepository.search(query, new Document(), 0, 20);
+        var followList = followRepository.search(query, new Document("lastUpdateTime", -1), commandFollow.getPage(), commandFollow.getSize());
         if (followList.isEmpty()) {
             log.info(String.format("%s no have follow user", commandFollow.getUserId()));
             return Optional.of(new ArrayList<>());
