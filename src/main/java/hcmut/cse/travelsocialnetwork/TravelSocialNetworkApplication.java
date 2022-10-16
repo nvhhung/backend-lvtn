@@ -5,7 +5,6 @@ import hcmut.cse.travelsocialnetwork.service.VertxProvider;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RequestHandler;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RestfulVerticle;
 import io.vertx.core.http.HttpMethod;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;

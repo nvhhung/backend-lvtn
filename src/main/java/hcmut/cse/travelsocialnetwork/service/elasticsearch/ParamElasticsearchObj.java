@@ -30,9 +30,7 @@ public class ParamElasticsearchObj {
     private Map<String, Object> queryModel;
     private String templateCfgKey;
     private String filedSearch;
-    private List<SortData> sorts;
     private String key;
     private String value;
     private Class clazz;
-//    private MappingIndex mappingIndex;
 }

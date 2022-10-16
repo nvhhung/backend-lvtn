@@ -1,6 +1,8 @@
 package hcmut.cse.travelsocialnetwork.service.elasticsearch;
+
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
-import co.elastic.clients.elasticsearch._types.*;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -24,8 +26,6 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static co.elastic.clients.elasticsearch._types.Conflicts.Proceed;
 
@@ -166,7 +166,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
                         .from(params.getFrom())
                         .size(params.getSize())
                         .minScore((double) params.getMinScore())
-                        .sort(buildListSortOptions(params))
                         .query(QueryBuilders.wrapper(wrapperQuery -> wrapperQuery
                                 .query(Base64.getEncoder()
                                         .encodeToString(params.getQuery().getBytes(StandardCharsets.UTF_8)))
@@ -181,22 +180,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
             }
             callback.handle(response.hits().hits());
         });
-    }
-
-    private List<SortOptions> buildListSortOptions(ParamElasticsearchObj params) {
-        if (params.getSorts() != null) {
-            return params.getSorts().stream().map(SortData::sortBuilder).filter(Objects::nonNull).collect(Collectors.toList());
-        }
-        return List.of(SortOptionsBuilders.geoDistance(distance -> distance
-                .field("LOCATION")
-                .location(location -> location.latlon(coordinates -> coordinates
-                        .lat(params.getLat())
-                        .lon(params.getLon()))
-                )
-                .distanceType(GeoDistanceType.Plane)
-                .order(SortOrder.Asc)
-                .unit(DistanceUnit.Meters)
-                .mode(SortMode.Min)));
     }
 
     @Override

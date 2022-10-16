@@ -1,6 +1,5 @@
 package hcmut.cse.travelsocialnetwork.application.search;
 
-import hcmut.cse.travelsocialnetwork.application.user.UserApplication;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
@@ -16,7 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.*;
+import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_THREE_MINUTE;
+import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_TWO_MINUTE;
 
 /**
  * @author : hung.nguyen23
@@ -24,11 +24,11 @@ import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.*;
  **/
 @Component
 public class SearchApplication implements ISearchApplication {
-    private static final Logger log = LogManager.getLogger(UserApplication.class);
-    private ElasticsearchClient elasticsearchClient;
-    private RestfulVerticle restfulVerticle;
-    private IUserRepository userRepository;
-    private IPostRepository postRepository;
+    private static final Logger log = LogManager.getLogger(SearchApplication.class);
+    private final ElasticsearchClient elasticsearchClient;
+    private final RestfulVerticle restfulVerticle;
+    private final IUserRepository userRepository;
+    private final IPostRepository postRepository;
 
 
     public SearchApplication(ElasticsearchClient elasticsearchClient,
