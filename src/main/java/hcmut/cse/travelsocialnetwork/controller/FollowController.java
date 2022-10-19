@@ -4,12 +4,14 @@ import hcmut.cse.travelsocialnetwork.application.follow.IFollowApplication;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author : hung.nguyen23
@@ -60,8 +62,14 @@ public class FollowController extends AbstractController {
 
     public void getFollower(RoutingContext routingContext) {
         try {
-            var commandFollow = new CommandFollow();
-            commandFollow.setUserId(routingContext.user().get("userId"));
+            MultiMap params = routingContext.request().params();
+            var page = Integer.parseInt(Optional.ofNullable(params.get("page")).orElse("1"));
+            var size = Integer.parseInt(Optional.ofNullable(params.get("size")).orElse("20"));
+            var commandFollow = CommandFollow.builder()
+                    .page(page)
+                    .size(size)
+                    .userId(routingContext.user().get("userId"))
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
@@ -77,8 +85,14 @@ public class FollowController extends AbstractController {
 
     public void getFollowUser(RoutingContext routingContext) {
         try {
-            var commandFollow = new CommandFollow();
-            commandFollow.setUserId(routingContext.user().get("userId"));
+            MultiMap params = routingContext.request().params();
+            var page = Integer.parseInt(Optional.ofNullable(params.get("page")).orElse("1"));
+            var size = Integer.parseInt(Optional.ofNullable(params.get("size")).orElse("20"));
+            var commandFollow = CommandFollow.builder()
+                    .page(page)
+                    .size(size)
+                    .userId(routingContext.user().get("userId"))
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")

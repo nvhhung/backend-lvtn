@@ -111,10 +111,11 @@ public class PostController extends AbstractController {
     public void loadRelatedPost(RoutingContext routingContext) {
         try {
             var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            commandPost.setUserId(routingContext.user().principal().getString("userId"));
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(this.outputJson(9999, postApplication.getPost(commandPost)));
+                    .end(this.outputJson(9999, postApplication.loadRelationPost(commandPost)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()

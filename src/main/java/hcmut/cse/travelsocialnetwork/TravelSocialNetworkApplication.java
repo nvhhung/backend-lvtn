@@ -97,7 +97,7 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/post/update", postController::updatePost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/get", postController::getPost, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/post/load-all", postController::loadAllPost, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/post/load-related", postController::loadRelatedPost, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/post/load-related", postController::loadRelatedPost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/search", postController::searchPost, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth)
 				));

@@ -1,8 +1,10 @@
 package hcmut.cse.travelsocialnetwork.application.post;
 
 import hcmut.cse.travelsocialnetwork.application.follow.FollowApplication;
+import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
 import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
+import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Follow;
 import hcmut.cse.travelsocialnetwork.model.Media;
@@ -35,20 +37,20 @@ public class PostApplication implements IPostApplication{
     IPostRepository postRepository;
     UserRedis userRedis;
     PostRedis postRedis;
-    IMediaRepository mediaRepository;
     FollowApplication followApplication;
+    IMediaApplication mediaApplication;
 
     public PostApplication(HelperUser helperUser,
             IPostRepository postRepository,
             UserRedis userRedis,
             PostRedis postRedis,
-            IMediaRepository mediaRepository,
+                           IMediaApplication mediaApplication,
                            FollowApplication followApplication) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
         this.postRedis = postRedis;
-        this.mediaRepository = mediaRepository;
+        this.mediaApplication = mediaApplication;
         this.followApplication = followApplication;
     }
 
@@ -75,8 +77,12 @@ public class PostApplication implements IPostApplication{
         }
 
         Optional.ofNullable(commandPost.getMediaList()).ifPresent(medias -> medias.forEach(media -> {
-            media.setPostId(post.get_id().toString());
-            mediaRepository.add(media);
+            var commandMedia = CommandMedia.builder()
+                    .postId(post.get_id().toString())
+                    .link(media.getLink())
+                    .type(media.getType())
+                    .build();
+            mediaApplication.add(commandMedia);
         }));
         post.setMediaList(commandPost.getMediaList());
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
@@ -109,20 +115,20 @@ public class PostApplication implements IPostApplication{
         }
 
         // update media
-        Optional.ofNullable(commandPost.getMediaList()).ifPresent(mediaList -> {
-            var resultDelete = mediaRepository.deleteMany(new Document("postId", post.get_id().toString()));
-            post.setMediaList(new ArrayList<>());
-            log.info("delete old media of post result = {}", resultDelete);
-            mediaList.forEach(media -> {
-                media.setPostId(post.get_id().toString());
-                var mediaNew = mediaRepository.add(media);
-                if (mediaNew.isEmpty()) {
-                    log.info("save media have link {} error", media.getLink());
-                    return;
-                }
-                post.getMediaList().add(mediaNew.get());
-            });
-        });
+//        Optional.ofNullable(commandPost.getMediaList()).ifPresent(mediaList -> {
+//            var resultDelete = mediaRepository.deleteMany(new Document("postId", post.get_id().toString()));
+//            post.setMediaList(new ArrayList<>());
+//            log.info("delete old media of post result = {}", resultDelete);
+//            mediaList.forEach(media -> {
+//                media.setPostId(post.get_id().toString());
+//                var mediaNew = mediaRepository.add(media);
+//                if (mediaNew.isEmpty()) {
+//                    log.info("save media have link {} error", media.getLink());
+//                    return;
+//                }
+//                post.getMediaList().add(mediaNew.get());
+//            });
+//        });
 
         log.info(String.format("update post have id = %s by user %s successful", post.get_id(), userPost.getFullName()));
         postRedis.updatePost(postUpdate.get().get_id().toString(), postUpdate.get());
@@ -161,20 +167,26 @@ public class PostApplication implements IPostApplication{
 
     @Override
     public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
+        var postList = new ArrayList<Post>();
+        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
         // get list user follow
         var commandFollow = CommandFollow.builder()
-                .userId(commandPost.getUserId())
-                .page(0)
-                .size(1000)
-                .build();
+            .userId(commandPost.getUserId())
+            .page(0)
+            .size(1000)
+            .build();
+
         var userFollowList = followApplication.getFollowUser(commandFollow);
-        var queryPostOfUserId = new Document();
-        userFollowList.ifPresent(follows -> queryPostOfUserId.append("userId", new Document("$in", follows.stream().map(Follow::getUserId).collect(Collectors.toList()))));
-        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
-        var postList = postRepository.search(queryPostOfUserId, sort, commandPost.getPage(), commandPost.getSize());
-        postList.ifPresentOrElse(posts -> log.info("user {} load post have size {}", commandPost.getUserId(), posts.size()),
-                () -> log.info("user {} load no post", commandPost.getUserId()));
-        return postList;
+        userFollowList.ifPresentOrElse(follows -> follows.forEach(follow -> {
+            var posts = postRepository.search(new Document("userId", follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
+            posts.ifPresent(post -> {
+            });
+        }), () -> {
+            var posts = postRepository.search(new Document(), sort, commandPost.getPage(), commandPost.getSize());
+            posts.ifPresent(postList::addAll);
+        });
+
+        return Optional.of(postList);
     }
 
     @Override

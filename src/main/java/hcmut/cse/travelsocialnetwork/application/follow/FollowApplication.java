@@ -38,6 +38,7 @@ public class FollowApplication implements IFollowApplication {
             log.warn(String.format("%s follow user fail",commandFollow.getUserId()));
             throw new CustomException(Constant.ERROR_MSG.FOLLOW_FAIL);
         }
+        log.info(String.format("%s user follow user %s success", commandFollow.getUserId(), commandFollow.getUserIdTarget()));
         // todo : create notification to user target
         return followAdd;
     }
