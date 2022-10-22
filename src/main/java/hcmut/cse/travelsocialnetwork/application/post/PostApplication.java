@@ -121,7 +121,7 @@ public class PostApplication implements IPostApplication{
                     .size(1000)
                     .postId(commandPost.getId())
                     .build();
-            var mediaListCurrentOptional = mediaApplication.load(commandMediaCurrent);
+            var mediaListCurrentOptional = mediaApplication.loadByPostId(commandMediaCurrent);
             mediaListCurrentOptional.ifPresentOrElse(mediaListCurrent -> {
                 // check different in request
                 var mediaDifferent = mediaList.stream()
@@ -190,7 +190,7 @@ public class PostApplication implements IPostApplication{
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
         postList.ifPresentOrElse(posts -> {
             log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
-            posts.forEach(post -> post.setMediaList(mediaApplication.load(CommandMedia.builder()
+            posts.forEach(post -> post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
                     .postId(post.get_id().toString())
                     .page(1)
                     .size(1000)
@@ -215,7 +215,7 @@ public class PostApplication implements IPostApplication{
             var postFollow = postRepository.search(new Document("userId", follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
             postFollow.ifPresent(postFollowUser -> {
                 postFollowUser.forEach(post -> {
-                    post.setMediaList(mediaApplication.load(CommandMedia.builder()
+                    post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
                             .postId(post.get_id().toString())
                             .page(1)
                             .size(1000)

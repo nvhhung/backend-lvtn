@@ -36,8 +36,8 @@ public class MediaApplication implements IMediaApplication {
     }
 
     @Override
-    public Optional<List<Media>> load(CommandMedia commandMedia) {
-        return mediaRepository.search(new Document(), new Document(), commandMedia.getPage(), commandMedia.getSize());
+    public Optional<List<Media>> loadByPostId(CommandMedia commandMedia) {
+        return mediaRepository.search(new Document("postId", commandMedia.getPostId()), new Document(), commandMedia.getPage(), commandMedia.getSize());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package hcmut.cse.travelsocialnetwork.command.post;
 
 import hcmut.cse.travelsocialnetwork.model.Media;
-import hcmut.cse.travelsocialnetwork.model.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
