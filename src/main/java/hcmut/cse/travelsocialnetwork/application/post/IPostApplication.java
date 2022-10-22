@@ -15,7 +15,7 @@ public interface IPostApplication {
     Optional<Post> updatePost(CommandPost commandPost) throws Exception;
     Optional<Post> getPost(CommandPost commandPost) throws Exception;
     Optional<Boolean> deletePost(CommandPost commandPost) throws Exception;
-    Optional<List<Post>> loadPost(CommandPost commandPost) throws Exception;
+    Optional<List<Post>> loadAllPost(CommandPost commandPost) throws Exception;
     Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception;
     Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception;
 }

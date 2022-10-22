@@ -98,7 +98,7 @@ public class PostController extends AbstractController {
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(this.outputJson(9999, postApplication.loadPost(commandPost)));
+                    .end(this.outputJson(9999, postApplication.loadAllPost(commandPost)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()

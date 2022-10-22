@@ -184,18 +184,24 @@ public class PostApplication implements IPostApplication{
     }
 
     @Override
-    public Optional<List<Post>> loadPost(CommandPost commandPost) throws Exception {
+    public Optional<List<Post>> loadAllPost(CommandPost commandPost) throws Exception {
         var query = new Document();
         var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
-        postList.ifPresentOrElse(posts -> log.info("user {} load post have size {}", commandPost.getUserId(), posts.size()),
-                () -> log.info("user {} load no post", commandPost.getUserId()));
+        postList.ifPresentOrElse(posts -> {
+            log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
+            posts.forEach(post -> post.setMediaList(mediaApplication.load(CommandMedia.builder()
+                    .postId(post.get_id().toString())
+                    .page(1)
+                    .size(1000)
+                    .build()).orElse(new ArrayList<>())));
+            }, () -> log.info("user {} load no post", commandPost.getUserId()));
         return postList;
     }
 
     @Override
     public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
-        var postList = new ArrayList<Post>();
+        var postListResult = new ArrayList<Post>();
         var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
         // get list user follow
         var commandFollow = CommandFollow.builder()
@@ -206,15 +212,23 @@ public class PostApplication implements IPostApplication{
 
         var userFollowList = followApplication.getFollowUser(commandFollow);
         userFollowList.ifPresentOrElse(follows -> follows.forEach(follow -> {
-            var posts = postRepository.search(new Document("userId", follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
-            posts.ifPresent(post -> {
+            var postFollow = postRepository.search(new Document("userId", follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
+            postFollow.ifPresent(postFollowUser -> {
+                postFollowUser.forEach(post -> {
+                    post.setMediaList(mediaApplication.load(CommandMedia.builder()
+                            .postId(post.get_id().toString())
+                            .page(1)
+                            .size(1000)
+                            .build()).orElse(new ArrayList<>()));
+                    postListResult.add(post);
+                });
             });
         }), () -> {
             var posts = postRepository.search(new Document(), sort, commandPost.getPage(), commandPost.getSize());
-            posts.ifPresent(postList::addAll);
+            posts.ifPresent(postListResult::addAll);
         });
 
-        return Optional.of(postList);
+        return Optional.of(postListResult);
     }
 
     @Override
