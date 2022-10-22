@@ -11,8 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
-import java.util.List;
-
 /**
  * @author : hung.nguyen23
  * @since : 9/7/22 Wednesday
@@ -30,6 +28,4 @@ public class Comment extends PO {
     private String userId;
     private String postId;
     private String content;
-    private String status;
-    private List<String> images;
 }

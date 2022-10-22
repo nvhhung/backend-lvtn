@@ -5,10 +5,12 @@ package hcmut.cse.travelsocialnetwork.utils;
  * @since : 8/1/22 Monday
  **/
 public class Constant {
-    public static class FIELD {
+    public static class FIELD_QUERY {
         public static final String IS_DELETED = "isDeleted";
         public static final String ID = "_id";
         public static final String LAST_UPDATE_TIME = "lastUpdateTime";
+        public static final String CREATE_TIME = "createTime";
+        public static final String POST_ID = "postId";
     }
 
     public static class OPERATOR_MONGODB {

@@ -63,12 +63,7 @@ public class CommentController extends AbstractController {
 
     public void loadComment(RoutingContext routingContext) {
         try {
-            MultiMap params = routingContext.request().params();
-            var commandComment = CommandComment.builder()
-                    .postId(params.get("postId"))
-                    .page(Integer.parseInt(params.get("page")))
-                    .size(Integer.parseInt(params.get("size")))
-                    .build();
+            var commandComment = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandComment.class);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")

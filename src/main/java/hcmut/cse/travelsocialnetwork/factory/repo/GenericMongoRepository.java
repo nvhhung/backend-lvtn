@@ -31,7 +31,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     public Optional<List<T>> search(@NonNull Map<String, Object> queryString, @NonNull Map<String, Object> querySort, int page, int size) {
         try {
             Document query = new Document(queryString);
-            query.put(Constant.FIELD.IS_DELETED, false);
+            query.put(Constant.FIELD_QUERY.IS_DELETED, false);
             Document sort = new Document(querySort);
             List<T> list = getMongoDBOperator().findMany(query, sort, new Document(), (page - 1) * size, size);
             if (!CollectionUtils.isEmpty(list)) {
@@ -48,7 +48,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
                                     @NonNull Map<String, Object> queryProjection, int page, int size) {
         try {
             Document query = new Document(queryString);
-            query.put(Constant.FIELD.IS_DELETED, false);
+            query.put(Constant.FIELD_QUERY.IS_DELETED, false);
             Document sort = new Document(querySort);
             Document projection = new Document(queryProjection);
             List<T> list = getMongoDBOperator().findMany(query, sort, projection, (page - 1) * size, size);
@@ -79,8 +79,8 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     @Override
     public Optional<T> getById(@NonNull String id) {
         try {
-            return Optional.ofNullable(getMongoDBOperator().find(new Document(Constant.FIELD.ID, new ObjectId(id))
-                    .append(Constant.FIELD.IS_DELETED, false), new Document(), new Document()));
+            return Optional.ofNullable(getMongoDBOperator().find(new Document(Constant.FIELD_QUERY.ID, new ObjectId(id))
+                    .append(Constant.FIELD_QUERY.IS_DELETED, false), new Document(), new Document()));
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return Optional.empty();
@@ -90,7 +90,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     @Override
     public Optional<T> getByIdWithDeleted(@NonNull String id) {
         try {
-            return Optional.ofNullable(getMongoDBOperator().find(new Document(Constant.FIELD.ID, new ObjectId(id)),
+            return Optional.ofNullable(getMongoDBOperator().find(new Document(Constant.FIELD_QUERY.ID, new ObjectId(id)),
                     new Document(), new Document()));
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -101,7 +101,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     @Override
     public Optional<T> get(@NonNull Map<String, Object> query) {
         try {
-            query.putIfAbsent(Constant.FIELD.IS_DELETED, false);
+            query.putIfAbsent(Constant.FIELD_QUERY.IS_DELETED, false);
             List<T> list = getMongoDBOperator().findMany(new Document(query), new Document(), new Document(), 0, 1);
             if (!CollectionUtils.isEmpty(list)) {
                 return Optional.of(list.get(0));
@@ -159,8 +159,8 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     @Override
     public Optional<T> update(@NonNull String id, @NonNull T t) {
         try {
-            Document query = new Document(Constant.FIELD.ID, new ObjectId(id));
-            query.append(Constant.FIELD.IS_DELETED, false);
+            Document query = new Document(Constant.FIELD_QUERY.ID, new ObjectId(id));
+            query.append(Constant.FIELD_QUERY.IS_DELETED, false);
             t.setLastUpdateTime(System.currentTimeMillis());
             Document data = BuildQuerySet.buildQuerySet(t);
             return Optional.ofNullable(getMongoDBOperator().findOneAndUpdate(query, data));
@@ -196,9 +196,9 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     @Override
     public Optional<Boolean> delete(@NonNull String id) {
         try {
-            Document query = new Document(Constant.FIELD.ID, new ObjectId(id));
-            Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD.IS_DELETED, true)
-                    .append(Constant.FIELD.LAST_UPDATE_TIME, System.currentTimeMillis()));
+            Document query = new Document(Constant.FIELD_QUERY.ID, new ObjectId(id));
+            Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD_QUERY.IS_DELETED, true)
+                    .append(Constant.FIELD_QUERY.LAST_UPDATE_TIME, System.currentTimeMillis()));
             return Optional.of(getMongoDBOperator().update(query, data).getModifiedCount() == 1);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -210,8 +210,8 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     public Optional<Boolean> deleteMany(@NonNull Map<String, Object> queryString) {
         try {
             Document query = new Document(queryString);
-            Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD.IS_DELETED, true)
-                    .append(Constant.FIELD.LAST_UPDATE_TIME, System.currentTimeMillis()));
+            Document data = new Document(Constant.OPERATOR_MONGODB.SET, new Document(Constant.FIELD_QUERY.IS_DELETED, true)
+                    .append(Constant.FIELD_QUERY.LAST_UPDATE_TIME, System.currentTimeMillis()));
             return Optional.of(getMongoDBOperator().updateMany(query, data).getModifiedCount() == 1);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -223,7 +223,7 @@ public abstract class GenericMongoRepository<T extends PO> implements GenericRep
     public Optional<T> upsert(@NonNull Map<String, Object> queryString, @NonNull T t, @NonNull Map<String, Object> setOnInsert) {
         try {
             Document query = new Document(queryString);
-            query.append(Constant.FIELD.IS_DELETED, false);
+            query.append(Constant.FIELD_QUERY.IS_DELETED, false);
             t.setLastUpdateTime(System.currentTimeMillis());
             Document data = BuildQuerySet.buildQueryUpsert(t);
             return Optional.ofNullable(getMongoDBOperator().findOneAndUpsert(query, data, new Document(setOnInsert)));

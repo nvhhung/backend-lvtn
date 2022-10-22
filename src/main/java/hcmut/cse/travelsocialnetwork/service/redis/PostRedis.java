@@ -65,12 +65,14 @@ public class PostRedis {
     }
 
     public void updatePostRedisDB(String postId, Post post) {
-        var postUpdate = postRepository.update(postId, post);
+        var postClone = post.cloneFull();
+        postClone.setMediaList(null);
+        var postUpdate = postRepository.update(postId, postClone);
         if (postUpdate.isEmpty()) {
             log.warn("update post fail");
             return;
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postUpdate.get()), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.SECOND_OF_ONE_DAY);
     }
 
     public Integer increaseAndGetPoints(String postId, Integer pointAdd) {

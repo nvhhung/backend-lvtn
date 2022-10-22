@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * @author : hung.nguyen23
  * @since : 9/7/22 Wednesday
@@ -20,7 +18,6 @@ public class CommandComment {
     private String userId;
     private String postId;
     private String content;
-    private List<String> images;
     private Integer page;
     private Integer size;
 }

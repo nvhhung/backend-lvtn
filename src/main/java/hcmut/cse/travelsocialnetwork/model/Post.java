@@ -34,4 +34,11 @@ public class Post extends PO {
     private Integer commentSize;
     private Integer rateSize;
     private Integer point;
+
+    public Post cloneFull() {
+        var post =  new Post(this._id, this.userId, this.title, this.content, this.destination,this.type,this.status, this.mediaList, this.likeSize, this.commentSize, this.rateSize, this.point);
+        post.setLastUpdateTime(this.getLastUpdateTime());
+        post.setCreateTime(this.getCreateTime());
+        return post;
+    }
 }

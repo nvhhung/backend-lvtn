@@ -187,7 +187,7 @@ public class PostApplication implements IPostApplication{
     @Override
     public Optional<List<Post>> loadAllPost(CommandPost commandPost) throws Exception {
         var query = new Document();
-        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
         postList.ifPresentOrElse(posts -> {
             log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
@@ -203,7 +203,7 @@ public class PostApplication implements IPostApplication{
     @Override
     public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
         var postListResult = new ArrayList<Post>();
-        var sort = new Document(Constant.FIELD.LAST_UPDATE_TIME, -1);
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         // get list user follow
         var commandFollow = CommandFollow.builder()
             .userId(commandPost.getUserId())

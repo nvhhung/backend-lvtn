@@ -51,7 +51,6 @@ public class CommentApplication implements ICommentApplication{
                 .postId(commandComment.getPostId())
                 .userId(commandComment.getUserId())
                 .content(commandComment.getContent())
-                .images(commandComment.getImages())
                 .build();
         var commentAdd = commentRepository.add(comment);
         if (commentAdd.isEmpty()) {
@@ -95,8 +94,8 @@ public class CommentApplication implements ICommentApplication{
             log.warn(String.format("%s not found post", commandComment.getUserId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
-        var query = new Document("postId",commandComment.getPostId());
-        var commentList = commentRepository.search(query,new Document("createTime", -1), commandComment.getPage(), commandComment.getSize());
+        var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
+        var commentList = commentRepository.search(query,new Document(Constant.FIELD_QUERY.CREATE_TIME, -1), commandComment.getPage(), commandComment.getSize());
         if (commentList.isEmpty()) {
             log.warn(String.format("%s no have comment", commandComment.getPostId()));
             return Optional.ofNullable(new ArrayList<>());

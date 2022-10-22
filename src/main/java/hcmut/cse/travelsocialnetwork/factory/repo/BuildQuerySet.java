@@ -49,7 +49,7 @@ public class BuildQuerySet {
             }
         }
         Document query = new Document();
-        queryItem.remove(Constant.FIELD.ID);
+        queryItem.remove(Constant.FIELD_QUERY.ID);
         query.put(Constant.OPERATOR_MONGODB.SET, queryItem);
         return query;
     }
@@ -62,8 +62,8 @@ public class BuildQuerySet {
             queryItem.put(entry.getKey(), entry.getValue());
         }
         Document query = new Document();
-        queryItem.remove(Constant.FIELD.ID);
-        queryItem.remove(Constant.FIELD.IS_DELETED);
+        queryItem.remove(Constant.FIELD_QUERY.ID);
+        queryItem.remove(Constant.FIELD_QUERY.IS_DELETED);
         query.put(Constant.OPERATOR_MONGODB.SET, queryItem);
         return query;
     }
@@ -72,7 +72,7 @@ public class BuildQuerySet {
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
         };
         Map<String, Object> data = objectMapper.convertValue(object, typeRef);
-        data.put(Constant.FIELD.ID, data.get(Constant.FIELD.ID));
+        data.put(Constant.FIELD_QUERY.ID, data.get(Constant.FIELD_QUERY.ID));
         return data;
     }
 }
