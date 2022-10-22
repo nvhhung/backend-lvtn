@@ -6,10 +6,8 @@ import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
-import hcmut.cse.travelsocialnetwork.model.Follow;
 import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.model.Post;
-import hcmut.cse.travelsocialnetwork.repository.media.IMediaRepository;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
@@ -114,21 +112,51 @@ public class PostApplication implements IPostApplication{
             throw new CustomException(Constant.ERROR_MSG.UPDATE_POST_FAIL);
         }
 
-        // update media
-//        Optional.ofNullable(commandPost.getMediaList()).ifPresent(mediaList -> {
-//            var resultDelete = mediaRepository.deleteMany(new Document("postId", post.get_id().toString()));
-//            post.setMediaList(new ArrayList<>());
-//            log.info("delete old media of post result = {}", resultDelete);
-//            mediaList.forEach(media -> {
-//                media.setPostId(post.get_id().toString());
-//                var mediaNew = mediaRepository.add(media);
-//                if (mediaNew.isEmpty()) {
-//                    log.info("save media have link {} error", media.getLink());
-//                    return;
-//                }
-//                post.getMediaList().add(mediaNew.get());
-//            });
-//        });
+        Optional.ofNullable(commandPost.getMediaList()).ifPresent(mediaList -> {
+            var linkList = mediaList.stream()
+                    .map(Media::getLink)
+                    .collect(Collectors.toList());
+            var commandMediaCurrent = CommandMedia.builder()
+                    .page(1)
+                    .size(1000)
+                    .postId(commandPost.getId())
+                    .build();
+            var mediaListCurrentOptional = mediaApplication.load(commandMediaCurrent);
+            mediaListCurrentOptional.ifPresentOrElse(mediaListCurrent -> {
+                // check different in request
+                var mediaDifferent = mediaList.stream()
+                                .filter(media -> !linkList.contains(media.getLink()))
+                                .collect(Collectors.toList());
+                if (!mediaDifferent.isEmpty()) {
+                    mediaDifferent.forEach(media -> {
+                        mediaApplication.delete(media.get_id().toString());
+                        mediaListCurrent.remove(media);
+                    });
+                }
+
+                var linkNew = linkList.stream()
+                        .filter(link -> !mediaListCurrent.stream().map(Media::getLink).collect(Collectors.toList()).contains(link))
+                        .collect(Collectors.toList());
+                mediaList.stream().filter(media -> linkNew.contains(media.getLink()))
+                        .forEach(media -> {
+                            var commandMedia = CommandMedia.builder()
+                                    .link(media.getLink())
+                                    .type(media.getType())
+                                    .postId(commandPost.getId())
+                                    .build();
+                            mediaApplication.add(commandMedia);
+                        });
+            }, () -> {
+                // add all
+                mediaList.forEach(media -> {
+                    var commandMediaAddNew = CommandMedia.builder()
+                            .type(media.getType())
+                            .link(media.getLink())
+                            .build();
+                    mediaApplication.add(commandMediaAddNew);
+                });
+            });
+        });
 
         log.info(String.format("update post have id = %s by user %s successful", post.get_id(), userPost.getFullName()));
         postRedis.updatePost(postUpdate.get().get_id().toString(), postUpdate.get());

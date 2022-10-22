@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface IMediaApplication {
     Optional<Media> add(CommandMedia commandMedia);
     Optional<List<Media>> load(CommandMedia commandMedia);
-    Optional<Boolean> delete(CommandMedia commandMedia);
+    Optional<Boolean> delete(String mediaId);
 }

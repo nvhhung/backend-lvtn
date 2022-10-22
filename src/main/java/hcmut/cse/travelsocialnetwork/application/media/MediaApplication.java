@@ -5,6 +5,7 @@ import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.repository.media.IMediaRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,8 +27,7 @@ public class MediaApplication implements IMediaApplication {
 
     @Override
     public Optional<Media> add(CommandMedia commandMedia) {
-    var media =
-        Media.builder()
+        var media = Media.builder()
             .postId(commandMedia.getPostId())
             .link(commandMedia.getLink())
             .type(commandMedia.getType())
@@ -37,11 +37,11 @@ public class MediaApplication implements IMediaApplication {
 
     @Override
     public Optional<List<Media>> load(CommandMedia commandMedia) {
-        return Optional.empty();
+        return mediaRepository.search(new Document(), new Document(), commandMedia.getPage(), commandMedia.getSize());
     }
 
     @Override
-    public Optional<Boolean> delete(CommandMedia commandMedia) {
-        return Optional.empty();
+    public Optional<Boolean> delete(String mediaId) {
+        return mediaRepository.delete(mediaId);
     }
 }

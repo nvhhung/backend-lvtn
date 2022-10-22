@@ -18,6 +18,6 @@ public class CommandMedia {
     private String link;
     private String type;
     private String userId;
-    private String page;
-    private String size;
+    private int page;
+    private int size;
 }
