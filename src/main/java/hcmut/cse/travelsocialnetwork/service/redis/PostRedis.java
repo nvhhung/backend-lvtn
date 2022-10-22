@@ -1,5 +1,7 @@
 package hcmut.cse.travelsocialnetwork.service.redis;
 
+import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
+import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
@@ -10,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 /**
  * @author : hung.nguyen23
  * @since : 9/19/22 Monday
@@ -19,11 +23,14 @@ public class PostRedis {
     private static final Logger log = LogManager.getLogger(PostRedis.class);
     JedisMaster jedis;
     IPostRepository postRepository;
+    IMediaApplication mediaApplication;
 
     public PostRedis(JedisMaster jedis,
-                     IPostRepository postRepository) {
+                     IPostRepository postRepository,
+                     IMediaApplication mediaApplication) {
         this.jedis = jedis;
         this.postRepository = postRepository;
+        this.mediaApplication = mediaApplication;
     }
 
     public Post getPost(String postId) {
@@ -39,6 +46,12 @@ public class PostRedis {
             log.warn(String.format("%s is not exist", postId));
             return null;
         }
+        postDb.ifPresent(post -> post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
+                .postId(post.get_id().toString())
+                .page(1)
+                .size(1000)
+                .build()).orElse(new ArrayList<>())));
+
         jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postDb.get()), Constant.TIME.SECOND_OF_ONE_DAY);
         return postDb.get();
     }
