@@ -4,12 +4,14 @@ import hcmut.cse.travelsocialnetwork.application.post.IPostApplication;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author : hung.nguyen23
@@ -78,7 +80,10 @@ public class PostController extends AbstractController {
 
     public void deletePost(RoutingContext routingContext) {
         try {
-            var commandPost = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandPost.class);
+            MultiMap params = routingContext.request().params();
+            var commandPost = CommandPost.builder()
+                    .id(Optional.ofNullable(params.get("postId")).orElse(""))
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")

@@ -93,4 +93,9 @@ public class PostRedis {
         }
         updatePostRedisDB(postId, post);
     }
+
+    public void deletePost(String postId) {
+        jedis.delete(Constant.KEY_REDIS.POST + postId);
+        postRepository.delete(postId);
+    }
 }

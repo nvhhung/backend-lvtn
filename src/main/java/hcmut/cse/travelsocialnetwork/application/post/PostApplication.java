@@ -80,9 +80,9 @@ public class PostApplication implements IPostApplication{
                     .link(media.getLink())
                     .type(media.getType())
                     .build();
-            mediaApplication.add(commandMedia);
+            var mediaAdd = mediaApplication.add(commandMedia);
+            mediaAdd.ifPresent(mediaAddSuccess -> post.getMediaList().add(mediaAddSuccess));
         }));
-        post.setMediaList(commandPost.getMediaList());
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
 
         // increase point for owner user post
@@ -180,7 +180,8 @@ public class PostApplication implements IPostApplication{
             log.error(String.format("not found post have id = %s", commandPost.getId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
-        return postRepository.delete(commandPost.getId());
+        postRedis.deletePost(commandPost.getId());
+        return Optional.of(true);
     }
 
     @Override
