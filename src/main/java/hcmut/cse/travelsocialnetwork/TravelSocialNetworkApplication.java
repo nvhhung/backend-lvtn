@@ -27,6 +27,7 @@ public class TravelSocialNetworkApplication {
 	LikeController likeController;
 	RateController rateController;
 	RankController rankController;
+	GlobalConfigController globalConfigController;
 
 	public TravelSocialNetworkApplication(RestfulVerticle restfulVerticle,
 										  VertxProvider vertxProvider,
@@ -36,7 +37,8 @@ public class TravelSocialNetworkApplication {
 										  FollowController followController,
 										  LikeController likeController,
 										  RateController rateController,
-										  RankController rankController) {
+										  RankController rankController,
+										  GlobalConfigController globalConfigController) {
 		this.restfulVerticle = restfulVerticle;
 		this.vertxProvider = vertxProvider;
 		this.userController = userController;
@@ -46,6 +48,7 @@ public class TravelSocialNetworkApplication {
 		this.likeController = likeController;
 		this.rateController = rateController;
 		this.rankController = rankController;
+		this.globalConfigController = globalConfigController;
 	}
 
 	public static void main(String[] args) {
@@ -100,7 +103,13 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/post/load-all", postController::loadAllPost, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/post/load-related", postController::loadRelatedPost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/search", postController::searchPost, notAuth),
-				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth)
+				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth),
+
+				// global config
+				RequestHandler.init(HttpMethod.POST, "/global-config/create", globalConfigController::addGlobalConfig, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/global-config/delete", globalConfigController::deleteGlobalConfig, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/global-config/update", globalConfigController::updateGlobalConfig, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/global-config/load", globalConfigController::loadGlobalConfig, notAuth)
 				));
 
 		vertxProvider.getVertx().deployVerticle(restfulVerticle);

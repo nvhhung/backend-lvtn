@@ -1,10 +1,14 @@
 package hcmut.cse.travelsocialnetwork.application.search;
 
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.floreysoft.jmte.Engine;
+import hcmut.cse.travelsocialnetwork.application.globalconfig.GlobalConfigApplication;
+import hcmut.cse.travelsocialnetwork.command.globalconfig.CommandGlobalConfig;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClient;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RestfulVerticle;
 import io.vertx.core.json.JsonObject;
@@ -13,6 +17,9 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_THREE_MINUTE;
@@ -25,20 +32,25 @@ import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_T
 @Component
 public class SearchApplication implements ISearchApplication {
     private static final Logger log = LogManager.getLogger(SearchApplication.class);
-    private final ElasticsearchClient elasticsearchClient;
+    private final VHElasticsearchClient elasticsearchClient;
+    private final GlobalConfigApplication globalConfigApplication;
     private final RestfulVerticle restfulVerticle;
     private final IUserRepository userRepository;
     private final IPostRepository postRepository;
+    private static Engine engine = new Engine();
 
 
-    public SearchApplication(ElasticsearchClient elasticsearchClient,
+
+    public SearchApplication(VHElasticsearchClient elasticsearchClient,
                              RestfulVerticle restfulVerticle,
                              IUserRepository userRepository,
-                             IPostRepository postRepository) {
+                             IPostRepository postRepository,
+                             GlobalConfigApplication globalConfigApplication) {
         this.elasticsearchClient = elasticsearchClient;
         this.restfulVerticle = restfulVerticle;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.globalConfigApplication = globalConfigApplication;
 
         syncUser();
         syncPost();
@@ -68,9 +80,11 @@ public class SearchApplication implements ISearchApplication {
                 var userSync = userListAll.get().get(atomicInt.getAndIncrement());
                 paramElasticsearchObj.setJBody(buildJBodyUser(userSync));
                 paramElasticsearchObj.setId(userSync.get_id().toString());
-                elasticsearchClient.update(paramElasticsearchObj, paramElasticsearchObj.getClazz(), result -> {
-                    log.info("update user id {} to elasticsearch result {}", userSync.get_id(),  result);
-                });
+                try{
+                    log.info("update user id {} to elasticsearch result {}", userSync.get_id(), elasticsearchClient.update(paramElasticsearchObj, paramElasticsearchObj.getClazz()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
         });
     }
@@ -99,9 +113,12 @@ public class SearchApplication implements ISearchApplication {
                 var postSync = postList.get().get(atomicInt.getAndIncrement());
                 paramElasticsearchObj.setJBody(buildJBodyPost(postSync));
                 paramElasticsearchObj.setId(postSync.get_id().toString());
-                elasticsearchClient.update(paramElasticsearchObj, paramElasticsearchObj.getClazz(), result -> {
-                    log.info("update post id {} to elasticsearch result {}", postSync.get_id(),  result);
-                });
+
+                try{
+                    log.info("update post id {} to elasticsearch result {}", postSync.get_id(),  elasticsearchClient.update(paramElasticsearchObj, paramElasticsearchObj.getClazz()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
         });
     }
@@ -122,5 +139,17 @@ public class SearchApplication implements ISearchApplication {
         jo.put("destination", post.getDestination());
         jo.put("type", post.getType());
         return jo;
+    }
+
+    public List<Hit> searchES(ParamElasticsearchObj paramElasticsearchObj) throws IOException {
+        formatQueryElasticsearch(paramElasticsearchObj);
+        var listHit = elasticsearchClient.searchDSL(paramElasticsearchObj, paramElasticsearchObj.getClazz());
+        return listHit;
+    }
+
+    private void formatQueryElasticsearch(ParamElasticsearchObj param) {
+        var templateCfg = globalConfigApplication.loadByKey(CommandGlobalConfig.builder().key(param.getTemplateCfgKey()).build());
+        var queryMap = param.getQueryModel();
+        templateCfg.ifPresent(template -> param.setQuery(engine.format(template.getKey(), queryMap)));
     }
 }

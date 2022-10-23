@@ -30,6 +30,7 @@ public class Constant {
         public static final String RATE = "rate";
         public static final String LIKE = "like";
         public static final String MEDIA = "media";
+        public static final String GLOBAL_CONFIG = "globalconfig";
     }
 
     public static class KEY_CONFIG {

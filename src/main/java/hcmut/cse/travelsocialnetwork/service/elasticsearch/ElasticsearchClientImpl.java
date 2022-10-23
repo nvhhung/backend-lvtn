@@ -1,8 +1,6 @@
 package hcmut.cse.travelsocialnetwork.service.elasticsearch;
 
-import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -12,7 +10,6 @@ import co.elastic.clients.json.JsonpMapper;
 import co.elastic.clients.json.SimpleJsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
@@ -22,21 +19,20 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-
-import static co.elastic.clients.elasticsearch._types.Conflicts.Proceed;
 
 /**
  * @author : hung.nguyen23
  * @since : 8/29/22 Monday
  **/
 @Component
-public class ElasticsearchClientImpl implements ElasticsearchClient{
+public class ElasticsearchClientImpl implements VHElasticsearchClient {
     private static final Logger log = LogManager.getLogger(ElasticsearchClientImpl.class);
-    private final ElasticsearchAsyncClient client;
+    private final ElasticsearchClient client;
     private static final String EXCEPTION_ELASTICSEARCH = "Have exception when call elasticsearch";
 
     @Autowired
@@ -57,7 +53,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
                 )
                 .build();
         var transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-        client = new ElasticsearchAsyncClient(transport);
+        client = new ElasticsearchClient(transport);
         log.info("connect elasticsearch successfully");
     }
 
@@ -67,44 +63,39 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
     }
 
     @Override
-    public <T> void update(ParamElasticsearchObj params, Class<T> clazz, Handler<Boolean> callback) {
-        client.update(updateRequest ->
+    public <T> boolean update(ParamElasticsearchObj params, Class<T> clazz) throws IOException {
+        var updateResponse = client.update(updateRequest ->
                         updateRequest.index(params.getIndex())
                                 .id(params.getId())
                                 .docAsUpsert(params.isUpsert())
                                 .doc(buildJsonData(params.getJBody().toString()))
-                                .detectNoop(false)
-                , clazz
-        ).whenCompleteAsync((response, throwable) -> {
-            if (response == null) {
-                log.warn(EXCEPTION_ELASTICSEARCH);
-                throwable.printStackTrace();
-                callback.handle(null);
-                return;
+                                .detectNoop(false), clazz);
+        if (updateResponse == null) {
+            log.warn(EXCEPTION_ELASTICSEARCH);
+            return false;
+        }
+        switch (updateResponse.result()) {
+            case Created -> {
+                log.info("Insert success doc have id: " + params.getId() + " in index: " + params.getIndex());
+                return true;
             }
-            switch (response.result()) {
-                case Created -> {
-                    log.info("Insert success doc have id: " + params.getId() + " in index: " + params.getIndex());
-                    callback.handle(true);
-                }
-                case Updated -> {
-                    log.info("Update success doc have id: " + params.getId() + " in index: " + params.getIndex());
-                    callback.handle(true);
-                }
-                case NotFound -> {
-                    log.info("Id not exist in index: " + params.getIndex());
-                    callback.handle(false);
-                }
-                case NoOp -> {
-                    log.info("No operation with elasticsearch in index: " + params.getIndex());
-                    callback.handle(false);
-                }
-                default -> {
-                    log.info("Response no have result");
-                    callback.handle(false);
-                }
+            case Updated -> {
+                log.info("Update success doc have id: " + params.getId() + " in index: " + params.getIndex());
+                return true;
             }
-        });
+            case NotFound -> {
+                log.info("Id not exist in index: " + params.getIndex());
+                return false;
+            }
+            case NoOp -> {
+                log.info("No operation with elasticsearch in index: " + params.getIndex());
+                return false;
+            }
+            default -> {
+                log.info("Response no have result");
+                return false;
+            }
+        }
     }
 
     private JsonData buildJsonData(String joBody) {
@@ -114,54 +105,25 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
     }
 
     @Override
-    public <T> void get(ParamElasticsearchObj params, Class<T> clazz, Handler<GetResponse<T>> callback) {
-        client.get(getRequest -> getRequest
+    public <T> GetResponse<T> get(ParamElasticsearchObj params, Class<T> clazz) throws IOException {
+        var getResponse = client.get(getRequest -> getRequest
                                 .index(params.getIndex())
                                 .id(params.getId()),
-                        clazz
-                )
-                .whenCompleteAsync((response, throwable) -> {
-                            if (response == null) {
-                                log.warn(EXCEPTION_ELASTICSEARCH);
-                                throwable.printStackTrace();
-                                callback.handle(null);
-                                return;
-                            }
-                            if (!response.found()) {
-                                log.info("id = " + params.getId() + " not exist");
-                                callback.handle(null);
-                                return;
-                            }
-                            callback.handle(response);
-                        }
-                );
+                        clazz);
+        if (getResponse == null) {
+            log.warn(EXCEPTION_ELASTICSEARCH);
+            return null;
+        }
+        if (!getResponse.found()) {
+            log.info("id = " + params.getId() + " not exist");
+            return null;
+        }
+        return getResponse;
     }
 
     @Override
-    public void insertNoId(ParamElasticsearchObj params, Handler<Boolean> callback) {
-        client.index(insertRequest ->
-                        insertRequest
-                                .index(params.getIndex())
-                                .withJson(new StringReader(params.getJBody().toString())))
-                .whenCompleteAsync((response, throwable) -> {
-                    if (response == null) {
-                        log.warn(EXCEPTION_ELASTICSEARCH);
-                        throwable.printStackTrace();
-                        callback.handle(null);
-                        return;
-                    }
-                    if (response.result() != Result.Created) {
-                        log.info("Insert doc failure");
-                        callback.handle(false);
-                        return;
-                    }
-                    callback.handle(true);
-                });
-    }
-
-    @Override
-    public <T> void searchDSL(ParamElasticsearchObj params, Class<T> clazz, Handler<List<Hit<T>>> callback) {
-        client.search(searchRequest -> searchRequest
+    public <T> List<Hit<T>> searchDSL(ParamElasticsearchObj params, Class<T> clazz) throws IOException {
+        var searchResponse = client.search(searchRequest -> searchRequest
                         .index(params.getIndex())
                         .from(params.getFrom())
                         .size(params.getSize())
@@ -170,59 +132,13 @@ public class ElasticsearchClientImpl implements ElasticsearchClient{
                                 .query(Base64.getEncoder()
                                         .encodeToString(params.getQuery().getBytes(StandardCharsets.UTF_8)))
                         ))
-                , clazz
-        ).whenCompleteAsync((response, throwable) -> {
-            if (response == null) {
-                log.error(EXCEPTION_ELASTICSEARCH);
-                throwable.printStackTrace();
-                callback.handle(null);
-                return;
-            }
-            callback.handle(response.hits().hits());
-        });
-    }
-
-    @Override
-    public <T> void searchByParams(ParamElasticsearchObj params, Class<T> clazz, Handler<List<Hit<T>>> callback) {
-        client.search(searchRequest ->
-                        searchRequest.index(params.getIndex())
-                                .from(params.getFrom())
-                                .size(params.getSize())
-                                .query(params.getKey() != null ? QueryBuilders.terms(termQuery ->
-                                        termQuery.field(params.getKey())
-                                                .terms(termQueryField -> termQueryField.value(List.of(FieldValue.of(params.getValue())))))
-                                        : null)
-                , clazz
-        ).whenCompleteAsync((response, throwable) -> {
-            if (response == null) {
-                log.warn(EXCEPTION_ELASTICSEARCH);
-                throwable.printStackTrace();
-                callback.handle(null);
-                return;
-            }
-
-            callback.handle(response.hits().hits());
-        });
-    }
-
-    @Override
-    public void deleteByQuery(ParamElasticsearchObj params, Handler<Long> callback) {
-        client.deleteByQuery(deleteRequest ->
-                        deleteRequest.index(String.join(",", params.getIndexList()))
-                                .query(QueryBuilders.wrapper(wrapperQuery ->
-                                        wrapperQuery.query(Base64.getEncoder().encodeToString(params.getQuery()
-                                                .getBytes(StandardCharsets.UTF_8))
-                                        )))
-                                .conflicts(Proceed))
-                .whenCompleteAsync((response, throwable) -> {
-                    if (response == null) {
-                        log.info("job delete fail");
-                        callback.handle(0L);
-                        return;
-                    }
-                    log.info("response delete: " + response);
-                    callback.handle(response.deleted());
-                });
+                , clazz);
+        if (searchResponse == null) {
+            log.error(EXCEPTION_ELASTICSEARCH);
+            return null;
+        }
+        log.info("search have size: " + searchResponse.hits().hits().size());
+        return searchResponse.hits().hits();
     }
 }
 

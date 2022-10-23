@@ -1,8 +1,8 @@
-package hcmut.cse.travelsocialnetwork.repository.like;
+package hcmut.cse.travelsocialnetwork.repository.globalconfig;
 
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.factory.repo.GenericMongoRepository;
-import hcmut.cse.travelsocialnetwork.model.Like;
+import hcmut.cse.travelsocialnetwork.model.GlobalConfig;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClient;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClientImpl;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBConfig;
@@ -14,15 +14,15 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author : hung.nguyen23
- * @since : 9/20/22 Tuesday
+ * @since : 10/23/22 Sunday
  **/
 @Component
-public class LikeRepositoryImpl extends GenericMongoRepository<Like> implements ILikeRepository {
-    private final MongoDBClient<Like> mongoDBClient;
-    private static final Logger log = LogManager.getLogger(LikeRepositoryImpl.class);
+public class GlobalConfigRepositoryImpl extends GenericMongoRepository<GlobalConfig> implements IGlobalConfigRepository {
+    private final MongoDBClient<GlobalConfig> mongoDBClient;
+    private static final Logger log = LogManager.getLogger(GlobalConfigRepositoryImpl.class);
 
     @Autowired
-    public LikeRepositoryImpl(ENVConfig config) {
+    public GlobalConfigRepositoryImpl(ENVConfig config) {
         mongoDBClient = new MongoDBClientImpl<>(MongoDBConfig.getInstance(MongoDBConfig
                 .MongoDBConfigBuilder
                 .config()
@@ -30,12 +30,12 @@ public class LikeRepositoryImpl extends GenericMongoRepository<Like> implements 
                 .withDatabaseName(Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK).build()),
                 config.getStringProperty(Constant.KEY_CONFIG.DB),
                 Constant.DB_NAME.TRAVEL_SOCIAL_NETWORK,
-                Constant.COLLECTION_NAME.LIKE,
-                Like.class);
+                Constant.COLLECTION_NAME.GLOBAL_CONFIG,
+                GlobalConfig.class);
     }
 
     @Override
-    public MongoDBClient<Like> getMongoDBOperator() {
+    public MongoDBClient<GlobalConfig> getMongoDBOperator() {
         return mongoDBClient;
     }
 }

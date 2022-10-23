@@ -87,6 +87,12 @@
 			<artifactId>jakarta.json</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.floreysoft/jmte -->
+		<dependency>
+			<groupId>com.floreysoft</groupId>
+			<artifactId>jmte</artifactId>
+			<version>3.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

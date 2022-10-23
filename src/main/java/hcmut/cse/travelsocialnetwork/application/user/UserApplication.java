@@ -7,7 +7,7 @@ import hcmut.cse.travelsocialnetwork.command.user.CommandUser;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClient;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClientImpl;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
@@ -18,7 +18,6 @@ import hcmut.cse.travelsocialnetwork.utils.StringUtils;
 import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class UserApplication implements IUserApplication{
     private final IUserRepository userRepository;
     private final JWTAuth jwtAuth;
     private final UserRedis userRedis;
-    private ElasticsearchClient elasticsearchClient;
+    private VHElasticsearchClient elasticsearchClient;
 
     public UserApplication(HelperUser helperUser,
                            IUserRepository userRepository,

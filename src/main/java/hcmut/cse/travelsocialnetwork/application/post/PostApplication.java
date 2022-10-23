@@ -2,6 +2,7 @@ package hcmut.cse.travelsocialnetwork.application.post;
 
 import hcmut.cse.travelsocialnetwork.application.follow.FollowApplication;
 import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
+import hcmut.cse.travelsocialnetwork.application.search.ISearchApplication;
 import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
@@ -9,6 +10,7 @@ import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
@@ -37,19 +39,18 @@ public class PostApplication implements IPostApplication{
     PostRedis postRedis;
     FollowApplication followApplication;
     IMediaApplication mediaApplication;
+    ISearchApplication searchApplication;
 
-    public PostApplication(HelperUser helperUser,
-            IPostRepository postRepository,
-            UserRedis userRedis,
-            PostRedis postRedis,
-                           IMediaApplication mediaApplication,
-                           FollowApplication followApplication) {
+    public PostApplication(HelperUser helperUser, IPostRepository postRepository, UserRedis userRedis,
+            PostRedis postRedis, IMediaApplication mediaApplication, FollowApplication followApplication,
+                           ISearchApplication searchApplication) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
         this.postRedis = postRedis;
         this.mediaApplication = mediaApplication;
         this.followApplication = followApplication;
+        this.searchApplication = searchApplication;
     }
 
 
@@ -234,6 +235,9 @@ public class PostApplication implements IPostApplication{
 
     @Override
     public Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception {
+        var params = ParamElasticsearchObj.builder()
+                .build();
+        var hitList = searchApplication.searchES(params);
         return Optional.empty();
     }
 
