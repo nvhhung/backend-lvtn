@@ -8,8 +8,9 @@ import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
+import hcmut.cse.travelsocialnetwork.service.VertxProvider;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
 import hcmut.cse.travelsocialnetwork.service.vertx.rest.RestfulVerticle;
 import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_THREE_MINUTE;
@@ -33,8 +33,8 @@ import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_T
 public class SearchApplication implements ISearchApplication {
     private static final Logger log = LogManager.getLogger(SearchApplication.class);
     private final VHElasticsearchClient elasticsearchClient;
-    private final GlobalConfigApplication globalConfigApplication;
-    private final RestfulVerticle restfulVerticle;
+    private GlobalConfigApplication globalConfigApplication;
+    private final hcmut.cse.travelsocialnetwork.service.VertxProvider vertxProvider;
     private final IUserRepository userRepository;
     private final IPostRepository postRepository;
     private static Engine engine = new Engine();
@@ -42,12 +42,12 @@ public class SearchApplication implements ISearchApplication {
 
 
     public SearchApplication(VHElasticsearchClient elasticsearchClient,
-                             RestfulVerticle restfulVerticle,
+                             VertxProvider vertxProvider,
                              IUserRepository userRepository,
                              IPostRepository postRepository,
                              GlobalConfigApplication globalConfigApplication) {
         this.elasticsearchClient = elasticsearchClient;
-        this.restfulVerticle = restfulVerticle;
+        this.vertxProvider = vertxProvider;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.globalConfigApplication = globalConfigApplication;
@@ -57,7 +57,7 @@ public class SearchApplication implements ISearchApplication {
     }
 
     private void syncUser() {
-        restfulVerticle.getVertx().setPeriodic(MILLISECOND_OF_THREE_MINUTE, along -> {
+        vertxProvider.getVertx().setPeriodic(MILLISECOND_OF_THREE_MINUTE, along -> {
             var userListAll = userRepository.search(new Document(), new Document("lastUpdateTime", -1), 0, 1000);
             if (userListAll.isEmpty()) {
                 log.warn("no find all user");
@@ -70,10 +70,10 @@ public class SearchApplication implements ISearchApplication {
                     .build();
 
             var atomicInt = new AtomicInteger(0);
-            restfulVerticle.getVertx().setPeriodic(200L, alongElasticsearch -> {
+            vertxProvider.getVertx().setPeriodic(200L, alongElasticsearch -> {
                 if (atomicInt.get() == userListAll.get().size()) {
                     log.info("upsert user done: " + userListAll.get().size());
-                    restfulVerticle.getVertx().cancelTimer(alongElasticsearch);
+                    vertxProvider.getVertx().cancelTimer(alongElasticsearch);
                     return;
                 }
 
@@ -90,7 +90,7 @@ public class SearchApplication implements ISearchApplication {
     }
 
     private void syncPost() {
-        restfulVerticle.getVertx().setPeriodic(MILLISECOND_OF_TWO_MINUTE, along -> {
+        vertxProvider.getVertx().setPeriodic(MILLISECOND_OF_TWO_MINUTE, along -> {
             var postList = postRepository.search(new Document(), new Document("lastUpdateTime", -1), 1, 5000);
             if (postList.isEmpty()) {
                 log.warn("no find all post");
@@ -103,10 +103,10 @@ public class SearchApplication implements ISearchApplication {
                     .build();
 
             var atomicInt = new AtomicInteger(0);
-            restfulVerticle.getVertx().setPeriodic(200L, alongElasticsearch -> {
+            vertxProvider.getVertx().setPeriodic(200L, alongElasticsearch -> {
                 if (atomicInt.get() == postList.get().size()) {
                     log.info("upsert elasticsearch done: " + postList.get().size());
-                    restfulVerticle.getVertx().cancelTimer(alongElasticsearch);
+                    vertxProvider.getVertx().cancelTimer(alongElasticsearch);
                     return;
                 }
 

@@ -58,11 +58,6 @@ public class ElasticsearchClientImpl implements VHElasticsearchClient {
     }
 
     @Override
-    public String test() {
-        return "use elasticsearch successful";
-    }
-
-    @Override
     public <T> boolean update(ParamElasticsearchObj params, Class<T> clazz) throws IOException {
         var updateResponse = client.update(updateRequest ->
                         updateRequest.index(params.getIndex())
