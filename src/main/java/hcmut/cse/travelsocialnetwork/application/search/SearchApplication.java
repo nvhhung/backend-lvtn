@@ -11,7 +11,6 @@ import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
 import hcmut.cse.travelsocialnetwork.service.VertxProvider;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
-import hcmut.cse.travelsocialnetwork.service.vertx.rest.RestfulVerticle;
 import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -150,6 +149,6 @@ public class SearchApplication implements ISearchApplication {
     private void formatQueryElasticsearch(ParamElasticsearchObj param) {
         var templateCfg = globalConfigApplication.loadByKey(CommandGlobalConfig.builder().key(param.getTemplateCfgKey()).build());
         var queryMap = param.getQueryModel();
-        templateCfg.ifPresent(template -> param.setQuery(engine.format(template.getKey(), queryMap)));
+        templateCfg.ifPresent(template -> param.setQuery(engine.format(template.getValue(), queryMap)));
     }
 }

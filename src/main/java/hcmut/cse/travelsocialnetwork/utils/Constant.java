@@ -100,6 +100,11 @@ public class Constant {
         public static final String KEY_POST = "LEADER_BOARD_POINT_POST";
     }
 
+    public static class GLOBAL_CONFIG {
+        public static final String QUERY_ES_POST = "QUERY_ES_POST";
+        public static final String QUERY_ES_USER = "QUERY_ES_USER";
+    }
+
     public static class TIME {
         public static final int MILLISECOND_OF_FIVE_MINUTE = 5 * 60 * 1000;
         public static final int MILLISECOND_OF_TWO_MINUTE = 2 * 60 * 1000;

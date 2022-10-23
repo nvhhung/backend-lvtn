@@ -1,5 +1,6 @@
 package hcmut.cse.travelsocialnetwork.application.post;
 
+import com.google.api.client.util.Strings;
 import hcmut.cse.travelsocialnetwork.application.follow.FollowApplication;
 import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
 import hcmut.cse.travelsocialnetwork.application.search.ISearchApplication;
@@ -21,6 +22,7 @@ import org.bson.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -238,10 +240,34 @@ public class PostApplication implements IPostApplication{
 
     @Override
     public Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception {
+        var postListResult = new ArrayList<Post>();
+        var queryModel = new HashMap<String, Object>();
+
+        Optional.ofNullable(commandPost.getKeyword()).ifPresent(keyword -> queryModel.put("keyword", commandPost.getKeyword()));
+        if (!Strings.isNullOrEmpty(commandPost.getType())) {
+            queryModel.put("type", commandPost.getType());
+        }
+        if (!Strings.isNullOrEmpty(commandPost.getDestination())) {
+            queryModel.put("destination", commandPost.getDestination());
+        }
+
         var params = ParamElasticsearchObj.builder()
-                .build();
-        var hitList = searchApplication.searchES(params);
-        return Optional.empty();
+                .templateCfgKey(Constant.GLOBAL_CONFIG.QUERY_ES_POST)
+                .clazz(Post.class)
+                .index("post")
+                .from((commandPost.getPage() - 1) * commandPost.getSize())
+                .size(commandPost.getSize())
+                .minScore(0)
+                .queryModel(queryModel)
+            .build();
+        var hitPostList = searchApplication.searchES(params);
+        if (hitPostList == null) {
+            log.warn("post from elasticsearch null");
+            throw new CustomException("post from elasticsearch null");
+        }
+
+        hitPostList.forEach(hitPost -> postListResult.add(postRedis.getPost(hitPost.id())));
+        return Optional.of(postListResult);
     }
 
 }

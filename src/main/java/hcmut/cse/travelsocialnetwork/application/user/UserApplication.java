@@ -1,5 +1,6 @@
 package hcmut.cse.travelsocialnetwork.application.user;
 
+import hcmut.cse.travelsocialnetwork.application.search.SearchApplication;
 import hcmut.cse.travelsocialnetwork.command.user.CommandLogin;
 import hcmut.cse.travelsocialnetwork.command.user.CommandPassword;
 import hcmut.cse.travelsocialnetwork.command.user.CommandRegister;
@@ -7,8 +8,7 @@ import hcmut.cse.travelsocialnetwork.command.user.CommandUser;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.user.IUserRepository;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.VHElasticsearchClient;
-import hcmut.cse.travelsocialnetwork.service.elasticsearch.ElasticsearchClientImpl;
+import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTAuth;
 import hcmut.cse.travelsocialnetwork.service.jwt.JWTTokenData;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
@@ -20,6 +20,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,18 +32,18 @@ public class UserApplication implements IUserApplication{
     private final IUserRepository userRepository;
     private final JWTAuth jwtAuth;
     private final UserRedis userRedis;
-    private VHElasticsearchClient elasticsearchClient;
+    private final SearchApplication searchApplication;
 
     public UserApplication(HelperUser helperUser,
                            IUserRepository userRepository,
                            JWTAuth jwtAuth,
                            UserRedis userRedis,
-                           ElasticsearchClientImpl elasticsearchClient) {
+                           SearchApplication searchApplication) {
         this.helperUser = helperUser;
         this.userRepository = userRepository;
         this.jwtAuth = jwtAuth;
         this.userRedis = userRedis;
-        this.elasticsearchClient = elasticsearchClient;
+        this.searchApplication = searchApplication;
     }
 
     @Override
@@ -151,10 +153,29 @@ public class UserApplication implements IUserApplication{
         return userUpdate;
     }
 
-
     @Override
-    public Optional<List<User>> searchUser(CommandUser commandUser) {
-        return null;
+    public Optional<List<User>> searchUser(CommandUser commandUser) throws Exception {
+        var userListResult = new ArrayList<User>();
+        var queryModel = new HashMap<String, Object>();
+
+        Optional.ofNullable(commandUser.getKeyword()).ifPresent(keyword -> queryModel.put("keyword", commandUser.getKeyword()));
+        var params = ParamElasticsearchObj.builder()
+                .templateCfgKey(Constant.GLOBAL_CONFIG.QUERY_ES_USER)
+                .clazz(User.class)
+                .index("user")
+                .from((commandUser.getPage() - 1) * commandUser.getSize())
+                .size(commandUser.getSize())
+                .minScore(0)
+                .queryModel(queryModel)
+                .build();
+        var hitUserList = searchApplication.searchES(params);
+        if (hitUserList == null) {
+            log.warn("user from elasticsearch null");
+            throw new CustomException("user from elasticsearch null");
+        }
+
+        hitUserList.forEach(hitUser -> userListResult.add(userRedis.getUser(hitUser.id())));
+        return Optional.of(userListResult);
     }
 
 }

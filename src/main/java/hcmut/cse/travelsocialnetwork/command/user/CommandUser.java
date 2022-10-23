@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * @author : hung.nguyen23
  * @since : 9/17/22 Saturday
@@ -26,9 +24,10 @@ public class CommandUser {
     private String avatar;
     private String cover;
     private String address;
-    private List<String> userFollow;
     private Long experiencePoint;
     private Integer level;
     private String status;
-
+    private String keyword;
+    private int page;
+    private int size;
 }

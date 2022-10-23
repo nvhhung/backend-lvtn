@@ -17,5 +17,5 @@ public interface IUserApplication {
     Optional<LoginToken> refreshToken(String accessToken, String refreshToken) throws Exception;
     Optional<User> getInfoUser(String userId) throws Exception;
     Optional<User> updateInfoUser(CommandUser commandUser) throws Exception;
-    Optional<List<User>> searchUser(CommandUser userId) throws Exception;
+    Optional<List<User>> searchUser(CommandUser commandUser) throws Exception;
 }

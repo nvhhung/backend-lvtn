@@ -68,7 +68,7 @@ public class TravelSocialNetworkApplication {
 
 				RequestHandler.init(HttpMethod.GET, "/user/info-user", userController::getInfoUser, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/update-info-user", userController::updateInfoUser, auth),
-//				RequestHandler.init(HttpMethod.POST, "/user/search-user", userController::getInfoUser, auth),
+				RequestHandler.init(HttpMethod.POST, "/user/search", userController::search, notAuth),
 
 				// follow
 				RequestHandler.init(HttpMethod.POST, "/follow/follow-user", followController::followUser, auth),
