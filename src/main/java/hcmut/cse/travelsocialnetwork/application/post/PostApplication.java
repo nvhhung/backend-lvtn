@@ -75,15 +75,18 @@ public class PostApplication implements IPostApplication{
             throw new CustomException(Constant.ERROR_MSG.POST_FAIL);
         }
 
-        Optional.ofNullable(commandPost.getMediaList()).ifPresent(medias -> medias.forEach(media -> {
-            var commandMedia = CommandMedia.builder()
-                    .postId(post.get_id().toString())
-                    .link(media.getLink())
-                    .type(media.getType())
-                    .build();
-            var mediaAdd = mediaApplication.add(commandMedia);
-            mediaAdd.ifPresent(mediaAddSuccess -> post.getMediaList().add(mediaAddSuccess));
-        }));
+        Optional.ofNullable(commandPost.getMediaList()).ifPresent(medias -> {
+            post.setMediaList(new ArrayList<>());
+            medias.forEach(media -> {
+                var commandMedia = CommandMedia.builder()
+                        .postId(post.get_id().toString())
+                        .link(media.getLink())
+                        .type(media.getType())
+                        .build();
+                var mediaAdd = mediaApplication.add(commandMedia);
+                mediaAdd.ifPresent(mediaAddSuccess -> post.getMediaList().add(mediaAddSuccess));
+            });
+        });
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
 
         // increase point for owner user post
