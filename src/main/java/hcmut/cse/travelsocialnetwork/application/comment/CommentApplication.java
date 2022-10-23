@@ -102,4 +102,22 @@ public class CommentApplication implements ICommentApplication{
         }
         return commentList;
     }
+
+    @Override
+    public Optional<Comment> updateComment(CommandComment commandComment) throws Exception {
+        var commentOptional = commentRepository.getById(commandComment.getCommentId());
+        if (commentOptional.isEmpty()) {
+            log.error(String.format("not found comment have id = %s", commandComment.getCommentId()));
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_COMMENT);
+        }
+        var comment = commentOptional.get();
+        Optional.ofNullable(commandComment.getContent()).ifPresent(comment::setContent);
+
+        var commentUpdate = commentRepository.update(comment.get_id().toString(), comment);
+        if (commentUpdate.isEmpty()) {
+            log.info(String.format("update comment have id = %s fail", comment.get_id()));
+            throw new CustomException(Constant.ERROR_MSG.UPDATE_COMMENT_FAIL);
+        }
+        return commentUpdate;
+    }
 }

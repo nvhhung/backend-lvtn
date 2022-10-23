@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author : hung.nguyen23
@@ -43,11 +44,33 @@ public class CommentController extends AbstractController {
         }
     }
 
-    public void deleteComment(RoutingContext routingContext) {
+    public void updateComment(RoutingContext routingContext) {
         try {
             var userId = routingContext.user().principal().getString("userId");
             var commandComment = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandComment.class);
             commandComment.setUserId(userId);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, commentApplication.updateComment(commandComment)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
+    public void deleteComment(RoutingContext routingContext) {
+        try {
+            MultiMap params = routingContext.request().params();
+            var commentId = Optional.ofNullable(params.get("commentId")).orElse("");
+            var userId = routingContext.user().principal().getString("userId");
+            var commandComment = CommandComment.builder()
+                    .userId(userId)
+                    .commentId(commentId)
+                    .build();
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")

@@ -75,7 +75,8 @@ public class TravelSocialNetworkApplication {
 
 				// comment
 				RequestHandler.init(HttpMethod.POST, "/comment/create", commentController::createComment, auth),
-				RequestHandler.init(HttpMethod.POST, "/comment/delete", commentController::deleteComment, auth),
+				RequestHandler.init(HttpMethod.GET, "/comment/delete", commentController::deleteComment, auth),
+				RequestHandler.init(HttpMethod.POST, "/comment/update", commentController::updateComment, auth),
 				RequestHandler.init(HttpMethod.POST, "/comment/load", commentController::loadComment, notAuth),
 
 				// like

@@ -65,6 +65,7 @@ public class Constant {
         // comment
         public static String COMMENT_FAIL = "comment fail";
         public static String NOT_FOUND_COMMENT = "not found comment";
+        public static String UPDATE_COMMENT_FAIL = "update comment fail";
 
         // like
         public static String LIKE_FAIL = "like fail";
