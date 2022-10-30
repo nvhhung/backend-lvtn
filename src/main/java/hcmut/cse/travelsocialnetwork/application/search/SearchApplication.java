@@ -32,11 +32,11 @@ import static hcmut.cse.travelsocialnetwork.utils.Constant.TIME.MILLISECOND_OF_T
 public class SearchApplication implements ISearchApplication {
     private static final Logger log = LogManager.getLogger(SearchApplication.class);
     private final VHElasticsearchClient elasticsearchClient;
-    private GlobalConfigApplication globalConfigApplication;
+    private final GlobalConfigApplication globalConfigApplication;
     private final hcmut.cse.travelsocialnetwork.service.VertxProvider vertxProvider;
     private final IUserRepository userRepository;
     private final IPostRepository postRepository;
-    private static Engine engine = new Engine();
+    private static final Engine engine = new Engine();
 
 
 
@@ -71,7 +71,7 @@ public class SearchApplication implements ISearchApplication {
             var atomicInt = new AtomicInteger(0);
             vertxProvider.getVertx().setPeriodic(200L, alongElasticsearch -> {
                 if (atomicInt.get() == userListAll.get().size()) {
-                    log.info("upsert user done: " + userListAll.get().size());
+                    log.info(String.format("upsert user done: %d", userListAll.get().size()));
                     vertxProvider.getVertx().cancelTimer(alongElasticsearch);
                     return;
                 }
@@ -104,7 +104,7 @@ public class SearchApplication implements ISearchApplication {
             var atomicInt = new AtomicInteger(0);
             vertxProvider.getVertx().setPeriodic(200L, alongElasticsearch -> {
                 if (atomicInt.get() == postList.get().size()) {
-                    log.info("upsert elasticsearch done: " + postList.get().size());
+                    log.info(String.format("upsert elasticsearch done: %d", postList.get().size()));
                     vertxProvider.getVertx().cancelTimer(alongElasticsearch);
                     return;
                 }
@@ -142,13 +142,12 @@ public class SearchApplication implements ISearchApplication {
 
     public List<Hit> searchES(ParamElasticsearchObj paramElasticsearchObj) throws IOException {
         formatQueryElasticsearch(paramElasticsearchObj);
-        var listHit = elasticsearchClient.searchDSL(paramElasticsearchObj, paramElasticsearchObj.getClazz());
-        return listHit;
+        return elasticsearchClient.searchDSL(paramElasticsearchObj, paramElasticsearchObj.getClazz());
     }
 
     private void formatQueryElasticsearch(ParamElasticsearchObj param) {
         var templateCfg = globalConfigApplication.loadByKey(CommandGlobalConfig.builder().key(param.getTemplateCfgKey()).build());
         var queryMap = param.getQueryModel();
-        templateCfg.ifPresent(template -> param.setQuery(engine.format(template.getValue(), queryMap)));
+        templateCfg.ifPresent(template -> param.setQuery(engine.transform(template.getValue(), queryMap)));
     }
 }
