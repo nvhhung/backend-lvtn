@@ -11,8 +11,12 @@ import co.elastic.clients.json.SimpleJsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import io.vertx.core.json.JsonObject;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.RestClient;
@@ -50,6 +54,8 @@ public class ElasticsearchClientImpl implements VHElasticsearchClient {
                                         .availableProcessors())
                                 .build()
                         )
+                                .setDefaultHeaders(List.of(new BasicHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString())))
+                                .addInterceptorLast((HttpRequestInterceptor) (response, ctx) -> response.addHeader("X-Elastic-Product", "Elasticsearch"))
                 )
                 .build();
         var transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
