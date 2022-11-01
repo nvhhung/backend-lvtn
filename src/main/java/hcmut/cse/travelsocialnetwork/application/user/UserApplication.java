@@ -177,5 +177,4 @@ public class UserApplication implements IUserApplication{
         hitUserList.forEach(hitUser -> userListResult.add(userRedis.getUser(hitUser.id())));
         return Optional.of(userListResult);
     }
-
 }

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -136,7 +137,7 @@ public class ElasticsearchClientImpl implements VHElasticsearchClient {
                 , clazz);
         if (searchResponse == null) {
             log.error(EXCEPTION_ELASTICSEARCH);
-            return null;
+            return new ArrayList<>();
         }
         log.info("search have size: " + searchResponse.hits().hits().size());
         return searchResponse.hits().hits();
