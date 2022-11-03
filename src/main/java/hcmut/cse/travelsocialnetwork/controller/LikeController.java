@@ -60,4 +60,20 @@ public class LikeController extends AbstractController {
                     .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
     }
+
+    public void loadLike(RoutingContext routingContext) {
+        try {
+            var commandLike = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandLike.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, likeApplication.loadLike(commandLike)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 }

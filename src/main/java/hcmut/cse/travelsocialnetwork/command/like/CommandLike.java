@@ -16,4 +16,6 @@ import lombok.NoArgsConstructor;
 public class CommandLike {
     private String postId;
     private String userId;
+    private int page;
+    private int size;
 }

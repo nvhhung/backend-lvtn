@@ -85,6 +85,7 @@ public class TravelSocialNetworkApplication {
 				// like
 				RequestHandler.init(HttpMethod.POST, "/like/create", likeController::createLike, auth),
 				RequestHandler.init(HttpMethod.POST, "/like/unlike", likeController::unlike, auth),
+				RequestHandler.init(HttpMethod.POST, "/like/load", likeController::loadLike, notAuth),
 
 				// rate
 				RequestHandler.init(HttpMethod.POST, "/rate/create", rateController::rate, auth),

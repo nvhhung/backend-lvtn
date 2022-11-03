@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -79,5 +80,11 @@ public class LikeApplication implements ILikeApplication{
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandLike.getUserId(), pointUserNew);
 
         return likeRepository.delete(like.get().get_id().toString());
+    }
+
+    @Override
+    public Optional<List<Like>> loadLike(CommandLike commandLike) throws Exception {
+        var query = new Document("postId", commandLike.getPostId());
+        return likeRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandLike.getPage(), commandLike.getSize());
     }
 }
