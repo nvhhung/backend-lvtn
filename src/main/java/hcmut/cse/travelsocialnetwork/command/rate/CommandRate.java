@@ -17,4 +17,6 @@ public class CommandRate {
     private String userId;
     private String postId;
     private Integer point;
+    private int page;
+    private int size;
 }

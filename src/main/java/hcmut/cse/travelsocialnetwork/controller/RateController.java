@@ -60,4 +60,20 @@ public class RateController extends AbstractController {
                     .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
     }
+
+    public void loadRate(RoutingContext routingContext) {
+        try {
+            var commandRate = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandRate.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, rateApplication.load(commandRate)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 }

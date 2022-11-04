@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.application.rate;
 import hcmut.cse.travelsocialnetwork.command.rate.CommandRate;
 import hcmut.cse.travelsocialnetwork.model.Rate;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,4 +13,5 @@ import java.util.Optional;
 public interface IRateApplication {
     Optional<Rate> mark(CommandRate commandRate) throws Exception;
     Optional<Boolean> unmark(CommandRate commandRate) throws Exception;
+    Optional<List<Rate>> load(CommandRate commandRate) throws Exception;
 }

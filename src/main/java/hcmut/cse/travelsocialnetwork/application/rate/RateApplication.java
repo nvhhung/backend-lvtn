@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -80,5 +82,17 @@ public class RateApplication implements IRateApplication{
 
 
         return rateRepository.delete(rate.get().get_id().toString());
+    }
+
+    @Override
+    public Optional<List<Rate>> load(CommandRate commandRate) throws Exception {
+        var query = new Document("postId", commandRate.getPostId());
+        var listRate = rateRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandRate.getPage(), commandRate.getSize());
+        if (listRate.isEmpty()) {
+            log.warn("get list rate fail");
+            return Optional.of(new ArrayList<>());
+        }
+
+        return listRate;
     }
 }
