@@ -51,6 +51,7 @@ public class JWTAuth {
         return Optional.of(LoginToken.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
+                .userId(tokenData.getUserId())
                 .build());
     }
 
