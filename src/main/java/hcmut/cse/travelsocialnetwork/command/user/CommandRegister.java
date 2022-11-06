@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class CommandRegister {
     private String username;
     private String password;
-    private String kind;
     private String phone;
     private String fullName;
     private String avatar;

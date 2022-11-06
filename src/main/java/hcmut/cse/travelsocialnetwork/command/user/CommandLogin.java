@@ -16,6 +16,5 @@ import lombok.NoArgsConstructor;
 public class CommandLogin {
     private String username;
     private String password;
-    private String kind;
     private Boolean isAdmin;
 }

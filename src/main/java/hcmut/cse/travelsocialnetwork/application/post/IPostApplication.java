@@ -18,4 +18,5 @@ public interface IPostApplication {
     Optional<List<Post>> loadAllPost(CommandPost commandPost) throws Exception;
     Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception;
     Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception;
+    Optional<List<Post>> loadByUserId(CommandPost commandPost) throws Exception;
 }

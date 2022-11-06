@@ -11,6 +11,7 @@ public class Constant {
         public static final String LAST_UPDATE_TIME = "lastUpdateTime";
         public static final String CREATE_TIME = "createTime";
         public static final String POST_ID = "postId";
+        public static final String USER_ID = "userId";
     }
 
     public static class OPERATOR_MONGODB {

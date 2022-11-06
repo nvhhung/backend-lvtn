@@ -75,26 +75,20 @@ public class UserApplication implements IUserApplication{
     @Override
     public Optional<LoginToken> login(CommandLogin commandLogin) throws Exception {
         // login by registered account
-        if (StringUtils.equals(commandLogin.getKind(), Constant.AUTHENTICATION_KIND.INTERNAL)) {
-            var userTemp = helperUser.checkUserRegister(commandLogin.getUsername());
-            if (userTemp == null) {
-                throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
-            }
-
-            if (userTemp.getStatus().equals(Constant.STATUS_USER.BLOCKED)) {
-                throw new CustomException(Constant.ERROR_MSG.USER_BLOCKED);
-            }
-
-            if (!SHA512.valueOf(commandLogin.getPassword()).equals(userTemp.getPassword())) {
-                throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
-            }
-            log.info("user {} login successful", userTemp.get_id());
-            return jwtAuth.createLoginToken(JWTTokenData.builder()
-                    .userId(userTemp.get_id().toHexString())
-                    .build());
+        var userTemp = helperUser.checkUserRegister(commandLogin.getUsername());
+        if (userTemp == null) {
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
-        // todo login by facebook, google
-        return null;
+        if (userTemp.getStatus().equals(Constant.STATUS_USER.BLOCKED)) {
+            throw new CustomException(Constant.ERROR_MSG.USER_BLOCKED);
+        }
+        if (!SHA512.valueOf(commandLogin.getPassword()).equals(userTemp.getPassword())) {
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
+        }
+        log.info("user {} login successful", userTemp.get_id());
+        return jwtAuth.createLoginToken(JWTTokenData.builder()
+                .userId(userTemp.get_id().toHexString())
+                .build());
     }
 
     @Override

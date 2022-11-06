@@ -106,6 +106,7 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/post/load-related", postController::loadRelatedPost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/search", postController::searchPost, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth),
+				RequestHandler.init(HttpMethod.POST, "/post/load-by-userId", postController::loadByUserId, auth),
 
 				// global config
 				RequestHandler.init(HttpMethod.POST, "/global-config/create", globalConfigController::addGlobalConfig, notAuth),

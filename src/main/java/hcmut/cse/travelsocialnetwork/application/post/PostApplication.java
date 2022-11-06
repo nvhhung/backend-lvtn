@@ -270,4 +270,19 @@ public class PostApplication implements IPostApplication{
         return Optional.of(postListResult);
     }
 
+    @Override
+    public Optional<List<Post>> loadByUserId(CommandPost commandPost) throws Exception {
+        var query = new Document(Constant.FIELD_QUERY.USER_ID,  commandPost.getUserId());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
+        postList.ifPresentOrElse(posts -> {
+            log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
+            posts.forEach(post -> post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
+                    .postId(post.get_id().toString())
+                    .page(1)
+                    .size(1000)
+                    .build()).orElse(new ArrayList<>())));
+        }, () -> log.info("user {} load no post", commandPost.getUserId()));
+        return postList;
+    }
 }
