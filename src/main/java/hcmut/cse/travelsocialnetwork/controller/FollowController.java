@@ -65,10 +65,11 @@ public class FollowController extends AbstractController {
             MultiMap params = routingContext.request().params();
             var page = Integer.parseInt(Optional.ofNullable(params.get("page")).orElse("1"));
             var size = Integer.parseInt(Optional.ofNullable(params.get("size")).orElse("20"));
+            var userId = Optional.ofNullable(params.get("userId")).orElse("");
             var commandFollow = CommandFollow.builder()
                     .page(page)
                     .size(size)
-                    .userId(routingContext.user().get("userId"))
+                    .userId(userId)
                     .build();
             routingContext.response()
                     .setStatusCode(200)

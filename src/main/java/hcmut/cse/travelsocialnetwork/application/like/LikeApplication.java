@@ -63,7 +63,7 @@ public class LikeApplication implements ILikeApplication{
 
     @Override
     public Optional<Boolean> unlike(CommandLike commandLike) throws Exception {
-        var query = new Document("userId", commandLike.getUserId()).append("postId", commandLike.getPostId());
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandLike.getUserId()).append("postId", commandLike.getPostId());
         var like = likeRepository.get(query);
         if (like.isEmpty()) {
             log.warn(String.format("%s not found like in post %s", commandLike.getUserId(), commandLike.getPostId()));
@@ -84,7 +84,7 @@ public class LikeApplication implements ILikeApplication{
 
     @Override
     public Optional<List<Like>> loadLike(CommandLike commandLike) throws Exception {
-        var query = new Document("postId", commandLike.getPostId());
+        var query = new Document(Constant.FIELD_QUERY.POST_ID, commandLike.getPostId());
         return likeRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandLike.getPage(), commandLike.getSize());
     }
 }

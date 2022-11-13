@@ -219,7 +219,7 @@ public class PostApplication implements IPostApplication{
 
         var userFollowList = followApplication.getFollowUser(commandFollow);
         userFollowList.ifPresentOrElse(follows -> follows.forEach(follow -> {
-            var postFollow = postRepository.search(new Document("userId", follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
+            var postFollow = postRepository.search(new Document(Constant.FIELD_QUERY.USER_ID, follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
             postFollow.ifPresent(postFollowUser -> {
                 postFollowUser.forEach(post -> {
                     post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()

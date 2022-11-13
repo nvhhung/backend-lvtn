@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.application.media;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.model.Media;
 import hcmut.cse.travelsocialnetwork.repository.media.IMediaRepository;
+import hcmut.cse.travelsocialnetwork.utils.Constant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -37,7 +38,9 @@ public class MediaApplication implements IMediaApplication {
 
     @Override
     public Optional<List<Media>> loadByPostId(CommandMedia commandMedia) {
-        return mediaRepository.search(new Document("postId", commandMedia.getPostId()), new Document(), commandMedia.getPage(), commandMedia.getSize());
+        var query = new Document(Constant.FIELD_QUERY.POST_ID, commandMedia.getPostId());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        return mediaRepository.search(query, sort, commandMedia.getPage(), commandMedia.getSize());
     }
 
     @Override

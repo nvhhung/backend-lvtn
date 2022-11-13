@@ -73,7 +73,7 @@ public class TravelSocialNetworkApplication {
 				// follow
 				RequestHandler.init(HttpMethod.POST, "/follow/follow-user", followController::followUser, auth),
 				RequestHandler.init(HttpMethod.POST, "/follow/unfollow-user", followController::unFollowUser, auth),
-				RequestHandler.init(HttpMethod.GET, "/follow/get-follower", followController::getFollower, auth),
+				RequestHandler.init(HttpMethod.GET, "/follow/get-follower", followController::getFollower, notAuth),
 				RequestHandler.init(HttpMethod.GET, "/follow/get-follow-user", followController::getFollowUser, auth),
 
 				// comment

@@ -45,7 +45,8 @@ public class FollowApplication implements IFollowApplication {
 
     @Override
     public Optional<Boolean> unFollowUser(CommandFollow commandFollow) throws Exception {
-        var query = new Document("userId", commandFollow.getUserId()).append("userIdTarget", commandFollow.getUserIdTarget());
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandFollow.getUserId())
+                .append(Constant.FIELD_QUERY.USER_ID_TARGET, commandFollow.getUserIdTarget());
         var follow = followRepository.get(query);
         if (follow.isEmpty()) {
             log.warn("not found follow");
@@ -61,8 +62,9 @@ public class FollowApplication implements IFollowApplication {
 
     @Override
     public Optional<List<Follow>> getFollower(CommandFollow commandFollow) throws Exception {
-        var query = new Document("userIdTarget", commandFollow.getUserId());
-        var followList = followRepository.search(query, new Document(), 0, 20);
+        var query = new Document(Constant.FIELD_QUERY.USER_ID_TARGET, commandFollow.getUserId());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
         if (followList.isEmpty()) {
             log.info(String.format("%s no have follower", commandFollow.getUserId()));
             return Optional.of(new ArrayList<>());
@@ -72,8 +74,9 @@ public class FollowApplication implements IFollowApplication {
 
     @Override
     public Optional<List<Follow>> getFollowUser(CommandFollow commandFollow) throws Exception {
-        var query = new Document("userId", commandFollow.getUserId());
-        var followList = followRepository.search(query, new Document("lastUpdateTime", -1), commandFollow.getPage(), commandFollow.getSize());
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandFollow.getUserId());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
         if (followList.isEmpty()) {
             log.info(String.format("%s no have follow user", commandFollow.getUserId()));
             return Optional.of(new ArrayList<>());
