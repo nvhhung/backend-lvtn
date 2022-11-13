@@ -74,7 +74,7 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/follow/follow-user", followController::followUser, auth),
 				RequestHandler.init(HttpMethod.POST, "/follow/unfollow-user", followController::unFollowUser, auth),
 				RequestHandler.init(HttpMethod.GET, "/follow/get-follower", followController::getFollower, notAuth),
-				RequestHandler.init(HttpMethod.GET, "/follow/get-follow-user", followController::getFollowUser, auth),
+				RequestHandler.init(HttpMethod.GET, "/follow/get-follow-user", followController::getFollowUser, notAuth),
 
 				// comment
 				RequestHandler.init(HttpMethod.POST, "/comment/create", commentController::createComment, auth),
