@@ -12,7 +12,7 @@ public class Constant {
         public static final String CREATE_TIME = "createTime";
         public static final String POST_ID = "postId";
         public static final String USER_ID = "userId";
-        public static final String USER_ID_TARGET = userIdTarget;
+        public static final String USER_ID_TARGET = "userIdTarget";
     }
 
     public static class OPERATOR_MONGODB {
