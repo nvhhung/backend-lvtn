@@ -82,6 +82,13 @@ public class PostRedis {
         return post.getPoint();
     }
 
+    public Integer updateAndGetPoints(String postId, Integer pointOld, Integer pointNew) {
+        var post = getPost(postId);
+        post.setPoint(post.getPoint() - pointOld + pointNew);
+        updatePostRedisDB(postId, post);
+        return post.getPoint();
+    }
+
     public Integer decreaseAndGetPoints(String postId, Integer pointAdd) {
         var post = getPost(postId);
         post.setPoint(post.getPoint() - pointAdd);

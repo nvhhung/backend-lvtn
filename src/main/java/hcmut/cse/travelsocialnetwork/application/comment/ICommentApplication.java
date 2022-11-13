@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface ICommentApplication {
     Optional<Comment> createComment(CommandComment commandComment) throws Exception;
     Optional<Boolean> deleteComment(CommandComment commandComment) throws Exception;
-    Optional<List<Comment>> loadComment(CommandComment commandComment) throws Exception;
+    Optional<List<Object>> loadComment(CommandComment commandComment) throws Exception;
     Optional<Comment> updateComment(CommandComment commandComment) throws Exception;
 }

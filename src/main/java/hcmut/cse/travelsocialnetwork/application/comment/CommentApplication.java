@@ -9,6 +9,7 @@ import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
+import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import hcmut.cse.travelsocialnetwork.utils.enums.FactorialPost;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -88,19 +90,35 @@ public class CommentApplication implements ICommentApplication{
 
 
     @Override
-    public Optional<List<Comment>> loadComment(CommandComment commandComment) throws Exception {
+    public Optional<List<Object>> loadComment(CommandComment commandComment) throws Exception {
         var post = postRedis.getPost(commandComment.getPostId());
         if (post == null) {
             log.warn(String.format("%s not found post", commandComment.getUserId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_POST);
         }
         var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
-        var commentList = commentRepository.search(query,new Document(Constant.FIELD_QUERY.CREATE_TIME, -1), commandComment.getPage(), commandComment.getSize());
+        var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
+        var commentList = commentRepository.search(query, sort, commandComment.getPage(), commandComment.getSize());
         if (commentList.isEmpty()) {
             log.warn(String.format("%s no have comment", commandComment.getPostId()));
-            return Optional.ofNullable(new ArrayList<>());
+            return Optional.of(new ArrayList<>());
         }
-        return commentList;
+
+        return Optional.of(convertMappingComment(commentList.get()));
+    }
+
+    private List<Object>  convertMappingComment(List<Comment> commentList) {
+        var result = new ArrayList<>();
+        commentList.forEach(comment -> {
+            var mapComment = JSONUtils.objToMap(comment);
+            if (mapComment != null) {
+                var user = userRedis.getUser(comment.getUserId());
+                mapComment.put("avatar", user.getAvatar());
+                mapComment.put("fullName", user.getFullName());
+            }
+            result.add(mapComment);
+        });
+        return result;
     }
 
     @Override

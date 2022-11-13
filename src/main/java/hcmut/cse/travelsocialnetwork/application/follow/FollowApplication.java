@@ -29,6 +29,14 @@ public class FollowApplication implements IFollowApplication {
 
     @Override
     public Optional<Follow> followUser(CommandFollow commandFollow) throws Exception {
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandFollow.getUserId())
+                .append(Constant.FIELD_QUERY.USER_ID_TARGET, commandFollow.getUserIdTarget());
+        var followOptional = followRepository.get(query);
+        if (followOptional.isPresent()) {
+            log.warn("follow is exist");
+            throw new CustomException(Constant.ERROR_MSG.FOLLOW_IS_EXIST);
+        }
+
         var follow = Follow.builder()
                 .userId(commandFollow.getUserId())
                 .userIdTarget(commandFollow.getUserIdTarget())

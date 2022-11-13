@@ -90,6 +90,7 @@ public class TravelSocialNetworkApplication {
 				// rate
 				RequestHandler.init(HttpMethod.POST, "/rate/create", rateController::rate, auth),
 				RequestHandler.init(HttpMethod.POST, "/rate/delete", rateController::unRate, auth),
+				RequestHandler.init(HttpMethod.POST, "/rate/update", rateController::updateRate, auth),
 				RequestHandler.init(HttpMethod.POST, "/rate/load", rateController::loadRate, notAuth),
 
 				// rank

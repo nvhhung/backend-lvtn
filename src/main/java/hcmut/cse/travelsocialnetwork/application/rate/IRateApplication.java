@@ -12,6 +12,7 @@ import java.util.Optional;
  **/
 public interface IRateApplication {
     Optional<Rate> mark(CommandRate commandRate) throws Exception;
+    Optional<Rate> updateMark(CommandRate commandRate) throws Exception;
     Optional<Boolean> unmark(CommandRate commandRate) throws Exception;
     Optional<List<Rate>> load(CommandRate commandRate) throws Exception;
 }

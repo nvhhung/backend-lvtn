@@ -43,6 +43,14 @@ public class RateApplication implements IRateApplication{
 
     @Override
     public Optional<Rate> mark(CommandRate commandRate) throws Exception {
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandRate.getUserId())
+                .append(Constant.FIELD_QUERY.POST_ID, commandRate.getPostId());
+        var rateOptional = rateRepository.get(query);
+        if (rateOptional.isPresent()) {
+            log.warn("rate is exist");
+            throw new CustomException(Constant.ERROR_MSG.RATE_IS_EXIST);
+        }
+
         var rateNew = Rate.builder()
                 .userId(commandRate.getUserId())
                 .postId(commandRate.getPostId())
@@ -65,6 +73,23 @@ public class RateApplication implements IRateApplication{
     }
 
     @Override
+    public Optional<Rate> updateMark(CommandRate commandRate) throws Exception {
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandRate.getUserId())
+                .append(Constant.FIELD_QUERY.POST_ID, commandRate.getPostId());
+        var rateOptional = rateRepository.get(query);
+        if (rateOptional.isEmpty()) {
+            log.warn("rate not found");
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_RATE);
+        }
+
+        var pointPostNew = postRedis.updateAndGetPoints(commandRate.getPostId(), rateOptional.get().getPoint(), commandRate.getPoint());
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandRate.getPostId(), pointPostNew);
+
+        rateOptional.get().setPoint(commandRate.getPoint());
+        return rateRepository.update(rateOptional.get().get_id().toString(), rateOptional.get());
+    }
+
+    @Override
     public Optional<Boolean> unmark(CommandRate commandRate) throws Exception {
         var query = new Document("userId", commandRate.getUserId()).append("postId", commandRate.getPostId());
         var rate = rateRepository.get(query);
@@ -83,6 +108,8 @@ public class RateApplication implements IRateApplication{
 
         return rateRepository.delete(rate.get().get_id().toString());
     }
+
+
 
     @Override
     public Optional<List<Rate>> load(CommandRate commandRate) throws Exception {

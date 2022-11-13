@@ -1,7 +1,6 @@
 package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.rate.IRateApplication;
-import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.command.rate.CommandRate;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
@@ -43,6 +42,24 @@ public class RateController extends AbstractController {
         }
     }
 
+    public void updateRate(RoutingContext routingContext) {
+        try {
+            var userId = routingContext.user().principal().getString("userId");
+            var commandRate = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandRate.class);
+            commandRate.setUserId(userId);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(this.outputJson(9999, rateApplication.updateMark(commandRate)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(this.outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
     public void unRate(RoutingContext routingContext) {
         try {
             var userId = routingContext.user().principal().getString("userId");
@@ -51,7 +68,7 @@ public class RateController extends AbstractController {
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
-                    .end(this.outputJson(9999, rateApplication.mark(commandRate)));
+                    .end(this.outputJson(9999, rateApplication.unmark(commandRate)));
         } catch (Throwable throwable) {
             log.error(throwable);
             routingContext.response()

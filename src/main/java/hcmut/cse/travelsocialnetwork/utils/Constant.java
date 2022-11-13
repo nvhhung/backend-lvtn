@@ -64,6 +64,7 @@ public class Constant {
         public static String FOLLOW_FAIL = "follow user fail";
         public static String UN_FOLLOW_FAIL = "un follow user fail";
         public static String NOT_FOUND_FOLLOW = "not found follow";
+        public static String FOLLOW_IS_EXIST = "follow is exist";
 
         // comment
         public static String COMMENT_FAIL = "comment fail";
@@ -77,6 +78,7 @@ public class Constant {
         // rate
         public static String RATE_FAIL = "rate fail";
         public static String NOT_FOUND_RATE = "not found rate";
+        public static String RATE_IS_EXIST = "rate is exist";
     }
 
     public static class STATUS_USER {
