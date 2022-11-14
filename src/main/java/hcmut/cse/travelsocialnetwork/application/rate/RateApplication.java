@@ -113,7 +113,7 @@ public class RateApplication implements IRateApplication{
 
     @Override
     public Optional<List<Rate>> load(CommandRate commandRate) throws Exception {
-        var query = new Document("postId", commandRate.getPostId());
+        var query = new Document(Constant.FIELD_QUERY.POST_ID, commandRate.getPostId());
         var listRate = rateRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandRate.getPage(), commandRate.getSize());
         if (listRate.isEmpty()) {
             log.warn("get list rate fail");

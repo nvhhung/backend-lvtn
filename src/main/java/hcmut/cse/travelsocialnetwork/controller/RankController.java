@@ -1,8 +1,10 @@
 package hcmut.cse.travelsocialnetwork.controller;
 
 import hcmut.cse.travelsocialnetwork.application.rank.IRankApplication;
+import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.command.rank.CommandRank;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
+import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
@@ -49,10 +51,7 @@ public class RankController extends AbstractController {
 
     public void getRankUser(RoutingContext routingContext) {
         try {
-            var userId = routingContext.user().principal().getString("userId");
-            var commandRank = CommandRank.builder()
-                    .userId(userId)
-                    .build();
+            var commandRank = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandRank.class);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
@@ -90,11 +89,7 @@ public class RankController extends AbstractController {
 
     public void getRankPost(RoutingContext routingContext) {
         try {
-            MultiMap params = routingContext.request().params();
-            var postId = Optional.ofNullable(params.get("postId")).orElse("");
-            var commandRank = CommandRank.builder()
-                    .postId(postId)
-                    .build();
+            var commandRank = JSONUtils.jsonToObj(routingContext.getBodyAsString(), CommandRank.class);
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json; charset=utf-8")
