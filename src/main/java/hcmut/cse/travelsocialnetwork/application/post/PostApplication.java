@@ -13,6 +13,7 @@ import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
+import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
@@ -42,10 +43,11 @@ public class PostApplication implements IPostApplication{
     FollowApplication followApplication;
     IMediaApplication mediaApplication;
     ISearchApplication searchApplication;
+    RankRedis rankRedis;
 
     public PostApplication(HelperUser helperUser, IPostRepository postRepository, UserRedis userRedis,
             PostRedis postRedis, IMediaApplication mediaApplication, FollowApplication followApplication,
-                           ISearchApplication searchApplication) {
+                           ISearchApplication searchApplication, RankRedis rankRedis) {
         this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
@@ -53,6 +55,7 @@ public class PostApplication implements IPostApplication{
         this.mediaApplication = mediaApplication;
         this.followApplication = followApplication;
         this.searchApplication = searchApplication;
+        this.rankRedis = rankRedis;
     }
 
 
@@ -92,8 +95,8 @@ public class PostApplication implements IPostApplication{
         postRedis.updatePost(postAdd.get().get_id().toString(), postAdd.get());
 
         // increase point for owner user post
-        user.setExperiencePoint(user.getExperiencePoint() + Constant.POINTS.ONE_RATE_USER);
-        userRedis.updateUserRedisDB(user.get_id().toString(), user);
+        var pointUserNew = userRedis.increaseAndGetPoints(commandPost.getUserId(), Constant.POINTS.CREATE_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandPost.getUserId(), pointUserNew);
         return postAdd;
     }
 

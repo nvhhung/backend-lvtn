@@ -39,10 +39,10 @@ public class UserRedis {
     }
 
     public User getUser(String userId) {
-        var userRedis = JSONUtils.stringToObj(jedis.get(Constant.KEY_REDIS.USER + userId), User.class);
-        if (userRedis != null) {
+        var strUserCache = jedis.get(Constant.KEY_REDIS.USER + userId);
+        if (!StringUtils.isNullOrEmpty(strUserCache)) {
             log.info("user cached in redis");
-            return userRedis;
+            return JSONUtils.stringToObj(strUserCache, User.class);
         }
 
         log.info("no have user cached in redis");

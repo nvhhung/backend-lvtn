@@ -68,16 +68,18 @@ public class RankRedis {
                 .map(userId -> Rank.builder()
                         .userId(userId)
                         .point(jedis.getScoreMember(mainKey, userId))
+                        .position(jedis.getIndexMember(mainKey, userId))
                 .build())
                 .collect(Collectors.toList());
     }
 
     public List<Rank> getLeaderBoardPost(String mainKey, int start, int end) {
-        var userIdList = jedis.getListMemberFromGreatToSmall(mainKey, start, end);
-        return userIdList.stream()
-                .map(userId -> Rank.builder()
-                        .userId(userId)
-                        .point(jedis.getScoreMember(mainKey, userId))
+        var postIdList = jedis.getListMemberFromGreatToSmall(mainKey, start, end);
+        return postIdList.stream()
+                .map(postId -> Rank.builder()
+                        .postId(postId)
+                        .point(jedis.getScoreMember(mainKey, postId))
+                        .position(jedis.getIndexMember(mainKey, postId))
                         .build())
                 .collect(Collectors.toList());
     }

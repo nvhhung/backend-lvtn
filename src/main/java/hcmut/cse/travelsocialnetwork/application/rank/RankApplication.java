@@ -26,7 +26,7 @@ public class RankApplication implements IRankApplication{
 
     @Override
     public List<Rank> getLeaderBoardUser(CommandRank commandRank) {
-        var start = commandRank.getPage() * commandRank.getSize();
+        var start = (commandRank.getPage() -1) * commandRank.getSize();
         var end = start + commandRank.getSize();
         log.info(String.format("get rank user from %d to %d", start, end));
         return rankRedis.getLeaderBoardUser(Constant.LEADER_BOARD.KEY_USER, start, end);
@@ -34,7 +34,7 @@ public class RankApplication implements IRankApplication{
 
     @Override
     public List<Rank> getLeaderBoardPost(CommandRank commandRank) {
-        var start = commandRank.getPage() * commandRank.getSize();
+        var start = (commandRank.getPage() - 1) * commandRank.getSize();
         var end = start + commandRank.getSize();
         log.info(String.format("get rank post from %d to %d", start, end));
         return rankRedis.getLeaderBoardPost(Constant.LEADER_BOARD.KEY_POST, start, end);

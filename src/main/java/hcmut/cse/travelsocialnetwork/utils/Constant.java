@@ -97,6 +97,7 @@ public class Constant {
         public static final int ONE_LIKE_USER = 2;
         public static final int ONE_COMMENT_USER = 4;
         public static final int ONE_RATE_USER = 2;
+        public static final int CREATE_POST = 20;
     }
 
     public static class LEADER_BOARD {

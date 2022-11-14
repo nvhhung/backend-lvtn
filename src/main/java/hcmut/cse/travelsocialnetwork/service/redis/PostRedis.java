@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.service.redis;
 import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.model.Post;
+import hcmut.cse.travelsocialnetwork.model.User;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
@@ -34,10 +35,10 @@ public class PostRedis {
     }
 
     public Post getPost(String postId) {
-        var postCache = JSONUtils.stringToObj(jedis.get(Constant.KEY_REDIS.POST + postId), Post.class);
-        if (postCache != null) {
-            log.info(String.format("%s post cached in redis", postId));
-            return postCache;
+        var strPostCache = jedis.get(Constant.KEY_REDIS.POST + postId);
+        if (!StringUtils.isNullOrEmpty(strPostCache)) {
+            log.info("post cached in redis");
+            return JSONUtils.stringToObj(strPostCache, Post.class);
         }
 
         log.info("no have post cached in redis");
