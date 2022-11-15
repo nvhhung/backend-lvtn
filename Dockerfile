@@ -9,6 +9,9 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 # Run this inside the image => download dependency
 RUN ./mvnw dependency:go-offline
+# copy src for src of container
 COPY src ./src
+# expose port interact with docker
+EXPOSE 2701
 # run inside container
 CMD ["./mvnw", "spring-boot:run"]
