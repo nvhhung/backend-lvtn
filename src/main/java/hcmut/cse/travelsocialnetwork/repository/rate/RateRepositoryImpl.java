@@ -2,9 +2,7 @@ package hcmut.cse.travelsocialnetwork.repository.rate;
 
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.factory.repo.GenericMongoRepository;
-import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.model.Rate;
-import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClient;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBClientImpl;
 import hcmut.cse.travelsocialnetwork.service.mongodb.MongoDBConfig;

@@ -93,10 +93,12 @@
 			<artifactId>jmte</artifactId>
 			<version>3.2.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
 		<dependency>
-			<groupId>com.corundumstudio.socketio</groupId>
-			<artifactId>netty-socketio</artifactId>
-			<version>1.7.19</version>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>6.11.0</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
