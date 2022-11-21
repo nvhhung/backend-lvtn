@@ -93,11 +93,6 @@
 			<artifactId>jmte</artifactId>
 			<version>3.2.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.corundumstudio.socketio</groupId>
-			<artifactId>netty-socketio</artifactId>
-			<version>1.7.19</version>
-		</dependency>
 	</dependencies>
 
 	<build>
