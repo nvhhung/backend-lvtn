@@ -1,6 +1,8 @@
 package hcmut.cse.travelsocialnetwork.application.like;
 
+import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.command.like.CommandLike;
+import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Like;
 import hcmut.cse.travelsocialnetwork.repository.like.ILikeRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
@@ -28,15 +30,18 @@ public class LikeApplication implements ILikeApplication{
     PostRedis postRedis;
     UserRedis userRedis;
     RankRedis rankRedis;
+    INotificationApplication notificationApplication;
 
     public LikeApplication(ILikeRepository likeRepository,
                            PostRedis postRedis,
                            UserRedis userRedis,
-                           RankRedis rankRedis) {
+                           RankRedis rankRedis,
+                           INotificationApplication notificationApplication) {
         this.likeRepository = likeRepository;
         this.postRedis = postRedis;
         this.userRedis = userRedis;
         this.rankRedis = rankRedis;
+        this.notificationApplication = notificationApplication;
     }
 
     @Override
@@ -58,6 +63,18 @@ public class LikeApplication implements ILikeApplication{
         var pointUserNew = userRedis.increaseAndGetPoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandLike.getUserId(), pointUserNew);
         // todo : push notification to owner of post
+        var userTrigger = userRedis.getUser(commandLike.getUserId());
+        var post = postRedis.getPost(commandLike.getPostId());
+        var commandNotification = CommandNotification.builder()
+                .userId(post.getUserId())
+                .userIdTrigger(userTrigger.get_id().toString())
+                .isRead(false)
+                .objectId(post.get_id().toString())
+                .type(Constant.NOTIFICATION.LIKE)
+                .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
+                .content(String.format(Constant.NOTIFICATION.CONTENT_LIKE, userTrigger.getFullName(), post.getTitle()))
+                .build();
+        notificationApplication.createNotification(commandNotification);
         return likeAdd;
     }
 

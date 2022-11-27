@@ -1,5 +1,7 @@
 package hcmut.cse.travelsocialnetwork.application.rate;
 
+import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
+import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.command.rate.CommandRate;
 import hcmut.cse.travelsocialnetwork.model.Rate;
 import hcmut.cse.travelsocialnetwork.repository.rate.IRateRepository;
@@ -30,15 +32,18 @@ public class RateApplication implements IRateApplication{
     PostRedis postRedis;
     UserRedis userRedis;
     RankRedis rankRedis;
+    INotificationApplication notificationApplication;
 
     public RateApplication(IRateRepository rateRepository,
                            PostRedis postRedis,
                            UserRedis userRedis,
-                           RankRedis rankRedis) {
+                           RankRedis rankRedis,
+                           INotificationApplication notificationApplication) {
         this.rateRepository = rateRepository;
         this.postRedis = postRedis;
         this.userRedis = userRedis;
         this.rankRedis = rankRedis;
+        this.notificationApplication = notificationApplication;
     }
 
     @Override
@@ -68,7 +73,18 @@ public class RateApplication implements IRateApplication{
         var pointUserNew = userRedis.increaseAndGetPoints(commandRate.getUserId(), Constant.POINTS.ONE_RATE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandRate.getUserId(), pointUserNew);
         //todo: push notification to owner of post
-
+        var userTrigger = userRedis.getUser(commandRate.getUserId());
+        var post = postRedis.getPost(commandRate.getPostId());
+        var commandNotification = CommandNotification.builder()
+                .userId(post.getUserId())
+                .userIdTrigger(userTrigger.get_id().toString())
+                .isRead(false)
+                .objectId(post.get_id().toString())
+                .type(Constant.NOTIFICATION.RATE)
+                .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
+                .content(String.format(Constant.NOTIFICATION.CONTENT_RATE, userTrigger.getFullName(), post.getTitle()))
+                .build();
+        notificationApplication.createNotification(commandNotification);
         return rateAdd;
     }
 

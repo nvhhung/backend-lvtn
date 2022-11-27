@@ -1,8 +1,11 @@
 package hcmut.cse.travelsocialnetwork.application.follow;
 
+import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
+import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Follow;
 import hcmut.cse.travelsocialnetwork.repository.follow.IFollowRepository;
+import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
 import org.apache.logging.log4j.LogManager;
@@ -23,8 +26,14 @@ public class FollowApplication implements IFollowApplication {
     private static final Logger log = LogManager.getLogger(FollowApplication.class);
 
     IFollowRepository followRepository;
-    public FollowApplication(IFollowRepository followRepository) {
+    INotificationApplication notificationApplication;
+    UserRedis userRedis;
+    public FollowApplication(IFollowRepository followRepository,
+                             INotificationApplication notificationApplication,
+                             UserRedis userRedis) {
         this.followRepository = followRepository;
+        this.notificationApplication = notificationApplication;
+        this.userRedis = userRedis;
     }
 
     @Override
@@ -48,6 +57,17 @@ public class FollowApplication implements IFollowApplication {
         }
         log.info(String.format("%s user follow user %s success", commandFollow.getUserId(), commandFollow.getUserIdTarget()));
         // todo : create notification to user target
+        var userTrigger = userRedis.getUser(commandFollow.getUserId());
+        var commandNotification = CommandNotification.builder()
+                .userId(commandFollow.getUserIdTarget())
+                .userIdTrigger(commandFollow.getUserId())
+                .isRead(false)
+                .objectId(followAdd.get().get_id().toString())
+                .type(Constant.NOTIFICATION.FOLLOW)
+                .title(Constant.NOTIFICATION.TITLE_FOLLOW)
+                .content(String.format(Constant.NOTIFICATION.CONTENT_FOLLOW, userTrigger.getFullName()))
+                .build();
+        notificationApplication.createNotification(commandNotification);
         return followAdd;
     }
 

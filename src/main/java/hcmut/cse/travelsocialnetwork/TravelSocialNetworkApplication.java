@@ -28,6 +28,7 @@ public class TravelSocialNetworkApplication {
 	RateController rateController;
 	RankController rankController;
 	GlobalConfigController globalConfigController;
+	NotificationController notificationController;
 
 	public TravelSocialNetworkApplication(RestfulVerticle restfulVerticle,
 										  VertxProvider vertxProvider,
@@ -38,7 +39,8 @@ public class TravelSocialNetworkApplication {
 										  LikeController likeController,
 										  RateController rateController,
 										  RankController rankController,
-										  GlobalConfigController globalConfigController) {
+										  GlobalConfigController globalConfigController,
+										  NotificationController notificationController) {
 		this.restfulVerticle = restfulVerticle;
 		this.vertxProvider = vertxProvider;
 		this.userController = userController;
@@ -49,6 +51,7 @@ public class TravelSocialNetworkApplication {
 		this.rateController = rateController;
 		this.rankController = rankController;
 		this.globalConfigController = globalConfigController;
+		this.notificationController = notificationController;
 	}
 
 	public static void main(String[] args) {
@@ -108,6 +111,10 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/post/search", postController::searchPost, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/post/delete", postController::deletePost, auth),
 				RequestHandler.init(HttpMethod.POST, "/post/load-by-userId", postController::loadByUserId, auth),
+
+				// notify
+				RequestHandler.init(HttpMethod.POST, "/notify/read", notificationController::readNotify, auth),
+				RequestHandler.init(HttpMethod.POST, "/notify/load", notificationController::loadNotify, auth),
 
 				// global config
 				RequestHandler.init(HttpMethod.POST, "/global-config/create", globalConfigController::addGlobalConfig, notAuth),

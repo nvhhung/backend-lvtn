@@ -1,7 +1,9 @@
 package hcmut.cse.travelsocialnetwork.application.comment;
 
+import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.comment.CommandComment;
+import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Comment;
 import hcmut.cse.travelsocialnetwork.repository.comment.ICommentRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -34,17 +35,20 @@ public class CommentApplication implements ICommentApplication{
     ICommentRepository commentRepository;
     PostRedis postRedis;
     RankRedis rankRedis;
+    INotificationApplication notificationApplication;
 
     public CommentApplication(HelperUser helperUser,
                               UserRedis userRedis,
                               ICommentRepository commentRepository,
                               PostRedis postRedis,
-                              RankRedis rankRedis) {
+                              RankRedis rankRedis,
+                              INotificationApplication notificationApplication) {
         this.helperUser = helperUser;
         this.userRedis = userRedis;
         this.commentRepository = commentRepository;
         this.postRedis = postRedis;
         this.rankRedis = rankRedis;
+        this.notificationApplication = notificationApplication;
     }
 
     @Override
@@ -65,7 +69,48 @@ public class CommentApplication implements ICommentApplication{
 
         var pointUserNew = userRedis.increaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
-        // todo : push notification owner post
+        //push notification owner post
+        var post = postRedis.getPost(comment.getPostId());
+        var userTrigger = userRedis.getUser(comment.getUserId());
+        var userIdOwner = post.getUserId();
+        var commandNotification = CommandNotification.builder()
+                .userId(userIdOwner)
+                .userIdTrigger(userTrigger.get_id().toString())
+                .isRead(false)
+                .objectId(post.get_id().toString())
+                .type(Constant.NOTIFICATION.COMMENT)
+                .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
+                .content(String.format(Constant.NOTIFICATION.CONTENT_COMMENT, userTrigger.getFullName(), post.getTitle()))
+                .build();
+        notificationApplication.createNotification(commandNotification);
+        // TODO: publish message to channel of owner post
+        // push notification to user comment post
+        var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
+        query.append(Constant.FIELD_QUERY.USER_ID, new Document("$ne", userIdOwner));
+        var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
+        var commentList = commentRepository.search(query, sort, 1, 1000);
+        if (commentList.isEmpty() || commentList.get().isEmpty()) {
+            log.info("no have other user comment in post");
+            return commentAdd;
+        }
+
+        commentList.get().forEach(commentUserOther -> {
+            var commandNotificationOther = CommandNotification.builder()
+                    .userId(commentUserOther.getUserId())
+                    .userIdTrigger(userTrigger.get_id().toString())
+                    .isRead(false)
+                    .objectId(post.get_id().toString())
+                    .type(Constant.NOTIFICATION.COMMENT)
+                    .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
+                    .content(String.format(Constant.NOTIFICATION.CONTENT_COMMENT, userTrigger.getFullName(), post.getTitle()))
+                    .build();
+            try {
+                // TODO: publish message to channel of owner post
+                notificationApplication.createNotification(commandNotificationOther);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         return commentAdd;
     }
 

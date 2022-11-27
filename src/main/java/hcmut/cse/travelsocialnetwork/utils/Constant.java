@@ -33,17 +33,12 @@ public class Constant {
         public static final String LIKE = "like";
         public static final String MEDIA = "media";
         public static final String GLOBAL_CONFIG = "globalconfig";
+        public static final String NOTIFICATION = "notification";
     }
 
     public static class KEY_CONFIG {
         public static final String DB = "application.mongodb";
         public static final String REDIS = "application.redis";
-    }
-
-    public static class AUTHENTICATION_KIND {
-        public static String INTERNAL = "internal";
-        public static String GOOGLE = "google";
-        public static String FACEBOOK = "facebook";
     }
 
     public static class ERROR_MSG {
@@ -79,6 +74,9 @@ public class Constant {
         public static String RATE_FAIL = "rate fail";
         public static String NOT_FOUND_RATE = "not found rate";
         public static String RATE_IS_EXIST = "rate is exist";
+
+        // notification
+        public static String NOT_FOUND_NOTIFICATION = "not found notification";
     }
 
     public static class STATUS_USER {
@@ -110,24 +108,23 @@ public class Constant {
         public static final String QUERY_ES_USER = "QUERY_ES_USER";
     }
 
+    public static class NOTIFICATION {
+        public static final String LIKE = "like";
+        public static final String COMMENT = "comment";
+        public static final String RATE = "rate";
+        public static final String FOLLOW = "follow";
+        public static final String TITLE_POST = "Bạn có thông báo mới về bài đăng %s.";
+        public static final String CONTENT_LIKE = "%s đã thích bài viết %s.";
+        public static final String CONTENT_RATE = "%s đã đánh giá bài viết %s.";
+        public static final String CONTENT_COMMENT = "%s đã bình luận bài viết %s.";
+        public static final String TITLE_FOLLOW = "Bạn vừa được người khác theo dõi.";
+        public static final String CONTENT_FOLLOW = "%s đã bắt đầu theo dõi bạn.";
+    }
+
     public static class TIME {
-        public static final int MILLISECOND_OF_FIVE_MINUTE = 5 * 60 * 1000;
         public static final int MILLISECOND_OF_TWO_MINUTE = 2 * 60 * 1000;
         public static final int MILLISECOND_OF_THREE_MINUTE = 3 * 60 * 1000;
-        public static final int MILLISECOND_OF_FOUR_MINUTE = 4 * 60 * 1000;
-        public static final int MILLISECOND_OF_ONE_HOUR = 60 * 60 * 1000;
-        public static final int MILLISECOND_OF_SIX_HOUR = 6 * 60 * 60 * 1000;
-        public static final int MILLISECOND_OF_ONE_DAY = 24 * 60 * 60 * 1000;
-        public static final int MILLISECOND_OF_SEVEN_DAY = 7 * 24 * 60 * 60 * 1000;
-        public static final int SECOND_OF_TWO_MINUTE = 2 * 60;
-        public static final int SECOND_OF_THREE_MINUTE = 3 * 60;
-        public static final int SECOND_OF_FIVE_MINUTE = 5 * 60;
-        public static final int SECOND_OF_ONE_HOUR = 60 * 60;
-        public static final int SECOND_OF_TWO_HOUR = 2 * 60 * 60;
-        public static final int SECOND_OF_SIX_HOUR = 6 * 60 * 60;
         public static final int SECOND_OF_ONE_DAY = 24 * 60 * 60;
-        public static final int SECOND_OF_THREE_DAY = 3 * 24 * 60 * 60;
-        public static final int SECOND_OF_SEVEN_DAY = 7 * 24 * 60 * 60;
         public static final int SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60;
     }
 }

@@ -1,5 +1,7 @@
 package hcmut.cse.travelsocialnetwork.service.socket;
 
+import hcmut.cse.travelsocialnetwork.application.notification.DataHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
@@ -9,17 +11,21 @@ import org.springframework.web.socket.config.annotation.*;
  * @since : 8/31/22 Wednesday
  **/
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer {
-
+@EnableWebSocket
+public class WebSocketConfigure implements  WebSocketConfigurer{
+    /**
+     * http://localhost:8080/data
+     * @param registry
+     */
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(getDataHandler(), "/data");
+        registry.addHandler(getDataHandler(), "/haha");
     }
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/hello");
+
+    @Bean
+    DataHandler getDataHandler() {
+        return new DataHandler();
     }
 }
