@@ -14,4 +14,5 @@ public interface INotificationApplication {
     Optional<Notification> createNotification(CommandNotification commandNotification) throws Exception;
     Optional<Boolean> readNotification(CommandNotification commandNotification) throws Exception;
     Optional<List<Notification>> loadNotification(CommandNotification commandNotification) throws Exception;
+    void processingNotify(CommandNotification commandNotification) throws Exception;
 }

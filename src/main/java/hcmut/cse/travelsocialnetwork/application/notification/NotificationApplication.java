@@ -1,10 +1,14 @@
 package hcmut.cse.travelsocialnetwork.application.notification;
 
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
+import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.model.Notification;
 import hcmut.cse.travelsocialnetwork.repository.notification.INotificationRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
+import io.ably.lib.rest.AblyRest;
+import io.ably.lib.types.AblyException;
+import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -23,9 +27,14 @@ import java.util.Optional;
 public class NotificationApplication implements INotificationApplication {
     private static final Logger log = LogManager.getLogger(NotificationApplication.class);
     INotificationRepository notificationRepository;
+    private final String CHANNEL_NAME = "default";
+    private AblyRest ablyRest;
 
-    public NotificationApplication(INotificationRepository notificationRepository) {
+    public NotificationApplication(INotificationRepository notificationRepository,
+                                   ENVConfig applicationConfig) throws AblyException {
         this.notificationRepository = notificationRepository;
+
+        ablyRest = new AblyRest(applicationConfig.getStringProperty("application.ably_api_key", ""));
     }
 
 
@@ -40,6 +49,7 @@ public class NotificationApplication implements INotificationApplication {
             .title(commandNotification.getTitle())
             .type(commandNotification.getType())
             .build();
+        processingNotify(commandNotification);
         return notificationRepository.add(notificationNew);
     }
 
@@ -65,5 +75,14 @@ public class NotificationApplication implements INotificationApplication {
             return Optional.of(new ArrayList<>());
         }
         return notifyList;
+    }
+
+    @Override
+    public void processingNotify(CommandNotification commandNotification) throws Exception {
+        var channel = ablyRest.channels.get(CHANNEL_NAME);
+        channel.publish(
+            "like",
+            new JsonObject(
+                "{\"error\":\"14 UNAVAILABLE: upstream connect error or disconnect/reset before headers. reset reason: connection failure\"}").toString());
     }
 }

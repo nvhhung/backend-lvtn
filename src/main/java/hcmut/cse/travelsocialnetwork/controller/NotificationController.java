@@ -3,10 +3,7 @@ package hcmut.cse.travelsocialnetwork.controller;
 import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
-import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
-import io.ably.lib.rest.AblyRest;
-import io.ably.lib.types.AblyException;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,16 +20,9 @@ public class NotificationController extends AbstractController {
     private static final Logger log = LogManager.getLogger(NotificationController.class);
 
     INotificationApplication notificationApplication;
-    private final String CHANNEL_NAME = "default";
-    private AblyRest ablyRest;
-    private ENVConfig applicationConfig;
 
-    public NotificationController(INotificationApplication notificationApplication,
-                                  ENVConfig applicationConfig) throws AblyException {
+    public NotificationController(INotificationApplication notificationApplication) {
         this.notificationApplication = notificationApplication;
-        this.applicationConfig = applicationConfig;
-
-        ablyRest = new AblyRest(applicationConfig.getStringProperty("application.ably_api_key", ""));
     }
 
     public void readNotify(RoutingContext routingContext) {
