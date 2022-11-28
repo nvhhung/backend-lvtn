@@ -1,19 +1,15 @@
 package hcmut.cse.travelsocialnetwork.controller;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
 import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
-import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.factory.AbstractController;
+import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
+import io.ably.lib.rest.AblyRest;
+import io.ably.lib.types.AblyException;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -27,25 +23,16 @@ public class NotificationController extends AbstractController {
     private static final Logger log = LogManager.getLogger(NotificationController.class);
 
     INotificationApplication notificationApplication;
+    private final String CHANNEL_NAME = "default";
+    private AblyRest ablyRest;
+    private ENVConfig applicationConfig;
 
-    public NotificationController(INotificationApplication notificationApplication) {
+    public NotificationController(INotificationApplication notificationApplication,
+                                  ENVConfig applicationConfig) throws AblyException {
         this.notificationApplication = notificationApplication;
-    }
+        this.applicationConfig = applicationConfig;
 
-    @MessageMapping
-    @SendTo("/topic/messages")
-    public String send(String userName) {
-        return "Hello, " + userName;
-    }
-
-    public String pushNotification() throws FirebaseMessagingException {
-        Message message = Message.builder()
-                .putAllData(new HashMap<>())
-                .build();
-        var s = "123";
-        String response = null;
-        response = FirebaseMessaging.getInstance().send(message);
-        return response;
+        ablyRest = new AblyRest(applicationConfig.getStringProperty("application.ably_api_key", ""));
     }
 
     public void readNotify(RoutingContext routingContext) {
