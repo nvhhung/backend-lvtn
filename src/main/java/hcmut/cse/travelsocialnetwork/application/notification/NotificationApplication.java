@@ -27,7 +27,6 @@ import java.util.Optional;
 public class NotificationApplication implements INotificationApplication {
     private static final Logger log = LogManager.getLogger(NotificationApplication.class);
     INotificationRepository notificationRepository;
-    private final String CHANNEL_NAME = "default";
     private AblyRest ablyRest;
 
     public NotificationApplication(INotificationRepository notificationRepository,
@@ -77,9 +76,8 @@ public class NotificationApplication implements INotificationApplication {
         return notifyList;
     }
 
-    @Override
     public void processingNotify(CommandNotification commandNotification) throws Exception {
-        var channel = ablyRest.channels.get(CHANNEL_NAME);
+        var channel = ablyRest.channels.get(commandNotification.getChannel());
         channel.publish(
             "like",
             new JsonObject(

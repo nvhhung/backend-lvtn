@@ -23,6 +23,7 @@ public class CommandNotification {
     private String content;
     private String objectId;
     private String type; // like, comment, rate
+    private String channel;
     private int page;
     private int size;
 }

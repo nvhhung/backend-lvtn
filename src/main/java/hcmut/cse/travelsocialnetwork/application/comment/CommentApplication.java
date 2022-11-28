@@ -79,6 +79,7 @@ public class CommentApplication implements ICommentApplication{
                 .isRead(false)
                 .objectId(post.get_id().toString())
                 .type(Constant.NOTIFICATION.COMMENT)
+                .channel(Constant.NOTIFICATION.COMMENT)
                 .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
                 .content(String.format(Constant.NOTIFICATION.CONTENT_COMMENT, userTrigger.getFullName(), post.getTitle()))
                 .build();
@@ -101,6 +102,7 @@ public class CommentApplication implements ICommentApplication{
                     .isRead(false)
                     .objectId(post.get_id().toString())
                     .type(Constant.NOTIFICATION.COMMENT)
+                    .channel(Constant.NOTIFICATION.COMMENT)
                     .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
                     .content(String.format(Constant.NOTIFICATION.CONTENT_COMMENT, userTrigger.getFullName(), post.getTitle()))
                     .build();

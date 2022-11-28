@@ -81,6 +81,7 @@ public class RateApplication implements IRateApplication{
                 .isRead(false)
                 .objectId(post.get_id().toString())
                 .type(Constant.NOTIFICATION.RATE)
+                .channel(Constant.NOTIFICATION.RATE)
                 .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
                 .content(String.format(Constant.NOTIFICATION.CONTENT_RATE, userTrigger.getFullName(), post.getTitle()))
                 .build();

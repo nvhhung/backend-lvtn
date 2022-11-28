@@ -71,6 +71,7 @@ public class LikeApplication implements ILikeApplication{
                 .isRead(false)
                 .objectId(post.get_id().toString())
                 .type(Constant.NOTIFICATION.LIKE)
+                .channel(Constant.NOTIFICATION.LIKE)
                 .title(String.format(Constant.NOTIFICATION.TITLE_POST, post.getTitle()))
                 .content(String.format(Constant.NOTIFICATION.CONTENT_LIKE, userTrigger.getFullName(), post.getTitle()))
                 .build();

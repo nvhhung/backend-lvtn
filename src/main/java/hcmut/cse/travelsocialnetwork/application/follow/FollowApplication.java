@@ -64,6 +64,7 @@ public class FollowApplication implements IFollowApplication {
                 .isRead(false)
                 .objectId(followAdd.get().get_id().toString())
                 .type(Constant.NOTIFICATION.FOLLOW)
+                .channel(Constant.NOTIFICATION.FOLLOW)
                 .title(Constant.NOTIFICATION.TITLE_FOLLOW)
                 .content(String.format(Constant.NOTIFICATION.CONTENT_FOLLOW, userTrigger.getFullName()))
                 .build();
