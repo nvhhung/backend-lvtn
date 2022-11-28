@@ -6,9 +6,9 @@ import hcmut.cse.travelsocialnetwork.model.Notification;
 import hcmut.cse.travelsocialnetwork.repository.notification.INotificationRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
+import hcmut.cse.travelsocialnetwork.utils.JSONUtils;
 import io.ably.lib.rest.AblyRest;
 import io.ably.lib.types.AblyException;
-import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -48,7 +48,7 @@ public class NotificationApplication implements INotificationApplication {
             .title(commandNotification.getTitle())
             .type(commandNotification.getType())
             .build();
-        processingNotify(commandNotification);
+        processingNotify(commandNotification, notificationNew);
         return notificationRepository.add(notificationNew);
     }
 
@@ -65,7 +65,7 @@ public class NotificationApplication implements INotificationApplication {
     }
 
     @Override
-    public Optional<List<Notification>> loadNotification(CommandNotification commandNotification) throws Exception {
+    public Optional<List<Notification>> loadNotification(CommandNotification commandNotification) {
         var query = new Document(Constant.FIELD_QUERY.USER_ID,commandNotification.getUserId());
         var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
         var notifyList = notificationRepository.search(query, sort, commandNotification.getPage(), commandNotification.getSize());
@@ -76,11 +76,8 @@ public class NotificationApplication implements INotificationApplication {
         return notifyList;
     }
 
-    public void processingNotify(CommandNotification commandNotification) throws Exception {
+    public void processingNotify(CommandNotification commandNotification, Notification notification) throws AblyException {
         var channel = ablyRest.channels.get(commandNotification.getChannel());
-        channel.publish(
-            "like",
-            new JsonObject(
-                "{\"error\":\"14 UNAVAILABLE: upstream connect error or disconnect/reset before headers. reset reason: connection failure\"}").toString());
+        channel.publish("realtime", JSONUtils.objToJsonString(notification));
     }
 }
