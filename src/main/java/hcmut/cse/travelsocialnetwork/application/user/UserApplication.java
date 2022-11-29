@@ -18,6 +18,7 @@ import hcmut.cse.travelsocialnetwork.utils.StringUtils;
 import hcmut.cse.travelsocialnetwork.utils.crypto.SHA512;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,18 +29,15 @@ import java.util.Optional;
 @Component
 public class UserApplication implements IUserApplication{
     private static final Logger log = LogManager.getLogger(UserApplication.class);
-    private final HelperUser helperUser;
     private final IUserRepository userRepository;
     private final JWTAuth jwtAuth;
     private final UserRedis userRedis;
     private final SearchApplication searchApplication;
 
-    public UserApplication(HelperUser helperUser,
-                           IUserRepository userRepository,
+    public UserApplication(IUserRepository userRepository,
                            JWTAuth jwtAuth,
                            UserRedis userRedis,
                            SearchApplication searchApplication) {
-        this.helperUser = helperUser;
         this.userRepository = userRepository;
         this.jwtAuth = jwtAuth;
         this.userRedis = userRedis;
@@ -48,7 +46,7 @@ public class UserApplication implements IUserApplication{
 
     @Override
     public Boolean register(CommandRegister commandRegister) throws Exception {
-        var userTemp = helperUser.checkUserRegister(commandRegister.getUsername());
+        var userTemp = checkUserRegister(commandRegister.getUsername());
         if (userTemp != null) {
             throw new CustomException(Constant.ERROR_MSG.USER_REGISTER);
         }
@@ -75,7 +73,7 @@ public class UserApplication implements IUserApplication{
     @Override
     public Optional<LoginToken> login(CommandLogin commandLogin) throws Exception {
         // login by registered account
-        var userTemp = helperUser.checkUserRegister(commandLogin.getUsername());
+        var userTemp = checkUserRegister(commandLogin.getUsername());
         if (userTemp == null) {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
@@ -91,9 +89,14 @@ public class UserApplication implements IUserApplication{
                 .build());
     }
 
+    private User checkUserRegister(String username) {
+        var queryUserName = new Document("username", username);
+        return userRepository.get(queryUserName).orElse(null);
+    }
+
     @Override
     public Optional<LoginToken> resetPassword(CommandPassword commandPassword) throws Exception {
-        var user = helperUser.checkUserRegister(commandPassword.getUsername());
+        var user = checkUserRegister(commandPassword.getUsername());
         if (user == null) {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }

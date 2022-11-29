@@ -1,7 +1,6 @@
 package hcmut.cse.travelsocialnetwork.application.comment;
 
 import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
-import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.comment.CommandComment;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Comment;
@@ -30,20 +29,17 @@ import java.util.Optional;
 public class CommentApplication implements ICommentApplication{
     private static final Logger log = LogManager.getLogger(CommentApplication.class);
 
-    HelperUser helperUser;
     UserRedis userRedis;
     ICommentRepository commentRepository;
     PostRedis postRedis;
     RankRedis rankRedis;
     INotificationApplication notificationApplication;
 
-    public CommentApplication(HelperUser helperUser,
-                              UserRedis userRedis,
+    public CommentApplication(UserRedis userRedis,
                               ICommentRepository commentRepository,
                               PostRedis postRedis,
                               RankRedis rankRedis,
                               INotificationApplication notificationApplication) {
-        this.helperUser = helperUser;
         this.userRedis = userRedis;
         this.commentRepository = commentRepository;
         this.postRedis = postRedis;
@@ -84,7 +80,6 @@ public class CommentApplication implements ICommentApplication{
                 .content(String.format(Constant.NOTIFICATION.CONTENT_COMMENT, userTrigger.getFullName(), post.getTitle()))
                 .build();
         notificationApplication.createNotification(commandNotification);
-        // TODO: publish message to channel of owner post
         // push notification to user comment post
         var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
         query.append(Constant.FIELD_QUERY.USER_ID, new Document("$ne", userIdOwner));

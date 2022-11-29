@@ -4,7 +4,6 @@ import com.google.api.client.util.Strings;
 import hcmut.cse.travelsocialnetwork.application.follow.FollowApplication;
 import hcmut.cse.travelsocialnetwork.application.media.IMediaApplication;
 import hcmut.cse.travelsocialnetwork.application.search.ISearchApplication;
-import hcmut.cse.travelsocialnetwork.application.user.HelperUser;
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 public class PostApplication implements IPostApplication{
     private static final Logger log = LogManager.getLogger(PostApplication.class);
 
-    HelperUser helperUser;
     IPostRepository postRepository;
     UserRedis userRedis;
     PostRedis postRedis;
@@ -45,10 +43,9 @@ public class PostApplication implements IPostApplication{
     ISearchApplication searchApplication;
     RankRedis rankRedis;
 
-    public PostApplication(HelperUser helperUser, IPostRepository postRepository, UserRedis userRedis,
-            PostRedis postRedis, IMediaApplication mediaApplication, FollowApplication followApplication,
+    public PostApplication(IPostRepository postRepository, UserRedis userRedis, PostRedis postRedis,
+                           IMediaApplication mediaApplication, FollowApplication followApplication,
                            ISearchApplication searchApplication, RankRedis rankRedis) {
-        this.helperUser = helperUser;
         this.postRepository = postRepository;
         this.userRedis = userRedis;
         this.postRedis = postRedis;
