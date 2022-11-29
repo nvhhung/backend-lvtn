@@ -27,7 +27,7 @@ import java.util.Optional;
 public class NotificationApplication implements INotificationApplication {
     private static final Logger log = LogManager.getLogger(NotificationApplication.class);
     INotificationRepository notificationRepository;
-    private AblyRest ablyRest;
+    private final AblyRest ablyRest;
 
     public NotificationApplication(INotificationRepository notificationRepository,
                                    ENVConfig applicationConfig) throws AblyException {
@@ -48,8 +48,12 @@ public class NotificationApplication implements INotificationApplication {
             .title(commandNotification.getTitle())
             .type(commandNotification.getType())
             .build();
-        processingNotify(commandNotification, notificationNew);
-        return notificationRepository.add(notificationNew);
+        var notifyAdd = notificationRepository.add(notificationNew);
+        if (notifyAdd.isPresent()) {
+            log.info("push message to channel {}", commandNotification.getChannel());
+            processingNotify(commandNotification , notifyAdd.get());
+        }
+        return notifyAdd;
     }
 
     @Override
