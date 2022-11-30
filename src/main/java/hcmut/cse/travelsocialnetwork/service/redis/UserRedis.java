@@ -26,7 +26,7 @@ public class UserRedis {
         if (!StringUtils.isNullOrEmpty(userRedis)) {
             jedis.delete(Constant.KEY_REDIS.USER + userId);
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.TTL_USER);
     }
 
     public void updateUserRedisDB(String userId, User user) {
@@ -35,7 +35,7 @@ public class UserRedis {
             log.warn("update user fail");
             return;
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.TTL_USER);
     }
 
     public User getUser(String userId) {
@@ -51,7 +51,7 @@ public class UserRedis {
             log.warn("user not exist");
             return null;
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(userDb.get()), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(userDb.get()), Constant.TIME.TTL_USER);
         return userDb.get();
     }
 

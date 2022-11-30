@@ -53,7 +53,7 @@ public class PostRedis {
                 .size(1000)
                 .build()).orElse(new ArrayList<>())));
 
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postDb.get()), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(postDb.get()), Constant.TIME.TTL_POST);
         return postDb.get();
     }
 
@@ -62,7 +62,7 @@ public class PostRedis {
         if (!StringUtils.isNullOrEmpty(postRedis)) {
             jedis.delete(Constant.KEY_REDIS.POST + postId);
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.TTL_POST);
     }
 
     public void updatePostRedisDB(String postId, Post post) {
@@ -73,7 +73,7 @@ public class PostRedis {
             log.warn("update post fail");
             return;
         }
-        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.SECOND_OF_ONE_DAY);
+        jedis.setWithExpireAfter(Constant.KEY_REDIS.POST + postId, JSONUtils.objToJsonString(post), Constant.TIME.TTL_POST);
     }
 
     public Integer increaseAndGetPoints(String postId, Integer pointAdd) {
