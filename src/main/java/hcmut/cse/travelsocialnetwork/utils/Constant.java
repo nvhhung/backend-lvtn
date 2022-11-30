@@ -124,7 +124,9 @@ public class Constant {
     public static class TIME {
         public static final int MILLISECOND_OF_TWO_MINUTE = 2 * 60 * 1000;
         public static final int MILLISECOND_OF_THREE_MINUTE = 3 * 60 * 1000;
-        public static final int SECOND_OF_ONE_DAY = 24 * 60 * 60;
+        public static final int TTL_POST = 10 * 60;
+        public static final int TTL_USER = 20 * 60;
+        public static final long EXPIRED_TOKEN = 60 * 60 * 1000L;
         public static final int SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60;
     }
 }

@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.service.jwt;
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.model.LoginToken;
 import hcmut.cse.travelsocialnetwork.utils.Base64Convert;
+import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.RandomUtils;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.JWTOptions;
@@ -26,12 +27,11 @@ public class JWTAuth {
     @Autowired
     private RandomUtils randomUtils;
 
-    private final long EXPIRED_TOKEN = 60 * 60 * 1000L;
 
     private String generateToken(JsonObject data) {
     return jwtAuthProvider.getJwtAuth().generateToken(data
                     .put("sub","hcmut")
-                    .put("exp", System.currentTimeMillis() + EXPIRED_TOKEN) // after 60'
+                    .put("exp", System.currentTimeMillis() + Constant.TIME.EXPIRED_TOKEN) // after 60'
                     .put("iat", System.currentTimeMillis() / 1000)
             , new JWTOptions().setAlgorithm("RS256"));
     }

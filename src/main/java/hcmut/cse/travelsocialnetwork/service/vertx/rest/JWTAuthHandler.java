@@ -46,6 +46,12 @@ public class JWTAuthHandler extends AuthenticationHandlerImpl {
                     credentials.put("token", token);
                     authProvider.authenticate(credentials, res -> {
                         if (res.succeeded()) {
+                            var user = res.result();
+                            if (checkExpired(user.attributes())) {
+                                log.warn("token expired");
+                                routingContext.fail(401);
+                                return;
+                            }
                             routingContext.setUser(res.result());
                             request.resume();
                             routingContext.next();
@@ -58,6 +64,15 @@ public class JWTAuthHandler extends AuthenticationHandlerImpl {
             }
 
         }
+    }
+
+    private boolean checkExpired(JsonObject parseToken) {
+        var exp = parseToken.getString("exp", "");
+        var expiredTime = Long.parseLong(exp);
+        if (System.currentTimeMillis() > expiredTime) {
+            return true;
+        }
+        return false;
     }
 
     @Override
