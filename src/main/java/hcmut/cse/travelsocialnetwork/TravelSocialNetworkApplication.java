@@ -64,7 +64,7 @@ public class TravelSocialNetworkApplication {
 		final boolean notAuth = false;
 		restfulVerticle.setRequestHandlerList(Arrays.asList(
 				// user
-				RequestHandler.init(HttpMethod.GET, "/", userController::root, notAuth),
+				RequestHandler.init(HttpMethod.GET, "/testAlive", userController::root, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/register", userController::register, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/refresh-token", userController::refreshToken, notAuth),

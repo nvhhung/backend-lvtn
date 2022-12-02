@@ -34,6 +34,7 @@ public class NotificationApplication implements INotificationApplication {
         this.notificationRepository = notificationRepository;
 
         ablyRest = new AblyRest(applicationConfig.getStringProperty("application.ably_api_key", ""));
+        log.info("create ablyRest success");
     }
 
 
