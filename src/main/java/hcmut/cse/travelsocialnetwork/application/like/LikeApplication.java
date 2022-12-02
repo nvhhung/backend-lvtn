@@ -46,6 +46,14 @@ public class LikeApplication implements ILikeApplication{
 
     @Override
     public Optional<Like> createLike(CommandLike commandLike) throws Exception {
+        var queryLikeExist = new Document(Constant.FIELD_QUERY.USER_ID, commandLike.getUserId())
+                .append(Constant.FIELD_QUERY.POST_ID, commandLike.getPostId());
+        var likeExist = likeRepository.get(queryLikeExist);
+        if (likeExist.isPresent()) {
+            log.warn(String.format("%s liked post %s => throw error", commandLike.getUserId(), commandLike.getPostId()));
+            throw new CustomException(Constant.ERROR_MSG.LIKE_EXIST);
+        }
+
         var likeNew = Like.builder()
                 .userId(commandLike.getUserId())
                 .postId(commandLike.getPostId())

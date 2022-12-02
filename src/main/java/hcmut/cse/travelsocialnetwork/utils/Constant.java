@@ -68,6 +68,7 @@ public class Constant {
 
         // like
         public static String LIKE_FAIL = "like fail";
+        public static String LIKE_EXIST = "like exist";
         public static String NOT_FOUND_LIKE = "not found like";
 
         // rate
