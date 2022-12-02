@@ -10,6 +10,7 @@ services:
       environment:
         - MONGO_INIT_ROOT_USERNAME=admin
         - MONGO_INIT_ROOT_PASSWORD=admin
+#      command: mongo --host mongo --eval  "db.getSiblingDB('travel-social-network').createUser({user:'admin', pwd:'admin', roles:[{role:'readWrite',db:'travel-social-network'}]});"
   redis:
       image: 'bitnami/redis:latest'
       environment:
