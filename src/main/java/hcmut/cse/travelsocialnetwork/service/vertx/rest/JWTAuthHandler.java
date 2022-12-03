@@ -47,11 +47,11 @@ public class JWTAuthHandler extends AuthenticationHandlerImpl {
                     authProvider.authenticate(credentials, res -> {
                         if (res.succeeded()) {
                             var user = res.result();
-                            if (checkExpired(user.attributes())) {
-                                log.warn("token expired");
-                                routingContext.fail(401);
-                                return;
-                            }
+//                            if (checkExpired(user.attributes())) {
+//                                log.warn("token expired");
+//                                routingContext.fail(401);
+//                                return;
+//                            }
                             routingContext.setUser(res.result());
                             request.resume();
                             routingContext.next();
