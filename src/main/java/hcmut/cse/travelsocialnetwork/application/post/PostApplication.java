@@ -8,6 +8,7 @@ import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.media.CommandMedia;
 import hcmut.cse.travelsocialnetwork.command.post.CommandPost;
 import hcmut.cse.travelsocialnetwork.model.Media;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.model.Post;
 import hcmut.cse.travelsocialnetwork.repository.post.IPostRepository;
 import hcmut.cse.travelsocialnetwork.service.elasticsearch.ParamElasticsearchObj;
@@ -191,10 +192,11 @@ public class PostApplication implements IPostApplication{
     }
 
     @Override
-    public Optional<List<Post>> loadAllPost(CommandPost commandPost) throws Exception {
+    public Optional<Object> loadAllPost(CommandPost commandPost) throws Exception {
         var query = new Document();
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
+        var totalItem = postRepository.count(query);
         postList.ifPresentOrElse(posts -> {
             log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
             posts.forEach(post -> post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
@@ -203,11 +205,11 @@ public class PostApplication implements IPostApplication{
                     .size(1000)
                     .build()).orElse(new ArrayList<>())));
             }, () -> log.info("user {} load no post", commandPost.getUserId()));
-        return postList;
+        return Optional.of(new Paginated<>(postList.orElse(new ArrayList<>()), commandPost.getPage(), commandPost.getSize(), totalItem.orElse(0L)));
     }
 
     @Override
-    public Optional<List<Post>> loadRelationPost(CommandPost commandPost) throws Exception {
+    public Optional<Object> loadRelationPost(CommandPost commandPost) throws Exception {
         var postListResult = new ArrayList<Post>();
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         // get list user follow
@@ -234,8 +236,7 @@ public class PostApplication implements IPostApplication{
             var posts = postRepository.search(new Document(), sort, commandPost.getPage(), commandPost.getSize());
             posts.ifPresent(postListResult::addAll);
         });
-
-        return Optional.of(postListResult);
+        return Optional.of(new Paginated<>(postListResult, commandPost.getPage(), commandPost.getSize(), postListResult.size()));
     }
 
     @Override
@@ -271,10 +272,11 @@ public class PostApplication implements IPostApplication{
     }
 
     @Override
-    public Optional<List<Post>> loadByUserId(CommandPost commandPost) throws Exception {
+    public Optional<Object> loadByUserId(CommandPost commandPost) throws Exception {
         var query = new Document(Constant.FIELD_QUERY.USER_ID,  commandPost.getUserId());
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
+        var totalItem = postRepository.count(query);
         postList.ifPresentOrElse(posts -> {
             log.info("user {} load post have size {}", commandPost.getUserId(), posts.size());
             posts.forEach(post -> post.setMediaList(mediaApplication.loadByPostId(CommandMedia.builder()
@@ -283,6 +285,6 @@ public class PostApplication implements IPostApplication{
                     .size(1000)
                     .build()).orElse(new ArrayList<>())));
         }, () -> log.info("user {} load no post", commandPost.getUserId()));
-        return postList;
+        return Optional.of(new Paginated<>(postList.orElse(new ArrayList<>()), commandPost.getPage(), commandPost.getSize(), totalItem.orElse(0L)));
     }
 }
