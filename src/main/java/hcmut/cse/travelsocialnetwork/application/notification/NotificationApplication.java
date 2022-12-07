@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.application.notification;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
 import hcmut.cse.travelsocialnetwork.model.Notification;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.repository.notification.INotificationRepository;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
 import hcmut.cse.travelsocialnetwork.utils.CustomException;
@@ -15,7 +16,6 @@ import org.bson.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -70,15 +70,13 @@ public class NotificationApplication implements INotificationApplication {
     }
 
     @Override
-    public Optional<List<Notification>> loadNotification(CommandNotification commandNotification) {
+    public Optional<Object> loadNotification(CommandNotification commandNotification) {
         var query = new Document(Constant.FIELD_QUERY.USER_ID,commandNotification.getUserId());
         var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
         var notifyList = notificationRepository.search(query, sort, commandNotification.getPage(), commandNotification.getSize());
-        if (notifyList.isEmpty()) {
-            log.warn(String.format("%s no have notify", commandNotification.getUserId()));
-            return Optional.of(new ArrayList<>());
-        }
-        return notifyList;
+        var totalItem = notificationRepository.count(query);
+        log.info(String.format("user %s have notification size %d", commandNotification.getUserId(), totalItem.orElse(0L)));
+        return Optional.of(new Paginated<>(notifyList.orElse(new ArrayList<>()), commandNotification.getPage(), commandNotification.getSize(), totalItem.orElse(0L)));
     }
 
     public void processingNotify(CommandNotification commandNotification, Notification notification) throws AblyException {

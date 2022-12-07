@@ -219,7 +219,7 @@ public class PostApplication implements IPostApplication{
             .size(1000)
             .build();
 
-        var userFollowList = followApplication.getFollowUser(commandFollow);
+        var userFollowList = followApplication.getFollowUserInPost(commandFollow);
         userFollowList.ifPresentOrElse(follows -> follows.forEach(follow -> {
             var postFollow = postRepository.search(new Document(Constant.FIELD_QUERY.USER_ID, follow.getUserIdTarget()), sort, commandPost.getPage(), commandPost.getSize());
             postFollow.ifPresent(postFollowUser -> {
@@ -240,7 +240,7 @@ public class PostApplication implements IPostApplication{
     }
 
     @Override
-    public Optional<List<Post>> searchPost(CommandPost commandPost) throws Exception {
+    public Optional<Object> searchPost(CommandPost commandPost) throws Exception {
         var postListResult = new ArrayList<Post>();
         var queryModel = new HashMap<String, Object>();
 
@@ -268,7 +268,7 @@ public class PostApplication implements IPostApplication{
         }
 
         hitPostList.forEach(hitPost -> postListResult.add(postRedis.getPost(hitPost.id())));
-        return Optional.of(postListResult);
+        return Optional.of(new Paginated<>(postListResult, commandPost.getPage(), commandPost.getSize(), postListResult.size()));
     }
 
     @Override

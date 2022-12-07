@@ -3,7 +3,6 @@ package hcmut.cse.travelsocialnetwork.application.comment;
 import hcmut.cse.travelsocialnetwork.command.comment.CommandComment;
 import hcmut.cse.travelsocialnetwork.model.Comment;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,6 +12,6 @@ import java.util.Optional;
 public interface ICommentApplication {
     Optional<Comment> createComment(CommandComment commandComment) throws Exception;
     Optional<Boolean> deleteComment(CommandComment commandComment) throws Exception;
-    Optional<List<Object>> loadComment(CommandComment commandComment) throws Exception;
+    Optional<Object> loadComment(CommandComment commandComment) throws Exception;
     Optional<Comment> updateComment(CommandComment commandComment) throws Exception;
 }

@@ -4,6 +4,7 @@ import hcmut.cse.travelsocialnetwork.application.notification.INotificationAppli
 import hcmut.cse.travelsocialnetwork.command.comment.CommandComment;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Comment;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.repository.comment.ICommentRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
@@ -132,7 +133,7 @@ public class CommentApplication implements ICommentApplication{
 
 
     @Override
-    public Optional<List<Object>> loadComment(CommandComment commandComment) throws Exception {
+    public Optional<Object> loadComment(CommandComment commandComment) throws Exception {
         var post = postRedis.getPost(commandComment.getPostId());
         if (post == null) {
             log.warn(String.format("%s not found post", commandComment.getUserId()));
@@ -145,8 +146,8 @@ public class CommentApplication implements ICommentApplication{
             log.warn(String.format("%s no have comment", commandComment.getPostId()));
             return Optional.of(new ArrayList<>());
         }
-
-        return Optional.of(convertMappingComment(commentList.get()));
+        var listResult = convertMappingComment(commentList.get());
+        return Optional.of(new Paginated<>(listResult, commandComment.getPage(), commandComment.getSize(), listResult.size()));
     }
 
     private List<Object>  convertMappingComment(List<Comment> commentList) {

@@ -4,6 +4,7 @@ import hcmut.cse.travelsocialnetwork.application.notification.INotificationAppli
 import hcmut.cse.travelsocialnetwork.command.follow.CommandFollow;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Follow;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.repository.follow.IFollowRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.UserRedis;
 import hcmut.cse.travelsocialnetwork.utils.Constant;
@@ -90,19 +91,20 @@ public class FollowApplication implements IFollowApplication {
     }
 
     @Override
-    public Optional<List<Follow>> getFollower(CommandFollow commandFollow) throws Exception {
+    public Optional<Object> getFollower(CommandFollow commandFollow) throws Exception {
         var query = new Document(Constant.FIELD_QUERY.USER_ID_TARGET, commandFollow.getUserId());
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
+        var totalItem = followRepository.count(query);
         if (followList.isEmpty()) {
             log.info(String.format("%s no have follower", commandFollow.getUserId()));
             return Optional.of(new ArrayList<>());
         }
-        return followList;
+        return Optional.of(new Paginated<>(followList.orElse(new ArrayList<>()), commandFollow.getPage(), commandFollow.getSize(), totalItem.orElse(0L)));
     }
 
     @Override
-    public Optional<List<Follow>> getFollowUser(CommandFollow commandFollow) throws Exception {
+    public Optional<List<Follow>> getFollowUserInPost(CommandFollow commandFollow) throws Exception {
         var query = new Document(Constant.FIELD_QUERY.USER_ID, commandFollow.getUserId());
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
@@ -111,5 +113,18 @@ public class FollowApplication implements IFollowApplication {
             return Optional.of(new ArrayList<>());
         }
         return followList;
+    }
+
+    @Override
+    public Optional<Object> getFollowUser(CommandFollow commandFollow) throws Exception {
+        var query = new Document(Constant.FIELD_QUERY.USER_ID, commandFollow.getUserId());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
+        var totalItem = followRepository.count(query);
+        if (followList.isEmpty()) {
+            log.info(String.format("%s no have follow user", commandFollow.getUserId()));
+            return Optional.of(new ArrayList<>());
+        }
+        return Optional.of(new Paginated<>(followList.orElse(new ArrayList<>()), commandFollow.getPage(), commandFollow.getSize(), totalItem.orElse(0L)));
     }
 }

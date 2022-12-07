@@ -4,6 +4,7 @@ import hcmut.cse.travelsocialnetwork.application.notification.INotificationAppli
 import hcmut.cse.travelsocialnetwork.command.like.CommandLike;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.model.Like;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.repository.like.ILikeRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
 import hcmut.cse.travelsocialnetwork.service.redis.RankRedis;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,8 +111,12 @@ public class LikeApplication implements ILikeApplication{
     }
 
     @Override
-    public Optional<List<Like>> loadLike(CommandLike commandLike) throws Exception {
+    public Optional<Object> loadLike(CommandLike commandLike) throws Exception {
         var query = new Document(Constant.FIELD_QUERY.POST_ID, commandLike.getPostId());
-        return likeRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandLike.getPage(), commandLike.getSize());
+        var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
+        var likeList = likeRepository.search(query, sort, commandLike.getPage(), commandLike.getSize());
+        var totalItem = likeRepository.count(query);
+        log.info(String.format("post %s have like size %d", commandLike.getUserId(), totalItem.orElse(0L)));
+        return Optional.of(new Paginated<>(likeList.orElse(new ArrayList<>()), commandLike.getPage(), commandLike.getSize(), totalItem.orElse(0L)));
     }
 }

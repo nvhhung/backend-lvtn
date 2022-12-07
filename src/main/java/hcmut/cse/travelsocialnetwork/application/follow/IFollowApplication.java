@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface IFollowApplication {
     Optional<Follow> followUser(CommandFollow commandFollow) throws Exception;
     Optional<Boolean> unFollowUser(CommandFollow commandFollow) throws Exception;
-    Optional<List<Follow>> getFollower(CommandFollow commandFollow) throws Exception;
-    Optional<List<Follow>> getFollowUser(CommandFollow commandFollow) throws Exception;
+    Optional<Object> getFollower(CommandFollow commandFollow) throws Exception;
+    Optional<List<Follow>> getFollowUserInPost(CommandFollow commandFollow) throws Exception;
+    Optional<Object> getFollowUser(CommandFollow commandFollow) throws Exception;
 }

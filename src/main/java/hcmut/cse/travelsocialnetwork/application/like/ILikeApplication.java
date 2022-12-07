@@ -3,7 +3,6 @@ package hcmut.cse.travelsocialnetwork.application.like;
 import hcmut.cse.travelsocialnetwork.command.like.CommandLike;
 import hcmut.cse.travelsocialnetwork.model.Like;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,5 +12,5 @@ import java.util.Optional;
 public interface ILikeApplication {
     Optional<Like> createLike(CommandLike commandLike) throws Exception;
     Optional<Boolean> unlike(CommandLike commandLike) throws Exception;
-    Optional<List<Like>> loadLike(CommandLike commandLike) throws Exception;
+    Optional<Object> loadLike(CommandLike commandLike) throws Exception;
 }

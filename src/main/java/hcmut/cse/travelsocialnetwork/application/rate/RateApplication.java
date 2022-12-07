@@ -3,6 +3,7 @@ package hcmut.cse.travelsocialnetwork.application.rate;
 import hcmut.cse.travelsocialnetwork.application.notification.INotificationApplication;
 import hcmut.cse.travelsocialnetwork.command.notification.CommandNotification;
 import hcmut.cse.travelsocialnetwork.command.rate.CommandRate;
+import hcmut.cse.travelsocialnetwork.model.Paginated;
 import hcmut.cse.travelsocialnetwork.model.Rate;
 import hcmut.cse.travelsocialnetwork.repository.rate.IRateRepository;
 import hcmut.cse.travelsocialnetwork.service.redis.PostRedis;
@@ -129,14 +130,12 @@ public class RateApplication implements IRateApplication{
 
 
     @Override
-    public Optional<List<Rate>> load(CommandRate commandRate) throws Exception {
+    public Optional<Object> load(CommandRate commandRate) throws Exception {
         var query = new Document(Constant.FIELD_QUERY.POST_ID, commandRate.getPostId());
-        var listRate = rateRepository.search(query, new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1), commandRate.getPage(), commandRate.getSize());
-        if (listRate.isEmpty()) {
-            log.warn("get list rate fail");
-            return Optional.of(new ArrayList<>());
-        }
-
-        return listRate;
+        var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
+        var listRate = rateRepository.search(query, sort, commandRate.getPage(), commandRate.getSize());
+        var totalItem = rateRepository.count(query);
+        log.info(String.format("post %s have rate size %d", commandRate.getPostId(), totalItem.orElse(0L)));
+        return Optional.of(new Paginated<>(listRate.orElse(new ArrayList<>()), commandRate.getPage(), commandRate.getSize(), totalItem.orElse(0L)));
     }
 }
