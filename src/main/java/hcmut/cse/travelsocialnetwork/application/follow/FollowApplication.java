@@ -96,10 +96,7 @@ public class FollowApplication implements IFollowApplication {
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
         var totalItem = followRepository.count(query);
-        if (followList.isEmpty()) {
-            log.info(String.format("%s no have follower", commandFollow.getUserId()));
-            return Optional.of(new ArrayList<>());
-        }
+        log.info(String.format("user %s have follower size %d", commandFollow.getUserIdTarget(), totalItem.orElse(0L)));
         return Optional.of(new Paginated<>(followList.orElse(new ArrayList<>()), commandFollow.getPage(), commandFollow.getSize(), totalItem.orElse(0L)));
     }
 
@@ -121,10 +118,7 @@ public class FollowApplication implements IFollowApplication {
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var followList = followRepository.search(query, sort, commandFollow.getPage(), commandFollow.getSize());
         var totalItem = followRepository.count(query);
-        if (followList.isEmpty()) {
-            log.info(String.format("%s no have follow user", commandFollow.getUserId()));
-            return Optional.of(new ArrayList<>());
-        }
+        log.info(String.format("user %s have follow user size %d", commandFollow.getUserId(), totalItem.orElse(0L)));
         return Optional.of(new Paginated<>(followList.orElse(new ArrayList<>()), commandFollow.getPage(), commandFollow.getSize(), totalItem.orElse(0L)));
     }
 }

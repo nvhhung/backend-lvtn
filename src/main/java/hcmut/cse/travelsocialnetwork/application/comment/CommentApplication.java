@@ -142,11 +142,8 @@ public class CommentApplication implements ICommentApplication{
         var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
         var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
         var commentList = commentRepository.search(query, sort, commandComment.getPage(), commandComment.getSize());
-        if (commentList.isEmpty()) {
-            log.warn(String.format("%s no have comment", commandComment.getPostId()));
-            return Optional.of(new ArrayList<>());
-        }
-        var listResult = convertMappingComment(commentList.get());
+        var listResult = convertMappingComment(commentList.orElse(new ArrayList<>()));
+        log.info(String.format("post %s have rate size %d", commandComment.getPostId(), listResult.size()));
         return Optional.of(new Paginated<>(listResult, commandComment.getPage(), commandComment.getSize(), listResult.size()));
     }
 

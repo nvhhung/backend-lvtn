@@ -73,7 +73,7 @@ public class RateApplication implements IRateApplication{
 
         var pointUserNew = userRedis.increaseAndGetPoints(commandRate.getUserId(), Constant.POINTS.ONE_RATE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandRate.getUserId(), pointUserNew);
-        //todo: push notification to owner of post
+
         var userTrigger = userRedis.getUser(commandRate.getUserId());
         var post = postRedis.getPost(commandRate.getPostId());
         var commandNotification = CommandNotification.builder()
