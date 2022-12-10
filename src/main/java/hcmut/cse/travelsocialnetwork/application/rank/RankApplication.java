@@ -28,21 +28,23 @@ public class RankApplication implements IRankApplication{
     @Override
     public Object getLeaderBoardUser(CommandRank commandRank) {
         var start = (commandRank.getPage() -1) * commandRank.getSize();
-        var end = start + commandRank.getSize();
+        var end = start + commandRank.getSize() - 1;
         log.info(String.format("get rank user from %d to %d", start, end));
         var listResult =  rankRedis.getLeaderBoardUser(Constant.LEADER_BOARD.KEY_USER, start, end);
         log.info(String.format("rank user have size %d", listResult.size()));
-        return Optional.of(new Paginated<>(listResult, commandRank.getPage(), commandRank.getSize(), listResult.size()));
+        var totalItem = rankRedis.countMember(Constant.LEADER_BOARD.KEY_USER);
+        return Optional.of(new Paginated<>(listResult, commandRank.getPage(), commandRank.getSize(), totalItem));
     }
 
     @Override
     public Object getLeaderBoardPost(CommandRank commandRank) {
         var start = (commandRank.getPage() - 1) * commandRank.getSize();
-        var end = start + commandRank.getSize();
+        var end = start + commandRank.getSize() -1;
         log.info(String.format("get rank post from %d to %d", start, end));
         var listResult = rankRedis.getLeaderBoardPost(Constant.LEADER_BOARD.KEY_POST, start, end);
+        var totalItem = rankRedis.countMember(Constant.LEADER_BOARD.KEY_POST);
         log.info(String.format("rank user have size %d", listResult.size()));
-        return Optional.of(new Paginated<>(listResult, commandRank.getPage(), commandRank.getSize(), listResult.size()));
+        return Optional.of(new Paginated<>(listResult, commandRank.getPage(), commandRank.getSize(), totalItem));
     }
 
     @Override

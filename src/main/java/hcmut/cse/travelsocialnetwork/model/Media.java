@@ -27,7 +27,6 @@ public class Media extends PO {
 
   private String postId;
   private String userId;
-  private String commentId;
   private String type; // video or image
   private String link;
 }

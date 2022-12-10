@@ -141,10 +141,11 @@ public class CommentApplication implements ICommentApplication{
         }
         var query = new Document(Constant.FIELD_QUERY.POST_ID,commandComment.getPostId());
         var sort = new Document(Constant.FIELD_QUERY.CREATE_TIME, -1);
+        var totalItem = commentRepository.count(query);
         var commentList = commentRepository.search(query, sort, commandComment.getPage(), commandComment.getSize());
         var listResult = convertMappingComment(commentList.orElse(new ArrayList<>()));
         log.info(String.format("post %s have rate size %d", commandComment.getPostId(), listResult.size()));
-        return Optional.of(new Paginated<>(listResult, commandComment.getPage(), commandComment.getSize(), listResult.size()));
+        return Optional.of(new Paginated<>(listResult, commandComment.getPage(), commandComment.getSize(), totalItem.orElse(0L)));
     }
 
     private List<Object>  convertMappingComment(List<Comment> commentList) {

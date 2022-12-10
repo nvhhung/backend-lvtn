@@ -83,4 +83,8 @@ public class RankRedis {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public Long countMember(String mainKey) {
+        return jedis.countMember(mainKey);
+    }
 }
