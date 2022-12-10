@@ -68,6 +68,8 @@ public class TravelSocialNetworkApplication {
 				RequestHandler.init(HttpMethod.POST, "/user/register", userController::register, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/login", userController::login, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/refresh-token", userController::refreshToken, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/block-user", userController::blockUser, notAuth),
+				RequestHandler.init(HttpMethod.POST, "/user/delete-user", userController::deleteUser, notAuth),
 
 				RequestHandler.init(HttpMethod.GET, "/user/info-user", userController::getInfoUser, notAuth),
 				RequestHandler.init(HttpMethod.POST, "/user/update-info-user", userController::updateInfoUser, auth),

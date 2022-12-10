@@ -20,4 +20,5 @@ public class CommandRegister {
     private String fullName;
     private String avatar;
     private String role;
+    private Boolean isAdmin = false;
 }

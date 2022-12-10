@@ -29,6 +29,13 @@ public class UserRedis {
         jedis.setWithExpireAfter(Constant.KEY_REDIS.USER + userId, JSONUtils.objToJsonString(user), Constant.TIME.TTL_USER);
     }
 
+    public void deleteUser(String userId) {
+        String userRedis = jedis.get(Constant.KEY_REDIS.USER + userId);
+        if (!StringUtils.isNullOrEmpty(userRedis)) {
+            jedis.delete(Constant.KEY_REDIS.USER + userId);
+        }
+    }
+
     public void updateUserRedisDB(String userId, User user) {
         var userUpdate = userRepository.update(userId, user);
         if (userUpdate.isEmpty()) {

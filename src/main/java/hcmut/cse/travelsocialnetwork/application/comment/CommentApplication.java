@@ -114,12 +114,12 @@ public class CommentApplication implements ICommentApplication{
 
     @Override
     public Optional<Boolean> deleteComment(CommandComment commandComment) throws Exception {
-        var query = new Document("userId", commandComment.getUserId()).append("postId", commandComment.getPostId());
-        var comment = commentRepository.get(query);
-        if (comment.isEmpty()) {
-            log.warn(String.format("%s not found comment in post %s", commandComment.getUserId(), commandComment.getPostId()));
+        var commentOptional = commentRepository.getById(commandComment.getCommentId());
+        if (commentOptional.isEmpty()) {
+            log.error(String.format("not found comment have id = %s", commandComment.getCommentId()));
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_COMMENT);
         }
+        var comment = commentOptional.get();
 
         postRedis.decreaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
         var pointPostNew = postRedis.decreaseAndGetPoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
@@ -128,7 +128,7 @@ public class CommentApplication implements ICommentApplication{
         var pointUserNew = userRedis.decreaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
 
-        return commentRepository.delete(comment.get().get_id().toString());
+        return commentRepository.delete(comment.get_id().toString());
     }
 
 

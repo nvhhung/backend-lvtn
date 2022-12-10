@@ -18,4 +18,6 @@ public interface IUserApplication {
     Optional<User> getInfoUser(String userId) throws Exception;
     Optional<User> updateInfoUser(CommandUser commandUser) throws Exception;
     Optional<List<User>> searchUser(CommandUser commandUser) throws Exception;
+    Optional<User> blockUser(CommandUser commandUser) throws Exception;
+    Optional<User> deleteUser(CommandUser commandUser) throws Exception;
 }

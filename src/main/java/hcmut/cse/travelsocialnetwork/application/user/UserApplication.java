@@ -59,7 +59,7 @@ public class UserApplication implements IUserApplication{
                 .avatar(Optional.ofNullable(commandRegister.getAvatar()).orElse(""))
                 .status(Constant.STATUS_USER.ACTIVE)
                 .level(1)
-                .isAdmin(false)
+                .isAdmin(commandRegister.getIsAdmin())
                 .experiencePoint(0)
                 .build();
         var userAdd = userRepository.add(userRegister);
@@ -77,9 +77,9 @@ public class UserApplication implements IUserApplication{
         if (userTemp == null) {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
-        if (userTemp.getStatus().equals(Constant.STATUS_USER.BLOCKED)) {
-            throw new CustomException(Constant.ERROR_MSG.USER_BLOCKED);
-        }
+//        if (userTemp.getStatus().equals(Constant.STATUS_USER.BLOCKED)) {
+//            throw new CustomException(Constant.ERROR_MSG.USER_BLOCKED);
+//        }
         if (!SHA512.valueOf(commandLogin.getPassword()).equals(userTemp.getPassword())) {
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
         }
@@ -173,5 +173,37 @@ public class UserApplication implements IUserApplication{
 
         hitUserList.forEach(hitUser -> userListResult.add(userRedis.getUser(hitUser.id())));
         return Optional.of(userListResult);
+    }
+
+    @Override
+    public Optional<User> blockUser(CommandUser commandUser) throws Exception {
+        var user = userRedis.getUser(commandUser.getUserId());
+        if (user == null) {
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
+        }
+        user.setStatus(Constant.STATUS_USER.BLOCKED);
+
+        var userUpdate = userRepository.update(commandUser.getUserId(), user);
+        if (userUpdate.isEmpty()) {
+            throw new CustomException(Constant.ERROR_MSG.UPDATE_USER_FAIL);
+        }
+        userRedis.updateUser(commandUser.getUserId(), userUpdate.get());
+        return userUpdate;
+    }
+
+    @Override
+    public Optional<User> deleteUser(CommandUser commandUser) throws Exception {
+        var user = userRedis.getUser(commandUser.getUserId());
+        if (user == null) {
+            throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_USER);
+        }
+        user.setIsDeleted(true);
+
+        var userUpdate = userRepository.update(commandUser.getUserId(), user);
+        if (userUpdate.isEmpty()) {
+            throw new CustomException(Constant.ERROR_MSG.UPDATE_USER_FAIL);
+        }
+        userRedis.deleteUser(commandUser.getUserId());
+        return userUpdate;
     }
 }

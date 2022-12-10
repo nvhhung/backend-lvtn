@@ -141,4 +141,36 @@ public class UserController extends AbstractController {
                     .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
         }
     }
+
+    public void blockUser(RoutingContext routingContext) {
+        try {
+            var commandUser = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandUser.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(outputJson(9999, userApplication.blockUser(commandUser).orElse(null)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
+
+    public void deleteUser(RoutingContext routingContext) {
+        try {
+            var commandUser = JSONUtils.stringToObj(routingContext.getBodyAsString(), CommandUser.class);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "application/json; charset=utf-8")
+                    .end(outputJson(9999, userApplication.deleteUser(commandUser).orElse(null)));
+        } catch (Throwable throwable) {
+            log.error(throwable);
+            routingContext.response()
+                    .setStatusCode(200)
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(outputJson(-9999, throwable.getMessage(), new HashMap<>()));
+        }
+    }
 }
