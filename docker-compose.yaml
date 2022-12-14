@@ -1,50 +1,72 @@
 version: "3.8"
 services:
-  mongodb:
-      image: mongo
-      container_name: mongodb
-      ports:
-        - 27017:27017
-      volumes:
-        - mongodata:/data
-      environment:
-        - MONGO_INIT_ROOT_USERNAME=admin
-        - MONGO_INIT_ROOT_PASSWORD=admin
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data
+    environment:
+      - MONGO_INIT_ROOT_USERNAME=admin
+      - MONGO_INIT_ROOT_PASSWORD=admin
+    networks:
+      - travel-social-network
+    command: ["--bind_ip", "0.0.0.0"]
   redis:
-      image: 'bitnami/redis:latest'
-      environment:
-        - ALLOW_EMPTY_PASSWORD=yes
-      ports:
-        - 6379:6379
-      volumes:
-        - redisdata:/data
+    image: 'bitnami/redis:latest'
+    container_name: c-redis
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data
+    networks:
+      - travel-social-network
   elasticsearch:
-      container_name: es-container
-      image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
-      environment:
-        - "discovery.type=single-node"
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        - bootstrap.memory_lock=true
-      ports:
-        - 9200:9200
-      volumes:
-        - esdata:/data
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    container_name: es-container
+    restart: always
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data
+    networks:
+      - travel-social-network
+  backend-theis:
+    image: hungnvh2701/thesis-be:v1.0.2
+    container_name: backend-theis
+    restart: always
+    ports:
+      - "8081:2701"
+    networks:
+      - travel-social-network
+    depends_on:
+      - mongo
 volumes:
-  mongodata:
+  mongo-data:
     driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/mongodb
       o: bind
-      type: tmpfs
-  redisdata:
+      device: ./mongo-db/:/data
+      type: none
+  redis-data:
     driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/redis
+      device: ./redis:/data
       o: bind
-      type: tmpfs
-  esdata:
+      type: none
+  es-data:
     driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/elasticsearch
+      device: ./elasticsearch:/data
       o: bind
-      type: tmpfs
+      type: none
+
 networks:
-  default:
-    name: travel-social-network
+  travel-social-network:
+    driver: bridge
