@@ -18,7 +18,6 @@ services:
       image: 'bitnami/redis:latest'
       environment:
         - ALLOW_EMPTY_PASSWORD=yes
-      restart: always
       ports:
         - 6379:6379
       volumes:
@@ -27,7 +26,6 @@ services:
       container_name: es-container
       image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
       environment:
-#        - xpack.sercurity.enable=false
         - "discovery.type=single-node"
         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         - bootstrap.memory_lock=true
@@ -35,22 +33,22 @@ services:
         - 9200:9200
       volumes:
         - esdata:/data
-volumes:
-  mongodata:
-    driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/mongodb
-      o: bind
-      type: tmpfs
-  redisdata:
-    driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/redis
-      o: bind
-      type: tmpfs
-  esdata:
-    driver_opts:
-      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/elasticsearch
-      o: bind
-      type: tmpfs
+#volumes:
+#  mongodata:
+#    driver_opts:
+#      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/mongodb
+#      o: bind
+#      type: tmpfs
+#  redisdata:
+#    driver_opts:
+#      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/redis
+#      o: bind
+#      type: tmpfs
+#  esdata:
+#    driver_opts:
+#      device: /home/hungnguyen/Documents/Learning Data/Thesis/travel-social-network/travel-social-network-data/elasticsearch
+#      o: bind
+#      type: tmpfs
 networks:
   default:
     name: travel-social-network
