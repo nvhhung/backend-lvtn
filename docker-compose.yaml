@@ -43,7 +43,7 @@ services:
     networks:
       - travel-social-network
   backend-theis:
-    image: hungnvh2701/thesis-be:v1.0.5
+    image: hungnvh2701/thesis-be:v1.0.6
     #build:
     #  dockerfile: Dockerfile
     #  context: .
