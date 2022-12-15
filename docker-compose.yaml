@@ -45,7 +45,7 @@ services:
     container_name: backend-theis
     restart: always
     ports:
-      - "8081:2701"
+      - "8001:2701"
     networks:
       - travel-social-network
     depends_on:
