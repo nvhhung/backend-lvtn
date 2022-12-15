@@ -14,18 +14,20 @@ services:
     networks:
       - travel-social-network
     command: ["--bind_ip", "0.0.0.0"]
+
   redis-server:
     image: 'bitnami/redis:latest'
     container_name: redis-server
     restart: always
     environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PASSWORD=admin
     ports:
       - "6379:6379"
     volumes:
       - redis-data
     networks:
       - travel-social-network
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
     container_name: es-container
@@ -57,7 +59,7 @@ services:
       - mongo
 
   frontend-theis:
-    image: hungnvh2701/thesis-fe:v1.0.2
+    image: hungnvh2701/thesis-fe:v1.0.3
     container_name: frontend-theis
     restart: always
     ports:
