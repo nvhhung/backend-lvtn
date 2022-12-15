@@ -39,6 +39,7 @@ public class Constant {
     public static class KEY_CONFIG {
         public static final String DB = "application.mongodb";
         public static final String REDIS = "application.redis";
+        public static final String ELASTIC_SEARCH = "application.elasticsearch";
     }
 
     public static class ERROR_MSG {

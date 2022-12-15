@@ -14,9 +14,9 @@ services:
     networks:
       - travel-social-network
     command: ["--bind_ip", "0.0.0.0"]
-  redis:
+  redis-server:
     image: 'bitnami/redis:latest'
-    container_name: c-redis
+    container_name: redis-server
     restart: always
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
@@ -42,14 +42,29 @@ services:
       - travel-social-network
   backend-theis:
     image: hungnvh2701/thesis-be:v1.0.2
+    #build:
+    #  dockerfile: Dockerfile
+    #  context: .
     container_name: backend-theis
     restart: always
     ports:
       - "8001:2701"
     networks:
       - travel-social-network
+    links:
+      - redis-server
     depends_on:
       - mongo
+
+  frontend-theis:
+    image: hungnvh2701/thesis-fe:v1.0.2
+    container_name: frontend-theis
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - travel-social-network
+
 volumes:
   mongo-data:
     driver_opts:

@@ -10,6 +10,8 @@ import co.elastic.clients.json.JsonpMapper;
 import co.elastic.clients.json.SimpleJsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import hcmut.cse.travelsocialnetwork.factory.configuration.ENVConfig;
+import hcmut.cse.travelsocialnetwork.utils.Constant;
 import io.vertx.core.json.JsonObject;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -39,10 +41,14 @@ public class ElasticsearchClientImpl implements VHElasticsearchClient {
     private static final Logger log = LogManager.getLogger(ElasticsearchClientImpl.class);
     private final ElasticsearchClient client;
     private static final String EXCEPTION_ELASTICSEARCH = "Have exception when call elasticsearch";
+    @Autowired
+    private ENVConfig envConfig;
 
     @Autowired
-    public ElasticsearchClientImpl() {
-        var elasticsearchCfg = new JsonObject("{\"host\":\"localhost\",\"port\":9200}");
+    public ElasticsearchClientImpl(ENVConfig envConfig) {
+        this.envConfig = envConfig;
+        var redisEnv = envConfig.getStringProperty(Constant.KEY_CONFIG.ELASTIC_SEARCH);
+        var elasticsearchCfg = new JsonObject(redisEnv);
         var restClient = RestClient.builder(new HttpHost(elasticsearchCfg.getString("host"), elasticsearchCfg.getInteger("port"), "http"))
                 .setRequestConfigCallback(builder ->
                         builder.setConnectTimeout(5000)
