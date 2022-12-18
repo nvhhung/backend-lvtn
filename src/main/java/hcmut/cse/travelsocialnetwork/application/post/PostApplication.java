@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * @since : 8/30/22 Tuesday
  **/
 @Component
-public class PostApplication implements IPostApplication{
+public class  PostApplication implements IPostApplication{
     private static final Logger log = LogManager.getLogger(PostApplication.class);
 
     IPostRepository postRepository;

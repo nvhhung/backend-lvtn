@@ -1,89 +1,45 @@
 version: "3.8"
 services:
-  mongo:
+  mongodb:
     image: mongo
-    container_name: mongo
-    restart: always
+    container_name: mongodb
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
-      - mongo-data
+      - mongodata:/data
     environment:
       - MONGO_INIT_ROOT_USERNAME=admin
       - MONGO_INIT_ROOT_PASSWORD=admin
-    networks:
-      - travel-social-network
-    command: ["--bind_ip", "0.0.0.0"]
-
-  redis-server:
+  #        - MONGODB_USER: "${db_user_env}"
+  #        - MONGODB_DATABASE: "${dbname_env}"
+  #        - MONGODB_PASS: "${db_pass}"
+  #      command: mongo --host mongo --eval  "db.getSiblingDB('travel-social-network').createUser({user:'admin', pwd:'admin', roles:[{role:'readWrite',db:'travel-social-network'}]});"
+  redis:
     image: 'bitnami/redis:latest'
-    container_name: redis-server
-    restart: always
     environment:
-      - REDIS_PASSWORD=admin
+      - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
-      - redis-data
-    networks:
-      - travel-social-network
-
+      - redisdata:/data
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
     container_name: es-container
-    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
     environment:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true
     ports:
-      - "9200:9200"
+      - 9200:9200
     volumes:
-      - es-data
-    networks:
-      - travel-social-network
-  backend-theis:
-    image: hungnvh2701/thesis-be:v1.0.6
-    #build:
-    #  dockerfile: Dockerfile
-    #  context: .
-    container_name: backend-theis
-    restart: always
-    ports:
-      - "8001:2701"
-    networks:
-      - travel-social-network
-    links:
-      - redis-server
-    depends_on:
-      - mongo
-
-  frontend-theis:
-    image: hungnvh2701/thesis-fe:v1.0.3
-    container_name: frontend-theis
-    restart: always
-    ports:
-      - "3000:3000"
-    networks:
-      - travel-social-network
-
+      - esdata:/data
 volumes:
-  mongo-data:
-    driver_opts:
-      o: bind
-      device: ./mongo-db/:/data
-      type: none
-  redis-data:
-    driver_opts:
-      device: ./redis:/data
-      o: bind
-      type: none
-  es-data:
-    driver_opts:
-      device: ./elasticsearch:/data
-      o: bind
-      type: none
-
+  mongodata:
+    driver: local
+  redisdata:
+    driver: local
+  esdata:
+    driver: local
 networks:
-  travel-social-network:
-    driver: bridge
+  default:
+    name: travel-social-network
