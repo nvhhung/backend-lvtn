@@ -33,6 +33,7 @@ public class UserRedis {
         String userRedis = jedis.get(Constant.KEY_REDIS.USER + userId);
         if (!StringUtils.isNullOrEmpty(userRedis)) {
             jedis.delete(Constant.KEY_REDIS.USER + userId);
+            jedis.deleteMember(Constant.LEADER_BOARD.KEY_USER, userId);
         }
     }
 

@@ -120,5 +120,6 @@ public class PostRedis {
     public void deletePost(String postId) {
         jedis.delete(Constant.KEY_REDIS.POST + postId);
         postRepository.delete(postId);
+        jedis.deleteMember(Constant.LEADER_BOARD.KEY_POST, postId);
     }
 }

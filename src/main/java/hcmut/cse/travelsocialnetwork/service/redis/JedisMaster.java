@@ -381,4 +381,14 @@ public class JedisMaster {
         }
         return null;
     }
+
+    public long deleteMember(String key, String member) {
+        JedisPool pool = getJedisPool();
+        try (Jedis jedis = pool.getResource()) {
+            return jedis.zrem(key, member);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
 }
