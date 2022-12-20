@@ -120,10 +120,9 @@ public class CommentApplication implements ICommentApplication{
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_COMMENT);
         }
         var comment = commentOptional.get();
-
-        postRedis.decreaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
-        var pointPostNew = postRedis.decreaseAndGetPoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandComment.getPostId(), pointPostNew);
+        postRedis.decreaseFactorial(comment.getPostId(), FactorialPost.COMMENT);
+        var pointPostNew = postRedis.decreaseAndGetPoints(comment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, comment.getPostId(), pointPostNew);
 
         var pointUserNew = userRedis.decreaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
