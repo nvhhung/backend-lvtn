@@ -117,9 +117,20 @@ public class PostRedis {
         updatePostRedisDB(postId, post);
     }
 
+    public Integer getRateSizeOfPost(String postId) {
+        var post = getPost(postId);
+        return post.getRateSize();
+    }
+
     public void deletePost(String postId) {
         jedis.delete(Constant.KEY_REDIS.POST + postId);
         postRepository.delete(postId);
         jedis.deleteMember(Constant.LEADER_BOARD.KEY_POST, postId);
+    }
+
+    public Integer getPointElapsed(String postId) {
+        var elapsedTime = System.currentTimeMillis() - getPost(postId).getCreateTime();
+        // Each 6h : down 1 point
+        return (int) Math.ceil(elapsedTime / 1000 / 60 / 60 / 6);
     }
 }

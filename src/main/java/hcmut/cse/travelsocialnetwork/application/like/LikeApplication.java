@@ -67,8 +67,9 @@ public class LikeApplication implements ILikeApplication{
         }
 
         postRedis.increaseFactorial(commandLike.getPostId(), FactorialPost.LIKE);
+        var pointElapsed = postRedis.getPointElapsed(commandLike.getPostId());
         var pointPostNew = postRedis.increaseAndGetPoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew - pointElapsed);
 
         var pointUserNew = userRedis.increaseAndGetPoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandLike.getUserId(), pointUserNew);
@@ -100,8 +101,9 @@ public class LikeApplication implements ILikeApplication{
 
         // increase like size, point of post
         postRedis.decreaseFactorial(commandLike.getPostId(), FactorialPost.LIKE);
+        var pointElapsed = postRedis.getPointElapsed(commandLike.getPostId());
         var pointPostNew = postRedis.decreaseAndGetPoints(commandLike.getPostId(), Constant.POINTS.ONE_LIKE_POST);
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandLike.getPostId(), pointPostNew - pointElapsed);
 
         // increase point user like
         var pointUserNew = userRedis.decreaseAndGetPoints(commandLike.getUserId(), Constant.POINTS.ONE_LIKE_USER);

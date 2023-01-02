@@ -62,7 +62,8 @@ public class CommentApplication implements ICommentApplication{
         }
         postRedis.increaseFactorial(commandComment.getPostId(), FactorialPost.COMMENT);
         var pointPostNew = postRedis.increaseAndGetPoints(commandComment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandComment.getPostId(), pointPostNew);
+        var pointElapsed = postRedis.getPointElapsed(comment.getPostId());
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandComment.getPostId(), pointPostNew - pointElapsed);
 
         var pointUserNew = userRedis.increaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);
@@ -121,8 +122,9 @@ public class CommentApplication implements ICommentApplication{
         }
         var comment = commentOptional.get();
         postRedis.decreaseFactorial(comment.getPostId(), FactorialPost.COMMENT);
+        var pointElapsed = postRedis.getPointElapsed(comment.getPostId());
         var pointPostNew = postRedis.decreaseAndGetPoints(comment.getPostId(), Constant.POINTS.ONE_COMMENT_POST);
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, comment.getPostId(), pointPostNew);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, comment.getPostId(), pointPostNew - pointElapsed);
 
         var pointUserNew = userRedis.decreaseAndGetPoints(commandComment.getUserId(), Constant.POINTS.ONE_COMMENT_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandComment.getUserId(), pointUserNew);

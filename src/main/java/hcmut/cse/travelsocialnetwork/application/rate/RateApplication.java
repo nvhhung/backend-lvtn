@@ -67,8 +67,9 @@ public class RateApplication implements IRateApplication{
             throw new CustomException(Constant.ERROR_MSG.RATE_FAIL);
         }
         postRedis.increaseFactorial(commandRate.getPostId(), FactorialPost.RATE);
+        var pointElapsed = postRedis.getPointElapsed(commandRate.getPostId());
         var pointPostNew = postRedis.increaseAndGetPoints(commandRate.getPostId(), commandRate.getPoint());
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandRate.getPostId(), pointPostNew);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandRate.getPostId(), pointPostNew - pointElapsed);
 
         var pointUserNew = userRedis.increaseAndGetPoints(commandRate.getUserId(), Constant.POINTS.ONE_RATE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandRate.getUserId(), pointUserNew);
@@ -115,9 +116,9 @@ public class RateApplication implements IRateApplication{
             throw new CustomException(Constant.ERROR_MSG.NOT_FOUND_RATE);
         }
         postRedis.decreaseFactorial(commandRate.getPostId(), FactorialPost.RATE);
-
+        var pointElapsed = postRedis.getPointElapsed(commandRate.getPostId());
         var pointPostNew = postRedis.decreaseAndGetPoints(commandRate.getPostId(),rate.get().getPoint());
-        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandRate.getPostId(), pointPostNew);
+        rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_POST, commandRate.getPostId(), pointPostNew - pointElapsed);
 
         var pointUserNew = userRedis.decreaseAndGetPoints(commandRate.getUserId(), Constant.POINTS.ONE_RATE_USER);
         rankRedis.addLeaderBoard(Constant.LEADER_BOARD.KEY_USER, commandRate.getUserId(), pointUserNew);
