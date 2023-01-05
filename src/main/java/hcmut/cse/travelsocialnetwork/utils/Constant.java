@@ -13,6 +13,8 @@ public class Constant {
         public static final String POST_ID = "postId";
         public static final String USER_ID = "userId";
         public static final String USER_ID_TARGET = "userIdTarget";
+        public static final String DESTINATION = "destination";
+        public static final String TYPE = "type";
     }
 
     public static class OPERATOR_MONGODB {

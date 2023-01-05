@@ -194,6 +194,8 @@ public class PostApplication implements IPostApplication{
     @Override
     public Optional<Object> loadAllPost(CommandPost commandPost) throws Exception {
         var query = new Document();
+        Optional.ofNullable(commandPost.getDestination()).ifPresent(destination -> query.put(Constant.FIELD_QUERY.DESTINATION, destination));
+        Optional.ofNullable(commandPost.getType()).ifPresent(type -> query.put(Constant.FIELD_QUERY.TYPE, type));
         var sort = new Document(Constant.FIELD_QUERY.LAST_UPDATE_TIME, -1);
         var postList = postRepository.search(query, sort, commandPost.getPage(), commandPost.getSize());
         var totalItem = postRepository.count(query);
